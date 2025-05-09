@@ -18,9 +18,7 @@ if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
 else:
     running_folder = Path(__file__).parent
 
-from rag_powered_chatbot import (
-    main as main_package
-)
+from rag_powered_chatbot import main as main_package
 
 
 @click.command()
@@ -39,6 +37,7 @@ def main():
 
     logger.info(f"This is the working location {running_folder}")
     logger.info(main_package.hello_world())
+
 
 if __name__ == "__main__":
     main()
