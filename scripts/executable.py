@@ -18,7 +18,7 @@ if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
 else:
     running_folder = Path(__file__).parent
 
-from rag_powered_chatbot import main as main_package
+from app import main as main_package
 
 
 @click.command()

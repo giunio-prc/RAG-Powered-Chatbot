@@ -1,7 +1,7 @@
 from os import PathLike
 
-from rag_powered_chatbot.controller.helpers import chunk_document
-from rag_powered_chatbot.interfaces import AIAgentInterface, DatabaseManagerInterface
+from app.controller.helpers import chunk_document
+from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 
 
 async def load_initial_documents(db: DatabaseManagerInterface, folder: PathLike):
