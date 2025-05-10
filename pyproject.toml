@@ -1,10 +1,18 @@
 [project]
 name = "rag-powered-chatbot"
-requires-python = ">= 3.12"
+requires-python = ">=3.12"
 version = "0.0.0"
 dependencies = [
   "loguru",
-  "click"
+  "click",
+  "fastapi[standard]>=0.115.12",
+  "python-dotenv>=1.1.0",
+  "unstructured>=0.17.2",
+  "langchain>=0.3.25",
+  "langchain-community>=0.3.23",
+  "langchain-cohere>=0.4.4",
+  "onnxruntime==1.20.1; platform_system == 'Windows'",
+  "chromadb>=0.6.3"
 ]
 
 [tool.ruff]
