@@ -14,5 +14,5 @@ class DatabaseManagerInterface(ABC):
         pass
 
     @abstractmethod
-    def get_context(self, question: str):
+    async def get_context(self, question: str) -> str:
         pass
