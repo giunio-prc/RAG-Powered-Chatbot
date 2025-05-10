@@ -1,0 +1,18 @@
+from abc import ABC, abstractmethod
+from os import PathLike
+
+
+class DatabaseManagerInterface(ABC):
+    db: object
+
+    @abstractmethod
+    async def load_initial_documents(self, folder: PathLike):
+        pass
+
+    @abstractmethod
+    async def add_chunks(self, chunks: list[str]):
+        pass
+
+    @abstractmethod
+    def get_context(self, question: str):
+        pass
