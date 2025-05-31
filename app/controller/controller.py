@@ -9,8 +9,8 @@ async def load_initial_documents(db: DatabaseManagerInterface, folder: PathLike)
     await db.load_initial_documents(folder)
 
 
-async def add_document_into_db(db: DatabaseManagerInterface, document: bytes):
-    chunks = chunk_document(document)
+async def add_content_into_db(db: DatabaseManagerInterface, content: bytes):
+    chunks = chunk_document(content)
     await db.add_chunks(chunks)
 
 
