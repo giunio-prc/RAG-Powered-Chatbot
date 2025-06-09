@@ -25,7 +25,7 @@ async def test_load_initial_documents__load_chunks_from_file_in_folder(fake_data
 
     assert len(chunks) == 13
     assert chunks[0] == (
-        "Little Steps Baby Shop – Customer Q&A (Short Version) Format: .txt Last updated: June 2025"
+        "Little Steps Baby Shop\n\nCustomer Q&A (Short Version)\n\nFormat: .txt\n\nLast updated: June 2025"
     )
 
 

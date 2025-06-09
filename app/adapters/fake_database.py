@@ -26,8 +26,5 @@ class FakeDatabase(DatabaseManagerInterface):
     async def get_context(self, question) -> str:
         return " ".join(self.db)
 
-    async def add_document(self, content: bytes):
-        pass
-
     def get_chunks(self) -> list[str]:
         return self.db

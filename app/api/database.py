@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.post("/add-document")
-async def add_document(request: Request, file: UploadFile):
+async def add_document_endpoint(request: Request, file: UploadFile):
     if file.content_type != "text/plain":
         raise HTTPException(
             status_code=400, detail="Invalid file. The app only supprt text files"
