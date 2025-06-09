@@ -14,5 +14,9 @@ class DatabaseManagerInterface(ABC):
         pass
 
     @abstractmethod
+    async def add_document(self, content: bytes):
+        pass
+
+    @abstractmethod
     async def get_context(self, question: str) -> str:
         pass
