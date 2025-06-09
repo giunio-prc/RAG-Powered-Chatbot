@@ -12,7 +12,8 @@ dependencies = [
   "langchain-community>=0.3.23",
   "langchain-cohere>=0.4.4",
   "onnxruntime==1.20.1; platform_system == 'Windows'",
-  "chromadb>=0.6.3"
+  "chromadb>=0.6.3",
+  "langchain-chroma>=0.2.3"
 ]
 
 [tool.ruff]

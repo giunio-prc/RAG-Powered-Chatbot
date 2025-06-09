@@ -1107,6 +1107,20 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain-chroma"
+version = "0.2.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "chromadb" },
+    { name = "langchain-core" },
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ee/6a/f8e26b3ce1a7958beabf2e5776695781f93e87d245e1a6a62a316af7fca4/langchain_chroma-0.2.3.tar.gz", hash = "sha256:b880f3cfe9843b5a51039cb65f7102717518ef6b3117e6f9df54202273538494", size = 15828, upload-time = "2025-04-15T18:18:53.331Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/84/ab3afa3bb5e0792ea6ed3a5b44e5233aa6bd3313ca6a1ae58cb7e48903b1/langchain_chroma-0.2.3-py3-none-any.whl", hash = "sha256:d139f44a41f128cba5ee321a14817f0a1ffaeaed8576204baaf01f58cfe685a4", size = 11303, upload-time = "2025-04-15T18:18:52.557Z" },
+]
+
+[[package]]
 name = "langchain-cohere"
 version = "0.4.4"
 source = { registry = "https://pypi.org/simple" }
@@ -2183,6 +2197,7 @@ dependencies = [
     { name = "click" },
     { name = "fastapi", extra = ["standard"] },
     { name = "langchain" },
+    { name = "langchain-chroma" },
     { name = "langchain-cohere" },
     { name = "langchain-community" },
     { name = "loguru" },
@@ -2208,6 +2223,7 @@ requires-dist = [
     { name = "click" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
     { name = "langchain", specifier = ">=0.3.25" },
+    { name = "langchain-chroma", specifier = ">=0.2.3" },
     { name = "langchain-cohere", specifier = ">=0.4.4" },
     { name = "langchain-community", specifier = ">=0.3.23" },
     { name = "loguru" },

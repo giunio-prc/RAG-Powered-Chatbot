@@ -1,10 +1,9 @@
 from os import PathLike
 
 from dotenv import load_dotenv
-from langchain.text_splitter import TextSplitter
+from langchain_chroma.vectorstores import Chroma
 from langchain_cohere import CohereEmbeddings
 from langchain_community.document_loaders import DirectoryLoader
-from langchain_community.vectorstores import Chroma
 from langchain_core.documents.base import Document
 
 from app.interfaces.database import DatabaseManagerInterface
