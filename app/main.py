@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 from app.adapters.chroma_database import ChromaDataBase
 from app.adapters.cohere_agent import CohereAgent
-from app.api import database
+from app.api import database, prompting
 from app.controller.controller import load_initial_documents
 
 logger = logging.getLogger("uvicorn")
@@ -23,3 +23,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Baby Shop AI Assistant", lifespan=lifespan)
 app.include_router(database.router)
+app.include_router(prompting.router)
