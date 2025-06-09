@@ -5,11 +5,10 @@ from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 
 
 async def load_initial_documents(db: DatabaseManagerInterface, folder: PathLike):
-    # TODO check if folder exists
     await db.load_initial_documents(folder)
 
 
-async def add_content_into_db(db: DatabaseManagerInterface, content: bytes):
+async def add_content_into_db(db: DatabaseManagerInterface, content: str):
     chunks = chunk_document(content)
     await db.add_chunks(chunks)
 

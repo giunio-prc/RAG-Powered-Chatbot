@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from os import PathLike
+from typing import Any
 
 
 class DatabaseManagerInterface(ABC):
@@ -10,7 +11,7 @@ class DatabaseManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def add_chunks(self, chunks: list[str]):
+    async def add_chunks(self, chunks: list[Any]):
         pass
 
     @abstractmethod
@@ -19,4 +20,8 @@ class DatabaseManagerInterface(ABC):
 
     @abstractmethod
     async def get_context(self, question: str) -> str:
+        pass
+
+    @abstractmethod
+    def get_chunks(self) -> list[str]:
         pass
