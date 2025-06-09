@@ -20,6 +20,15 @@ git clone https://github.com/rag-powered-chatbot.git
 Provide the personal access token.
 You can create a personal access token [here](https://github.com/-/profile/personal_access_tokens)
 
+TO run the server in development mode you can use the FastAPI CLI:
+```bash
+uv run fastapi dev
+```
+The production mode is:
+```bash
+uv run fastapi run
+```
+
 Once the project is cloned go to the folder `rag-powered-chatbot` and create the environment with `uv` by running
 ```bash
 uv sync
