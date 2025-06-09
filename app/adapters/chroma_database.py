@@ -1,6 +1,7 @@
 from os import PathLike
 
 from dotenv import load_dotenv
+from langchain.text_splitter import CharacterTextSplitter, TextSplitter
 from langchain_chroma.vectorstores import Chroma
 from langchain_cohere import CohereEmbeddings
 from langchain_community.document_loaders import DirectoryLoader
@@ -16,8 +17,8 @@ class ChromaDataBase(DatabaseManagerInterface):
     text_splitter: TextSplitter
 
     def __init__(self):
-        self.db = Chroma(embedding_function=CohereEmbeddings())
-        self.db = TextSplitter(chunk_size=100, chunk_overlap=0)
+        self.db = Chroma(embedding_function=CohereEmbeddings(model="embed-v4.0"))
+        self.text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
 
     async def load_initial_documents(self, folder: PathLike):
         raw_documents = DirectoryLoader(str(folder), "*.txt").load()
