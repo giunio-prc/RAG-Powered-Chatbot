@@ -30,5 +30,7 @@ class CohereAgent(AIAgentInterface):
         self.chain = chat_prompt_template | self.model | StrOutputParser()
 
     async def query_with_context(self, question: str, context: str) -> str:
+        print(f"Question: {question}")
+        print(f"Context: {context}")
         response = await self.chain.ainvoke({"question": question, "context": context})
         return response
