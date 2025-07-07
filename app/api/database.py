@@ -13,4 +13,6 @@ async def add_document_endpoint(request: Request, file: UploadFile):
             status_code=400, detail="Invalid file. The app only supprt text files"
         )
     db: DatabaseManagerInterface = request.state.db
-    await add_content_into_db(db, file.file.read())
+    await add_content_into_db(db, file.file.read().decode())
+
+
