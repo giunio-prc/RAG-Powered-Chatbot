@@ -24,6 +24,7 @@ select = ["I", "E4", "E7", "E9", "F", "Q"]
 
 [tool.pytest.ini_options]
 pythonpath = "."
+asyncio_default_fixture_loop_scope = "session"
 
 [dependency-groups]
 dev = [
