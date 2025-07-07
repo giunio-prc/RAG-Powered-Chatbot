@@ -11,7 +11,7 @@ from app.adapters.cohere_agent import CohereAgent
 from app.api import database, prompting
 from app.controller.controller import load_initial_documents
 
-logger = logging.getLogger("uvicorn")
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
