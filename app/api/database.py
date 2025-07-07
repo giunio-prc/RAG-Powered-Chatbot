@@ -16,3 +16,9 @@ async def add_document_endpoint(request: Request, file: UploadFile):
     await add_content_into_db(db, file.file.read().decode())
 
 
+@router.get("/get-vectors-data")
+async def get_vectors_data(request: Request):
+    db: DatabaseManagerInterface = request.state.db
+    number_of_vectors = db.get_number_of_vectors()
+    longest_vector = db.get_length_of_longest_vector()
+    return {"number_of_vectors": number_of_vectors, "longest_vector": longest_vector}

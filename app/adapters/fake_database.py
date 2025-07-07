@@ -28,3 +28,9 @@ class FakeDatabase(DatabaseManagerInterface):
 
     def get_chunks(self) -> list[str]:
         return self.db
+
+    def get_number_of_vectors(self) -> int:
+        return len(self.db)
+
+    def get_length_of_longest_vector(self) -> int:
+        return len(max(self.db, key=len))

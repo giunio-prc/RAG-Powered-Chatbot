@@ -31,6 +31,8 @@ class ChromaDataBase(DatabaseManagerInterface):
         docs = self.db.similarity_search(question)
         return "\n\n".join(doc.page_content for doc in docs)
 
-    def get_chunks(self) -> list[str]:
-        # TODO get list of chunks
-        return []
+    def get_number_of_vectors(self) -> int:
+        return len(self.db.get()["documents"])
+
+    def get_length_of_longest_vector(self) -> int:
+        return len(max(self.db.get()["documents"], key=len))
