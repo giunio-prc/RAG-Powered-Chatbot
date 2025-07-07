@@ -15,7 +15,7 @@ from app.interfaces.agent import AIAgentInterface
 load_dotenv()
 
 
-logger = logging.getLogger("uvicorn")
+logger = logging.getLogger(__name__)
 
 
 class CohereAgent(AIAgentInterface):
@@ -35,7 +35,7 @@ class CohereAgent(AIAgentInterface):
         self.chain = chat_prompt_template | self.model | StrOutputParser()
 
     async def query_with_context(self, question: str, context: str) -> str:
-        logger.debug(f"Question: {question}")
-        logger.debug(f"Context: {context}")
+        logger.debug("Question: %s", question)
+        logger.debug("Context: %s", context)
         response = await self.chain.ainvoke({"question": question, "context": context})
         return response
