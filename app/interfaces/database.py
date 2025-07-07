@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 from langchain.text_splitter import TextSplitter
+from langchain_core.documents import Document
 
 
 class DatabaseManagerInterface(ABC):
@@ -9,11 +9,11 @@ class DatabaseManagerInterface(ABC):
     text_splitter: TextSplitter
 
     @abstractmethod
-    def get_chunks(self) -> list[Any]:
+    def get_chunks(self) -> list[Document]:
         pass
 
     @abstractmethod
-    async def add_chunks(self, chunks: list[Any]):
+    async def add_chunks(self, chunks: list[Document]):
         pass
 
     @abstractmethod

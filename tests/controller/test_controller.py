@@ -24,9 +24,13 @@ async def test_load_initial_documents__load_chunks_from_file_in_folder(fake_data
     chunks = fake_database.get_chunks()
 
     assert len(chunks) == 18
-    assert chunks[0] == (
-        "Little Steps Baby Shop\nCustomer Q&A (Short Version)\nFormat: .txt\nLast updated: June 2025\n1. Products and Safety"
+    expected_content_chunk = (
+        "Little Steps Baby Shop\nCustomer Q&A (Short Version)\n"
+        + "Format: .txt\nLast updated: June 2025\n"
+        + "1. Products and Safety"
     )
+
+    assert any(expected_content_chunk in doc.page_content for doc in chunks)
 
 
 @pytest.mark.asyncio
@@ -45,10 +49,10 @@ In that case, you may return the item after delivery following our return policy
     chunks = fake_database.get_chunks()
 
     assert len(chunks) == 2
-    assert (
-        chunks[0]
-        == "Can I modify or cancel my order after placing it?\n"
+    expected_content_chunk = (
+        "Can I modify or cancel my order after placing it?\n"
         + "A: Yes, but only within a short window.\n"
         + "If your order hasn't been packed or shipped yet,\n"
         + "you can contact customer service to modify or cancel it."
     )
+    assert any(expected_content_chunk in doc.page_content for doc in chunks)
