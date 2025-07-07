@@ -25,12 +25,12 @@ class ChromaDataBase(DatabaseManagerInterface):
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
         await self.db.aadd_documents(chunks)
 
-    def get_chunks(self) -> list[str]:
+    def get_chunks(self) -> list[Document]:
         return self.db.get()["documents"]
 
     async def get_context(self, question) -> str:
-        docs = self.db.similarity_search(question)
-        return "\n\n".join(doc.page_content for doc in docs)
+        documents = self.db.similarity_search(question)
+        return "\n\n".join(doc.page_content for doc in documents)
 
     def get_number_of_vectors(self) -> int:
         return len(self.db.get()["documents"])
