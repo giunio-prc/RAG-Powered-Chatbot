@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
-from os import PathLike
 from typing import Any
+
+from langchain.text_splitter import TextSplitter
 
 
 class DatabaseManagerInterface(ABC):
     db: object
+    text_splitter: TextSplitter
 
     @abstractmethod
-    async def load_initial_documents(self, folder: PathLike):
+    def get_chunks(self) -> list[Any]:
         pass
 
     @abstractmethod
@@ -15,9 +17,17 @@ class DatabaseManagerInterface(ABC):
         pass
 
     @abstractmethod
+    async def add_text_to_db(self, text: str):
+        pass
+
+    @abstractmethod
     async def get_context(self, question: str) -> str:
         pass
 
     @abstractmethod
-    def get_chunks(self) -> list[str]:
+    def get_number_of_vectors(self) -> int:
+        pass
+
+    @abstractmethod
+    def get_length_of_longest_vector(self) -> int:
         pass

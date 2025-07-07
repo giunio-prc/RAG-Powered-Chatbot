@@ -1,16 +1,18 @@
 from os import PathLike
 
-from app.controller.helpers import chunk_document
+from langchain_community.document_loaders import DirectoryLoader
+
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 
 
 async def load_initial_documents(db: DatabaseManagerInterface, folder: PathLike):
-    await db.load_initial_documents(folder)
+    documents = DirectoryLoader(str(folder), "*.txt").load()
+    chunks = db.text_splitter.split_documents(documents)
+    await db.add_chunks(chunks)
 
 
 async def add_content_into_db(db: DatabaseManagerInterface, content: str):
-    chunks = chunk_document(content)
-    await db.add_chunks(chunks)
+    await db.add_text_to_db(content)
 
 
 async def query_agent(
