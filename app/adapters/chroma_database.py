@@ -1,3 +1,4 @@
+from chromadb import HttpClient
 from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_chroma.vectorstores import Chroma
@@ -10,13 +11,10 @@ load_dotenv()
 
 
 class ChromaDataBase(DatabaseManagerInterface):
-    db: Chroma
-
-    def __init__(self):
-        self.db = Chroma(embedding_function=CohereEmbeddings(model="embed-v4.0"))
-        self.text_splitter = CharacterTextSplitter(
-            chunk_size=200, chunk_overlap=0, separator="\n"
-        )
+    db = Chroma(embedding_function=CohereEmbeddings(model="embed-v4.0"))
+    text_splitter = CharacterTextSplitter(
+        chunk_size=200, chunk_overlap=0, separator="\n"
+    )
 
     async def add_chunks(self, chunks: list[str]):
         await self.db.aadd_documents([Document(chunk) for chunk in chunks])
@@ -40,3 +38,10 @@ class ChromaDataBase(DatabaseManagerInterface):
 
     def empty_database(self):
         self.db.reset_collection()
+
+
+class ChromaDataBaseServer(ChromaDataBase):
+    db = Chroma(
+        embedding_function=CohereEmbeddings(model="embed-v4.0"),
+        client=HttpClient(host="localhost", port=8001),
+    )
