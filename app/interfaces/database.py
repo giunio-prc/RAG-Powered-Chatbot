@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from langchain.text_splitter import TextSplitter
-from langchain_core.documents import Document
 
 
 class DatabaseManagerInterface(ABC):
@@ -9,11 +8,11 @@ class DatabaseManagerInterface(ABC):
     text_splitter: TextSplitter
 
     @abstractmethod
-    def get_chunks(self) -> list[Document]:
+    def get_chunks(self) -> list[str]:
         pass
 
     @abstractmethod
-    async def add_chunks(self, chunks: list[Document]):
+    async def add_chunks(self, chunks: list[str]):
         pass
 
     @abstractmethod
@@ -30,4 +29,8 @@ class DatabaseManagerInterface(ABC):
 
     @abstractmethod
     def get_length_of_longest_vector(self) -> int:
+        pass
+
+    @abstractmethod
+    def empty_database(self):
         pass
