@@ -18,14 +18,14 @@ class ChromaDataBase(DatabaseManagerInterface):
             chunk_size=200, chunk_overlap=0, separator="\n"
         )
 
-    async def add_chunks(self, chunks: list[Document]):
-        await self.db.aadd_documents(chunks)
+    async def add_chunks(self, chunks: list[str]):
+        await self.db.aadd_documents([Document(chunk) for chunk in chunks])
 
     async def add_text_to_db(self, text: str):
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
         await self.db.aadd_documents(chunks)
 
-    def get_chunks(self) -> list[Document]:
+    def get_chunks(self) -> list[str]:
         return self.db.get()["documents"]
 
     async def get_context(self, question) -> str:
@@ -37,3 +37,6 @@ class ChromaDataBase(DatabaseManagerInterface):
 
     def get_length_of_longest_vector(self) -> int:
         return len(max(self.db.get()["documents"], key=len))
+
+    def empty_database(self):
+        self.db.reset_collection()

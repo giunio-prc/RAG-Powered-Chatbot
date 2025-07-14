@@ -8,7 +8,7 @@ from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 async def load_initial_documents(db: DatabaseManagerInterface, folder: PathLike):
     documents = DirectoryLoader(str(folder), "*.txt").load()
     chunks = db.text_splitter.split_documents(documents)
-    await db.add_chunks(chunks)
+    await db.add_chunks([chunk.page_content for chunk in chunks])
 
 
 async def add_content_into_db(db: DatabaseManagerInterface, content: str):
