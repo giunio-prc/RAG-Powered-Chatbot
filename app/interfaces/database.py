@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 
-from langchain.text_splitter import TextSplitter
-
 
 class DatabaseManagerInterface(ABC):
     db: object
-    text_splitter: TextSplitter
+    text_splitter: object
 
     @abstractmethod
     def get_chunks(self) -> list[str]:
