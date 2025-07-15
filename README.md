@@ -16,7 +16,7 @@ To configure the chatbot, create a `.env` file in the project root. This file is
 ```
 COHERE_API_KEY=your-cohere-api-key
 CHROMA_SERVER_HOST=localhost
-CHROMA_SERVER_PORT=8000
+CHROMA_SERVER_PORT=8001
 ```
 
 - `COHERE_API_KEY`: Your Cohere API key for embeddings and language models.
