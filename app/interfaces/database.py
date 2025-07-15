@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from os import PathLike
 
 
 class DatabaseManagerInterface(ABC):
@@ -31,4 +32,8 @@ class DatabaseManagerInterface(ABC):
 
     @abstractmethod
     def empty_database(self):
+        pass
+
+    @abstractmethod
+    def load_documents_from_folder(self, folder: PathLike):
         pass

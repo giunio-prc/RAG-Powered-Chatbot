@@ -1,8 +1,11 @@
+from os import PathLike
+
 from chromadb import HttpClient
 from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_chroma.vectorstores import Chroma
 from langchain_cohere import CohereEmbeddings
+from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents.base import Document
 
 from app.interfaces.database import DatabaseManagerInterface
@@ -11,10 +14,13 @@ load_dotenv()
 
 
 class ChromaDataBase(DatabaseManagerInterface):
-    db = Chroma(embedding_function=CohereEmbeddings(model="embed-v4.0"))
-    text_splitter = CharacterTextSplitter(
+    db: Chroma
+    text_splitter: CharacterTextSplitter = CharacterTextSplitter(
         chunk_size=200, chunk_overlap=0, separator="\n"
     )
+
+    def __init__(self):
+        self.db = Chroma(embedding_function=CohereEmbeddings(model="embed-v4.0"))
 
     async def add_chunks(self, chunks: list[str]):
         await self.db.aadd_documents([Document(chunk) for chunk in chunks])
@@ -39,9 +45,14 @@ class ChromaDataBase(DatabaseManagerInterface):
     def empty_database(self):
         self.db.reset_collection()
 
+    def load_documents_from_folder(self, folder: PathLike):
+        documents = DirectoryLoader(str(folder), "*.txt").load()
+        self.db.add_documents(self.text_splitter.split_documents(documents))
+
 
 class ChromaDataBaseServer(ChromaDataBase):
-    db = Chroma(
-        embedding_function=CohereEmbeddings(model="embed-v4.0"),
-        client=HttpClient(host="localhost", port=8001),
-    )
+    def __init__(self):
+        self.db = Chroma(
+            embedding_function=CohereEmbeddings(model="embed-v4.0"),
+            client=HttpClient(host="localhost", port=8001),
+        )
