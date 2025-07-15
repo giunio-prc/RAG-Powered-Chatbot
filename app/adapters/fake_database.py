@@ -1,4 +1,7 @@
+from os import PathLike
+
 from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents.base import Document
 
 from app.interfaces import DatabaseManagerInterface
@@ -7,11 +10,12 @@ from app.interfaces import DatabaseManagerInterface
 class FakeDatabase(DatabaseManagerInterface):
     db: list[Document]
 
+    text_splitter: CharacterTextSplitter = CharacterTextSplitter(
+        chunk_size=200, chunk_overlap=0, separator="\n"
+    )
+
     def __init__(self):
         self.db = []
-        self.text_splitter = CharacterTextSplitter(
-            chunk_size=200, chunk_overlap=0, separator="\n"
-        )
 
     async def add_chunks(self, chunks: list[str]):
         self.db.extend([Document(page_content=chunk) for chunk in chunks])
@@ -36,3 +40,7 @@ class FakeDatabase(DatabaseManagerInterface):
 
     def empty_database(self):
         self.db = []
+
+    def load_documents_from_folder(self, folder: PathLike):
+        documents = DirectoryLoader(str(folder), "*.txt").load()
+        self.db.extend(self.text_splitter.split_documents(documents))

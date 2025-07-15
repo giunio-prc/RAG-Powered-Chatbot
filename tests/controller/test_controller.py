@@ -5,8 +5,10 @@ import pytest
 
 from app.adapters.chroma_database import ChromaDataBase
 from app.adapters.fake_database import FakeDatabase
-from app.controller.controller import add_content_into_db, load_initial_documents
+from app.controller.controller import add_content_into_db
 from app.interfaces.database import DatabaseManagerInterface
+
+data_location = Path(__file__).parent.parent / "data"
 
 
 @pytest.fixture(
@@ -18,12 +20,10 @@ def vector_database(request) -> Generator[DatabaseManagerInterface, None, None]:
     database.empty_database()
 
 
-data_location = Path(__file__).parent.parent / "data"
-
-
 @pytest.mark.asyncio
 async def test_load_initial_documents__load_chunks_from_file_in_folder(vector_database):
-    await load_initial_documents(vector_database, data_location)
+    vector_database.load_documents_from_folder(data_location)
+
     chunks = vector_database.get_chunks()
 
     assert len(chunks) == 18
