@@ -6,6 +6,8 @@ This project is designed following the principles of [hexagonal architecture (po
 
 Built with FastAPI and modern Python libraries, it is designed for easy deployment, extensibility, and robust performance in real-world customer service scenarios.
 
+![Hexagonal Architecture Diagram](hexagonal-archi-draw.drawio.svg)
+
 
 ## Environment Configuration
 
