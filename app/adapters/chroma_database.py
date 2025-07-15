@@ -1,6 +1,7 @@
-from os import PathLike
+from os import PathLike, getenv
 
 from chromadb import HttpClient
+from chromadb.api import ClientAPI
 from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_chroma.vectorstores import Chroma
@@ -13,14 +14,24 @@ from app.interfaces.database import DatabaseManagerInterface
 load_dotenv()
 
 
+CHROMA_SERVER_HOST = getenv("CHROMA_SERVER_HOST")
+CHROMA_SERVER_PORT = getenv("CHROMA_SERVER_PORT")
+
+client: ClientAPI | None = None
+
+if CHROMA_SERVER_HOST is not None and CHROMA_SERVER_PORT is not None:
+    client = HttpClient(host=CHROMA_SERVER_HOST, port=int(CHROMA_SERVER_PORT))
+elif CHROMA_SERVER_HOST is not None:
+    client = HttpClient(host=CHROMA_SERVER_HOST)
+
+
 class ChromaDataBase(DatabaseManagerInterface):
-    db: Chroma
+    db: Chroma = Chroma(
+        embedding_function=CohereEmbeddings(model="embed-v4.0"), client=client
+    )
     text_splitter: CharacterTextSplitter = CharacterTextSplitter(
         chunk_size=200, chunk_overlap=0, separator="\n"
     )
-
-    def __init__(self):
-        self.db = Chroma(embedding_function=CohereEmbeddings(model="embed-v4.0"))
 
     async def add_chunks(self, chunks: list[str]):
         await self.db.aadd_documents([Document(chunk) for chunk in chunks])
@@ -48,11 +59,3 @@ class ChromaDataBase(DatabaseManagerInterface):
     def load_documents_from_folder(self, folder: PathLike):
         documents = DirectoryLoader(str(folder), "*.txt").load()
         self.db.add_documents(self.text_splitter.split_documents(documents))
-
-
-class ChromaDataBaseServer(ChromaDataBase):
-    def __init__(self):
-        self.db = Chroma(
-            embedding_function=CohereEmbeddings(model="embed-v4.0"),
-            client=HttpClient(host="localhost", port=8001),
-        )

@@ -1,10 +1,40 @@
 # RAG Powered Chatbot
 
-Brief description of the project, what it does, and any important notes.
+This is an AI-driven customer support assistant that leverages Retrieval-Augmented Generation (RAG) to provide accurate, context-aware answers to user queries. The chatbot combines a vector database for document retrieval with advanced language models to deliver helpful, up-to-date responses based on your organization’s knowledge base.
 
-## Development environment
+This project is designed following the principles of [hexagonal architecture (ports and adapters)](https://alistair.cockburn.us/hexagonal-architecture/), which promotes separation of concerns, testability, and flexibility by decoupling the core business logic from external systems and frameworks.
 
-Before using this template, ensure you have:
+Built with FastAPI and modern Python libraries, it is designed for easy deployment, extensibility, and robust performance in real-world customer service scenarios.
+
+
+## Environment Configuration
+
+To configure the chatbot, create a `.env` file in the project root. This file is used to store environment variables such as API keys and database settings. Example:
+
+```
+COHERE_API_KEY=your-cohere-api-key
+CHROMA_SERVER_HOST=localhost
+CHROMA_SERVER_PORT=8000
+```
+
+- `COHERE_API_KEY`: Your Cohere API key for embeddings and language models.
+- `CHROMA_SERVER_HOST` and `CHROMA_SERVER_PORT`: Host and port for the Chroma vector database server.
+If `CHROMA_SERVER_HOST` is not specified it will use the in-memory database.
+
+## Running the Chroma Server Locally
+
+If you want to use the Chroma server database, you need to run the Chroma server locally. You can do this with Docker:
+
+```bash
+uv run chroma run --path ./db_chroma --port <PORT>
+```
+
+This will start the Chroma server on `localhost:<PORT>`. Make sure your `.env` file matches these settings.
+
+
+## How to run it
+
+Before using the project, ensure you have:
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
@@ -24,12 +54,6 @@ The production mode is:
 ```bash
 uv run fastapi run
 ```
-
-Once the project is cloned go to the folder `rag-powered-chatbot` and create the environment with `uv` by running
-```bash
-uv sync
-```
-The command will create a `.venv` that stores the environment to run the project
 
 You can run a command within the virtual environment by prepending `uv run` to the command.
 Alternatively, you can activate the environment and then run the command directly.
@@ -57,14 +81,4 @@ They will then run automatically before each commit.
 You can also run the hooks from the command line as:
 ```bash
 uv run pre-commit run
-```
-or
-
-Each time you commit hooks will automatically run.
-If any of hooks fail, the commit won't be added.
-However, only exceptionally, you can bybass the pre-commit hooks
-with the option `--no-verify` to the commit command as:
-
-```bash
-git commit --no-verify -m "commit message"
 ```
