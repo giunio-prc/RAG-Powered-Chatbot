@@ -124,3 +124,5 @@ venv.bak/
 
 data/*
 !data/.gitkeep
+
+db_chroma/
