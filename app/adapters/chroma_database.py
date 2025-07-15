@@ -20,7 +20,13 @@ CHROMA_SERVER_PORT = getenv("CHROMA_SERVER_PORT")
 client: ClientAPI | None = None
 
 if CHROMA_SERVER_HOST is not None and CHROMA_SERVER_PORT is not None:
-    client = HttpClient(host=CHROMA_SERVER_HOST, port=int(CHROMA_SERVER_PORT))
+    try:
+        port = int(CHROMA_SERVER_PORT)
+        client = HttpClient(host=CHROMA_SERVER_HOST, port=port)
+    except ValueError:
+        raise ValueError(
+            f"Invalid CHROMA_SERVER_PORT: {CHROMA_SERVER_PORT}. Must be a valid integer."
+        )
 elif CHROMA_SERVER_HOST is not None:
     client = HttpClient(host=CHROMA_SERVER_HOST)
 
