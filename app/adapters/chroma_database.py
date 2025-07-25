@@ -33,7 +33,10 @@ elif CHROMA_SERVER_HOST is not None:
 
 class ChromaDataBase(DatabaseManagerInterface):
     db: Chroma = Chroma(
-        embedding_function=CohereEmbeddings(model="embed-v4.0"), client=client
+        embedding_function=CohereEmbeddings(
+            model="embed-v4.0"  # type: ignore
+        ),
+        client=client,
     )
     text_splitter: CharacterTextSplitter = CharacterTextSplitter(
         chunk_size=200, chunk_overlap=0, separator="\n"
