@@ -6,16 +6,16 @@ from cohere.errors import TooManyRequestsError
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from app.adapters.chroma_database import ChromaDataBase
-from app.adapters.cohere_agent import CohereAgent
+from app.agents.cohere_agent import CohereAgent
 from app.api import database, prompting
+from app.databases.chroma_database import ChromaDatabase
 
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db = ChromaDataBase()
+    db = ChromaDatabase()
     logger.info("Loading initial documents into the vector database")
     documents_folder = Path(__file__).parent.parent / "docs"
     db.load_documents_from_folder(documents_folder)
