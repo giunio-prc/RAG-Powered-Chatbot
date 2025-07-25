@@ -31,7 +31,7 @@ elif CHROMA_SERVER_HOST is not None:
     client = HttpClient(host=CHROMA_SERVER_HOST)
 
 
-class ChromaDataBase(DatabaseManagerInterface):
+class ChromaDatabase(DatabaseManagerInterface):
     db: Chroma = Chroma(
         embedding_function=CohereEmbeddings(
             model="embed-v4.0"  # type: ignore

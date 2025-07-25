@@ -3,16 +3,15 @@ from typing import Generator
 
 import pytest
 
-from app.adapters.chroma_database import ChromaDataBase
-from app.adapters.fake_database import FakeDatabase
 from app.controller.controller import add_content_into_db
+from app.databases import ChromaDatabase, FakeDatabase
 from app.interfaces.database import DatabaseManagerInterface
 
 data_location = Path(__file__).parent.parent / "data"
 
 
 @pytest.fixture(
-    params=[FakeDatabase(), ChromaDataBase()], ids=["fake_database", "chroma_database"]
+    params=[FakeDatabase(), ChromaDatabase()], ids=["fake_database", "chroma_database"]
 )
 def vector_database(request) -> Generator[DatabaseManagerInterface, None, None]:
     database = request.param
