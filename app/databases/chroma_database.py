@@ -42,9 +42,6 @@ class ChromaDatabase(DatabaseManagerInterface):
         chunk_size=200, chunk_overlap=0, separator="\n"
     )
 
-    async def add_chunks(self, chunks: list[str]):
-        await self.db.aadd_documents([Document(chunk) for chunk in chunks])
-
     async def add_text_to_db(self, text: str):
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
         await self.db.aadd_documents(chunks)

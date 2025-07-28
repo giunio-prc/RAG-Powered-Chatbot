@@ -1,6 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import TypedDict
 
 from cohere.errors import TooManyRequestsError
 from fastapi import FastAPI, Request, status
@@ -9,8 +10,14 @@ from fastapi.responses import JSONResponse
 from app.agents.cohere_agent import CohereAgent
 from app.api import database, prompting
 from app.databases.chroma_database import ChromaDatabase
+from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 
 logger = logging.getLogger(__name__)
+
+
+class Context(TypedDict):
+    db: DatabaseManagerInterface
+    agent: AIAgentInterface
 
 
 @asynccontextmanager

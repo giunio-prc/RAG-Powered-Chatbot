@@ -16,7 +16,6 @@ class FakeDatabase(DatabaseManagerInterface):
     def __init__(self):
         self.db = []
 
-
     async def get_context(self, question) -> str:
         return "\n\n".join(self.db)
 
