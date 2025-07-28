@@ -16,8 +16,6 @@ class FakeDatabase(DatabaseManagerInterface):
     def __init__(self):
         self.db = []
 
-    async def add_chunks(self, chunks: list[str]):
-        self.db.extend(chunks)
 
     async def get_context(self, question) -> str:
         return "\n\n".join(self.db)
