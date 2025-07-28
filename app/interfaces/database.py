@@ -4,14 +4,9 @@ from os import PathLike
 
 class DatabaseManagerInterface(ABC):
     db: object
-    text_splitter: object
 
     @abstractmethod
     def get_chunks(self) -> list[str]:
-        pass
-
-    @abstractmethod
-    async def add_chunks(self, chunks: list[str]):
         pass
 
     @abstractmethod
