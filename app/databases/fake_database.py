@@ -17,6 +17,8 @@ class FakeDatabase(DatabaseManagerInterface):
         self.db = []
 
     async def get_context(self, question) -> str:
+        if self.db == []:
+            return "there is no context, you are not allowed to answer"
         return "\n\n".join(self.db)
 
     async def add_text_to_db(self, text: str):
