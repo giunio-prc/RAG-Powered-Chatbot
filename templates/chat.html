@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - RAG AI Assistant{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold m-0 d-flex align-items-center">
+                    <i class="fas fa-comments text-blue-600 mr-3"></i>
+                    Chat with AI Assistant
+                </h2>
+                <p class="text-muted mt-2 mb-0">Ask questions about documents you uploaded and get intelligent responses based on our knowledge base.</p>
+            </div>
+
+            <div class="card-body">
+                <!-- Chat Messages Container -->
+                <div id="chat-messages" class="chat-container mb-4">
+                    <div class="message message-assistant">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-robot text-blue-600 mr-3 mt-1"></i>
+                            <div>
+                                <strong class="text-blue-600">AI Assistant</strong>
+                                <p class="mt-1 mb-0">Hello! I'm your AI Assistant. What would you like to know?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form id="chat-form" class="d-flex space-x-2">
+                    <div class="flex-1">
+                        <input
+                            type="text"
+                            id="message-input"
+                            class="form-control"
+                            placeholder="Type your question here..."
+                            required
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button
+                        type="submit"
+                        id="send-button"
+                        class="btn btn-primary d-flex align-items-center"
+                    >
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Send
+                    </button>
+                </form>
+
+                <!-- Loading indicator -->
+                <div id="loading-indicator" class="d-none mt-3">
+                    <div class="message message-assistant">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-robot text-blue-600 mr-3 mt-1"></i>
+                            <div>
+                                <strong class="text-blue-600">AI Assistant</strong>
+                                <div class="mt-1 d-flex align-items-center">
+                                    <div class="spinner mr-2"></div>
+                                    <span class="typing-indicator">Thinking...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light">
+                <div class="d-flex justify-content-between align-items-center text-sm text-muted">
+                    <span>
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Responses are generated using RAG technology
+                    </span>
+                    <button
+                        type="button"
+                        id="clear-chat"
+                        class="btn btn-sm btn-light"
+                    >
+                        <i class="fas fa-trash mr-1"></i>
+                        Clear Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', path='/js/chat.js') }}"></script>
+{% endblock %}

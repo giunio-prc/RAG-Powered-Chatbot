@@ -6,6 +6,8 @@ from typing import TypedDict
 from cohere.errors import TooManyRequestsError
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from app.agents.cohere_agent import CohereAgent
 from app.api import database, prompting
@@ -26,8 +28,27 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
 
 
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
+
+# Include API routers
 app.include_router(database.router)
 app.include_router(prompting.router)
+
+# Set up static files and templates
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
+
+# Frontend routes
+@app.get("/")
+async def home(request: Request):
+    """Serve the chat interface"""
+    return templates.TemplateResponse("chat.html", {"request": request})
+
+
+@app.get("/documents")
+async def documents(request: Request):
+    """Serve the document management interface"""
+    return templates.TemplateResponse("documents.html", {"request": request})
 
 
 @app.exception_handler(TooManyRequestsError)
