@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Baby Shop AI Assistant{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center py-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-robot text-blue-600 text-2xl mr-3"></i>
+                    <span class="navbar-brand">AI Assistant</span>
+                </div>
+
+                <div class="d-flex space-x-1">
+                    <a href="{{ url_for('home') }}" class="nav-link {% if request.url.path == '/' %}active{% endif %}">
+                        <i class="fas fa-comments mr-2"></i>Chat
+                    </a>
+                    <a href="{{ url_for('documents') }}" class="nav-link {% if request.url.path == '/documents' %}active{% endif %}">
+                        <i class="fas fa-database mr-2"></i>Documents
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container py-6">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2024 AI Assistant. Powered by RAG technology.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast notifications container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Base JavaScript -->
+    <script src="{{ url_for('static', path='/js/base.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
