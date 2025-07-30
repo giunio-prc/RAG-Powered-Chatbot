@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Document Management - AI Assistant{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Document Upload Section -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold m-0 d-flex align-items-center">
+                    <i class="fas fa-upload text-green-600 mr-3"></i>
+                    Upload Documents
+                </h2>
+                <p class="text-muted mt-2 mb-0">Add new documents to the knowledge base to improve AI responses.</p>
+            </div>
+
+            <div class="card-body">
+                <!-- File Upload Area -->
+                <div id="file-upload-area" class="file-upload-area">
+                    <div class="text-center">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Upload Text Files</h3>
+                        <p class="text-gray-500 mb-4">Drag and drop files here or click to browse</p>
+                        <input type="file" id="file-input" class="d-none" accept=".txt" multiple>
+                        <button type="button" id="browse-button" class="btn btn-primary">
+                            <i class="fas fa-folder-open mr-2"></i>
+                            Browse Files
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" class="d-none mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-sm font-medium">Uploading...</span>
+                        <span id="upload-percentage" class="text-sm text-gray-500">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="upload-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Upload Status -->
+                <div id="upload-status" class="mt-4"></div>
+
+                <!-- File Requirements -->
+                <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 class="text-sm font-medium text-blue-800 mb-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        File Requirements
+                    </h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Only text files (.txt) are supported</li>
+                        <li>• Files should contain relevant baby product information</li>
+                        <li>• Maximum file size: 10MB per file</li>
+                        <li>• Multiple files can be uploaded at once</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Statistics Section -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold m-0 d-flex align-items-center">
+                    <i class="fas fa-chart-bar text-blue-600 mr-3"></i>
+                    Database Statistics
+                </h2>
+                <p class="text-muted mt-2 mb-0">Current status of the vector database and knowledge base.</p>
+            </div>
+
+            <div class="card-body">
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-12 mb-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div id="vector-count" class="stat-number">-</div>
+                                    <div class="stat-label">Total Vectors</div>
+                                </div>
+                                <i class="fas fa-database text-3xl opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div id="longest-vector" class="stat-number">-</div>
+                                    <div class="stat-label">Longest Vector Length</div>
+                                </div>
+                                <i class="fas fa-ruler text-3xl opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Refresh Button -->
+                <div class="text-center mb-4">
+                    <button id="refresh-stats" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Refresh Statistics
+                    </button>
+                </div>
+
+                <!-- Database Health -->
+                <div class="p-3 bg-gray-50 rounded-lg border">
+                    <h4 class="text-sm font-medium text-gray-800 mb-3">
+                        <i class="fas fa-heartbeat mr-1"></i>
+                        Database Health
+                    </h4>
+                    <div id="db-health" class="space-y-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-sm text-gray-600">Connection Status</span>
+                            <span id="connection-status" class="text-sm">
+                                <i class="fas fa-circle text-green-500 mr-1"></i>
+                                Connected
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-sm text-gray-600">Last Updated</span>
+                            <span id="last-updated" class="text-sm text-gray-500">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-sm text-gray-600">Embedding Model</span>
+                            <span class="text-sm text-gray-500">Cohere embed-v4.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="text-lg font-medium m-0">
+                    <i class="fas fa-history text-purple-600 mr-2"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="card-body">
+                <div id="recent-activity" class="space-y-3">
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-clock text-2xl mb-2"></i>
+                        <p>No recent activity</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', path='/js/documents.js') }}"></script>
+{% endblock %}
