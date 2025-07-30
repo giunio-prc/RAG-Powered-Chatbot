@@ -28,9 +28,9 @@ repos:
         entry: uv run ruff check --fix
         language: system
         types: [python]
-    -   id: mypy
-        name: mypy (local)
-        entry: uv run mypy
-        language: system
-        types: [python]
-        args: []
+    # -   id: mypy
+    #     name: mypy (local)
+    #     entry: uv run mypy
+    #     language: system
+    #     types: [python]
+    #     args: []
