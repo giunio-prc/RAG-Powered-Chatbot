@@ -1,4 +1,5 @@
 import logging
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import TypedDict
@@ -15,13 +16,13 @@ from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 logger = logging.getLogger(__name__)
 
 
-class Context(TypedDict):
+class State(TypedDict):
     db: DatabaseManagerInterface
     agent: AIAgentInterface
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     db = ChromaDatabase()
     logger.info("Loading initial documents into the vector database")
     documents_folder = Path(__file__).parent.parent / "docs"
