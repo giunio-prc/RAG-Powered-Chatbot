@@ -1,3 +1,5 @@
+from collections.abc import AsyncIterator
+
 from app.interfaces.agent import AIAgentInterface
 
 
@@ -6,5 +8,17 @@ class FakeAgent(AIAgentInterface):
         return (
             f'You asked me the following question:\n "{question}" \n'
             f'With the following context "{context}"\n'
-            f"Unfortunately I am a fake agent I am not able to answer you"
+            "Unfortunately I am a fake agent I am not able to answer you"
         )
+
+    async def get_stream_response( # type: ignore[override]
+        self, question: str, context: str
+        ) -> AsyncIterator[str]:
+
+        yield "You asked me the following question:\n"
+
+        yield f'"{question}" \n'
+
+        yield f'With the following context "{context}"\n'
+
+        yield "Unfortunately I am a fake agent I am not able to answer you"
