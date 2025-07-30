@@ -51,7 +51,11 @@ class ChromaDatabase(DatabaseManagerInterface):
 
     async def get_context(self, question) -> str:
         documents = self.db.similarity_search(question)
+        if not documents:
+            return "there is no context, you are not allowed to answer"
+
         return "\n\n".join(doc.page_content for doc in documents)
+
 
     def get_number_of_vectors(self) -> int:
         return len(self.db.get()["documents"])

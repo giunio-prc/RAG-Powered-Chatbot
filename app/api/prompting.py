@@ -23,7 +23,7 @@ async def query_agent_endpoint(
     return response
 
 @router.post("/query-stream")
-async def query_with_strem_response(
+async def query_with_stream_response(
     db: get_db_from_state_annotation,
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],

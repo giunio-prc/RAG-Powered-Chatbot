@@ -11,7 +11,7 @@ class FakeAgent(AIAgentInterface):
             "Unfortunately I am a fake agent I am not able to answer you"
         )
 
-    async def get_stream_response( # type: ignore[override]
+    async def get_stream_response(
         self, question: str, context: str
         ) -> AsyncIterator[str]:
 

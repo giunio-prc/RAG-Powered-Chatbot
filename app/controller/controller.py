@@ -18,6 +18,6 @@ async def query_agent(
 async def query_agent_with_stream_response(
     db: DatabaseManagerInterface, ai_agent: AIAgentInterface, question: str
 ) -> AsyncGenerator[str, None]:
-        context = await db.get_context(question)
-        async for chunk in ai_agent.get_stream_response(question, context): # type: ignore[attr-defined]
-            yield chunk
+    context = await db.get_context(question)
+    async for chunk in ai_agent.get_stream_response(question, context):
+        yield chunk
