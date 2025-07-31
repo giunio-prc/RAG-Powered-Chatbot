@@ -1,7 +1,6 @@
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import TypedDict
 
 from cohere.errors import TooManyRequestsError
@@ -23,14 +22,10 @@ class State(TypedDict):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[State]:
-    db = ChromaDatabase()
-    logger.info("Loading initial documents into the vector database")
-    documents_folder = Path(__file__).parent.parent / "docs"
-    db.load_documents_from_folder(documents_folder)
-    yield {"db": db, "agent": CohereAgent()}
+    yield {"db": ChromaDatabase(), "agent": CohereAgent()}
 
 
-app = FastAPI(title="Baby Shop AI Assistant", lifespan=lifespan)
+app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
 app.include_router(database.router)
 app.include_router(prompting.router)
 
