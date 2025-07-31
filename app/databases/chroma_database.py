@@ -61,7 +61,10 @@ class ChromaDatabase(DatabaseManagerInterface):
         return len(self.db.get()["documents"])
 
     def get_length_of_longest_vector(self) -> int:
-        return len(max(self.db.get()["documents"], key=len))
+        documents = self.db.get()["documents"]
+        if not documents:
+            return 0
+        return len(max(documents, key=len))
 
     def empty_database(self):
         self.db.reset_collection()
