@@ -36,13 +36,24 @@ class ChatManager {
             });
         });
 
-        // Enter key handling
+        // Auto-resize textarea and Enter key handling
+        this.messageInput.addEventListener('input', () => {
+            this.messageInput.style.height = 'auto';
+            this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+        });
+
         this.messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
             }
         });
+
+        // Set welcome time
+        const welcomeTime = document.getElementById('welcome-time');
+        if (welcomeTime) {
+            welcomeTime.textContent = this.formatTime(new Date());
+        }
     }
 
     async sendMessage() {
@@ -120,25 +131,49 @@ class ChatManager {
 
     createMessageElement(content, sender) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message message-${sender}`;
-
         const isUser = sender === 'user';
-        const icon = isUser ? 'fas fa-user' : 'fas fa-robot';
-        const iconColor = isUser ? 'text-blue-600' : 'text-blue-600';
-        const senderName = isUser ? 'You' : 'AI Assistant';
 
-        messageDiv.innerHTML = `
-            <div class="d-flex align-items-start">
-                <i class="${icon} ${iconColor} mr-3 mt-1"></i>
-                <div class="flex-1">
-                    <strong class="${iconColor}">${senderName}</strong>
-                    <div class="message-content mt-1">${this.formatMessageContent(content)}</div>
-                    <div class="text-xs text-gray-500 mt-2">${utils.formatDate(new Date())}</div>
+        if (isUser) {
+            messageDiv.className = 'flex justify-end mb-4';
+            messageDiv.innerHTML = `
+                <div class="flex items-start space-x-3 max-w-xs lg:max-w-md">
+                    <div class="flex-1 bg-primary-600 text-white rounded-lg p-4 shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-primary-100">You</span>
+                            <span class="text-xs text-primary-200">${this.formatTime(new Date())}</span>
+                        </div>
+                        <div class="message-content leading-relaxed">${this.formatMessageContent(content)}</div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        } else {
+            messageDiv.className = 'flex items-start space-x-3 mb-4';
+            messageDiv.innerHTML = `
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-1 bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-600">AI Assistant</span>
+                        <span class="text-xs text-gray-500">${this.formatTime(new Date())}</span>
+                    </div>
+                    <div class="message-content text-gray-800 leading-relaxed">${this.formatMessageContent(content)}</div>
+                </div>
+            `;
+        }
 
-        this.chatMessages.appendChild(messageDiv);
+        this.chatMessages.querySelector('.p-4.space-y-4').appendChild(messageDiv);
         return messageDiv;
     }
 
@@ -161,11 +196,22 @@ class ChatManager {
         this.messageInput.disabled = isStreaming;
 
         if (isStreaming) {
-            this.loadingIndicator.classList.remove('d-none');
-            this.sendButton.innerHTML = '<div class="spinner mr-2"></div>Sending...';
+            this.loadingIndicator.classList.remove('hidden');
+            this.sendButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="sr-only">Sending...</span>
+            `;
         } else {
-            this.loadingIndicator.classList.add('d-none');
-            this.sendButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Send';
+            this.loadingIndicator.classList.add('hidden');
+            this.sendButton.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+                <span class="sr-only">Send message</span>
+            `;
             this.currentStreamingMessage = null;
         }
     }
@@ -174,10 +220,20 @@ class ChatManager {
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
 
+    formatTime(date) {
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+
     clearChat() {
-        // Keep only the initial welcome message
-        const messages = this.chatMessages.querySelectorAll('.message');
-        for (let i = 1; i < messages.length; i++) {
+        // Clear all messages except the welcome message
+        const messagesContainer = this.chatMessages.querySelector('.p-4.space-y-4');
+        const messages = messagesContainer.children;
+        // Keep only the first message (welcome message)
+        for (let i = messages.length - 1; i > 0; i--) {
             messages[i].remove();
         }
 
