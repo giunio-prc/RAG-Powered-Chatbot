@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, HTTPException, UploadFile, status
 
 from app.api.dependencies import get_db_from_state_annotation
 from app.controller.controller import add_content_into_db
@@ -10,9 +10,16 @@ router = APIRouter()
 async def add_document_endpoint(db: get_db_from_state_annotation, file: UploadFile):
     if file.content_type != "text/plain":
         raise HTTPException(
-            status_code=400, detail="Invalid file. The app only supprt text files"
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail="Invalid file. The app only supprt text files"
         )
-    await add_content_into_db(db, file.file.read().decode())
+    try:
+        file_content = file.file.read().decode()
+    except UnicodeError:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="The file cannot be uploaded"
+        )
+    await add_content_into_db(db, file_content)
 
 
 @router.get("/get-vectors-data")
