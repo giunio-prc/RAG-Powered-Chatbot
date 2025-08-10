@@ -3,132 +3,159 @@
 {% block title %}Document Management - AI Assistant{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Document Upload Section -->
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="text-xl font-semibold m-0 d-flex align-items-center">
-                    <i class="fas fa-upload text-green-600 mr-3"></i>
-                    Upload Documents
-                </h2>
-                <p class="text-muted mt-2 mb-0">Add new documents to the knowledge base to improve AI responses.</p>
+    <div class="space-y-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 text-white">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Upload Documents</h2>
+                        <p class="text-green-100 text-sm">Expand your knowledge base</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="card-body">
+            <div class="p-6">
                 <!-- File Upload Area -->
-                <div id="file-upload-area" class="file-upload-area">
-                    <div class="text-center">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                        <h3 class="text-lg font-medium text-gray-700 mb-2">Upload Text Files</h3>
-                        <p class="text-gray-500 mb-4">Drag and drop files here or click to browse</p>
-                        <input type="file" id="file-input" class="d-none" accept=".txt" multiple>
-                        <button type="button" id="browse-button" class="btn btn-primary">
-                            <i class="fas fa-folder-open mr-2"></i>
-                            Browse Files
-                        </button>
+                <div id="file-upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors duration-200 cursor-pointer">
+                    <div class="space-y-4">
+                        <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Upload Text Files</h3>
+                            <p class="text-gray-500 mb-4">Drag and drop files here or click to browse</p>
+                            <input type="file" id="file-input" class="hidden" accept=".txt" multiple>
+                            <button type="button" id="browse-button" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5L12 5H5a2 2 0 00-2 2z"></path>
+                                </svg>
+                                Browse Files
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Upload Progress -->
-                <div id="upload-progress" class="d-none mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-sm font-medium">Uploading...</span>
+                <div id="upload-progress" class="hidden mt-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">Uploading...</span>
                         <span id="upload-percentage" class="text-sm text-gray-500">0%</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div id="upload-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        <div id="upload-bar" class="bg-primary-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <!-- Upload Status -->
                 <div id="upload-status" class="mt-4"></div>
+            </div>
 
-                <!-- File Requirements -->
-                <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 class="text-sm font-medium text-blue-800 mb-2">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        File Requirements
-                    </h4>
-                    <ul class="text-sm text-blue-700 space-y-1">
-                        <li>• Only text files (.txt) are supported</li>
-                        <li>• Files should contain relevant baby product information</li>
-                        <li>• Maximum file size: 10MB per file</li>
-                        <li>• Multiple files can be uploaded at once</li>
-                    </ul>
-                </div>
+            <!-- File Requirements -->
+            <div class="bg-blue-50 border-t border-blue-200 px-6 py-4">
+                <h4 class="text-sm font-medium text-blue-900 mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    File Requirements
+                </h4>
+                <ul class="text-sm text-blue-800 space-y-1 ml-6">
+                    <li class="list-disc">Only text files (.txt) are supported</li>
+                    <li class="list-disc">Files should contain relevant information for the knowledge base</li>
+                    <li class="list-disc">Maximum file size: 10MB per file</li>
+                    <li class="list-disc">Multiple files can be uploaded simultaneously</li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Database Statistics Section -->
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="text-xl font-semibold m-0 d-flex align-items-center">
-                    <i class="fas fa-chart-bar text-blue-600 mr-3"></i>
-                    Database Statistics
-                </h2>
-                <p class="text-muted mt-2 mb-0">Current status of the vector database and knowledge base.</p>
+    <!-- Statistics and Health Section -->
+    <div class="space-y-6">
+        <!-- Database Statistics -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold">Database Statistics</h2>
+                            <p class="text-primary-100 text-sm">Knowledge base metrics</p>
+                        </div>
+                    </div>
+                    <button id="refresh-stats" class="flex items-center px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
             </div>
 
-            <div class="card-body">
+            <div class="p-6">
                 <!-- Stats Cards -->
-                <div class="row mb-4">
-                    <div class="col-12 mb-3">
-                        <div class="stat-card">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div id="vector-count" class="stat-number">-</div>
-                                    <div class="stat-label">Total Vectors</div>
-                                </div>
-                                <i class="fas fa-database text-3xl opacity-75"></i>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div id="vector-count" class="text-3xl font-bold">-</div>
+                                <div class="text-blue-100 text-sm">Total Vectors</div>
                             </div>
+                            <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                            </svg>
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div id="longest-vector" class="stat-number">-</div>
-                                    <div class="stat-label">Longest Vector Length</div>
-                                </div>
-                                <i class="fas fa-ruler text-3xl opacity-75"></i>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div id="longest-vector" class="text-3xl font-bold">-</div>
+                                <div class="text-green-100 text-sm">Longest Vector</div>
                             </div>
+                            <svg class="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                            </svg>
                         </div>
                     </div>
-                </div>
-
-                <!-- Refresh Button -->
-                <div class="text-center mb-4">
-                    <button id="refresh-stats" class="btn btn-secondary">
-                        <i class="fas fa-sync-alt mr-2"></i>
-                        Refresh Statistics
-                    </button>
                 </div>
 
                 <!-- Database Health -->
-                <div class="p-3 bg-gray-50 rounded-lg border">
-                    <h4 class="text-sm font-medium text-gray-800 mb-3">
-                        <i class="fas fa-heartbeat mr-1"></i>
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h4 class="text-sm font-medium text-gray-900 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
                         Database Health
                     </h4>
-                    <div id="db-health" class="space-y-2">
-                        <div class="d-flex justify-content-between align-items-center">
+                    <div id="db-health" class="space-y-3">
+                        <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Connection Status</span>
-                            <span id="connection-status" class="text-sm">
-                                <i class="fas fa-circle text-green-500 mr-1"></i>
+                            <span id="connection-status" class="text-sm flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                                 Connected
                             </span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Last Updated</span>
                             <span id="last-updated" class="text-sm text-gray-500">-</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Embedding Model</span>
-                            <span class="text-sm text-gray-500">Cohere embed-v4.0</span>
+                            <span class="text-sm text-gray-700 font-medium">Cohere embed-v4.0</span>
                         </div>
                     </div>
                 </div>
@@ -136,18 +163,32 @@
         </div>
 
         <!-- Recent Activity -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h3 class="text-lg font-medium m-0">
-                    <i class="fas fa-history text-purple-600 mr-2"></i>
-                    Recent Activity
-                </h3>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4 text-white">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold">Recent Activity</h3>
+                        <p class="text-purple-100 text-sm">Latest operations</p>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
+
+            <div class="p-6">
                 <div id="recent-activity" class="space-y-3">
-                    <div class="text-center text-gray-500 py-4">
-                        <i class="fas fa-clock text-2xl mb-2"></i>
-                        <p>No recent activity</p>
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 text-sm">No recent activity</p>
+                        <p class="text-gray-400 text-xs mt-1">Upload documents to see activity here</p>
                     </div>
                 </div>
             </div>

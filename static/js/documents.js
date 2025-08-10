@@ -33,17 +33,22 @@ class DocumentManager {
         // Drag and drop
         this.fileUploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            this.fileUploadArea.classList.add('dragover');
+            this.fileUploadArea.classList.add('border-primary-500', 'bg-primary-50');
+            this.fileUploadArea.classList.remove('border-gray-300');
         });
 
         this.fileUploadArea.addEventListener('dragleave', (e) => {
             e.preventDefault();
-            this.fileUploadArea.classList.remove('dragover');
+            if (!this.fileUploadArea.contains(e.relatedTarget)) {
+                this.fileUploadArea.classList.remove('border-primary-500', 'bg-primary-50');
+                this.fileUploadArea.classList.add('border-gray-300');
+            }
         });
 
         this.fileUploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            this.fileUploadArea.classList.remove('dragover');
+            this.fileUploadArea.classList.remove('border-primary-500', 'bg-primary-50');
+            this.fileUploadArea.classList.add('border-gray-300');
             this.handleFiles(e.dataTransfer.files);
         });
 
@@ -112,14 +117,14 @@ class DocumentManager {
     }
 
     showUploadProgress() {
-        this.uploadProgress.classList.remove('d-none');
+        this.uploadProgress.classList.remove('hidden');
         this.uploadStatus.innerHTML = '';
         this.updateProgress(0);
     }
 
     hideUploadProgress() {
         setTimeout(() => {
-            this.uploadProgress.classList.add('d-none');
+            this.uploadProgress.classList.add('hidden');
         }, 1000);
     }
 
@@ -131,8 +136,10 @@ class DocumentManager {
     showUploadSuccess(fileCount) {
         const message = fileCount === 1 ? 'File uploaded successfully!' : `${fileCount} files uploaded successfully!`;
         this.uploadStatus.innerHTML = `
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle mr-2"></i>
+            <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4 flex items-center">
+                <svg class="w-5 h-5 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
                 ${message}
             </div>
         `;
@@ -142,8 +149,10 @@ class DocumentManager {
     showUploadError(error) {
         const message = `Upload failed: ${error.message}`;
         this.uploadStatus.innerHTML = `
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle mr-2"></i>
+            <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 flex items-center">
+                <svg class="w-5 h-5 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
                 ${message}
             </div>
         `;
@@ -174,11 +183,14 @@ class DocumentManager {
 
     addRecentActivity(activity) {
         const activityElement = document.createElement('div');
-        activityElement.className = 'border-l-4 border-blue-500 pl-3 py-2';
+        activityElement.className = 'border-l-4 border-purple-500 bg-purple-50 pl-4 py-3 rounded-r-lg mb-3';
         activityElement.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="text-sm text-gray-700">${activity}</span>
-                <span class="text-xs text-gray-500">${utils.formatDate(new Date())}</span>
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span class="text-sm text-gray-700 font-medium">${activity}</span>
+                </div>
+                <span class="text-xs text-gray-500">${this.formatTime(new Date())}</span>
             </div>
         `;
 
@@ -196,6 +208,14 @@ class DocumentManager {
         if (activities.length > 5) {
             activities[activities.length - 1].remove();
         }
+    }
+
+    formatTime(date) {
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
     }
 }
 

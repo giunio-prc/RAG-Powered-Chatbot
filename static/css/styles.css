@@ -1,302 +1,105 @@
-/* Tailwind CSS with Bootstrap-like styling */
-@import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
-
-/* Custom Bootstrap-like components using Tailwind */
-.btn {
-  @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
-}
-
-.btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
-}
-
-.btn-secondary {
-  @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
-}
-
-.btn-success {
-  @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
-}
-
-.btn-danger {
-  @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
-}
-
-.btn-warning {
-  @apply bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-400;
-}
-
-.btn-info {
-  @apply bg-cyan-500 text-white hover:bg-cyan-600 focus:ring-cyan-400;
-}
-
-.btn-light {
-  @apply bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-gray-300 border-gray-300;
-}
-
-.btn-dark {
-  @apply bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-600;
-}
-
-.btn-sm {
-  @apply px-3 py-1.5 text-xs;
-}
-
-.btn-lg {
-  @apply px-6 py-3 text-base;
-}
-
-.card {
-  @apply bg-white rounded-lg shadow-md border border-gray-200;
-}
-
-.card-header {
-  @apply px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg;
-}
-
-.card-body {
-  @apply px-6 py-4;
-}
-
-.card-footer {
-  @apply px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg;
-}
-
-.form-control {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500;
-}
-
-.form-label {
-  @apply block text-sm font-medium text-gray-700 mb-2;
-}
-
-.form-group {
-  @apply mb-4;
-}
-
-.alert {
-  @apply px-4 py-3 rounded-md border;
-}
-
-.alert-success {
-  @apply bg-green-50 border-green-200 text-green-800;
-}
-
-.alert-danger {
-  @apply bg-red-50 border-red-200 text-red-800;
-}
-
-.alert-warning {
-  @apply bg-yellow-50 border-yellow-200 text-yellow-800;
-}
-
-.alert-info {
-  @apply bg-blue-50 border-blue-200 text-blue-800;
-}
-
-.navbar {
-  @apply bg-white shadow-sm border-b border-gray-200;
-}
-
-.navbar-brand {
-  @apply text-xl font-bold text-gray-800;
-}
-
-.nav-link {
-  @apply text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
-}
-
-.nav-link.active {
-  @apply text-blue-600 bg-blue-50;
-}
-
-.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
+/* Custom styles for the RAG AI Assistant */
 
-.row {
-  @apply flex flex-wrap -mx-4;
+/* Smooth scrolling for chat messages */
+#chat-messages {
+    scroll-behavior: smooth;
 }
 
-.col {
-  @apply px-4;
+/* Enhanced focus states for better accessibility */
+input:focus,
+textarea:focus,
+button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 
-.col-12 {
-  @apply w-full px-4;
+/* Custom scrollbar for chat messages */
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
 }
 
-.col-6 {
-  @apply w-1/2 px-4;
+#chat-messages::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
 }
 
-.col-4 {
-  @apply w-1/3 px-4;
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
 }
 
-.col-3 {
-  @apply w-1/4 px-4;
+#chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
-.col-md-6 {
-  @apply w-full px-4 md:w-1/2;
+/* Smooth transitions for interactive elements */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
 }
 
-.col-lg-4 {
-  @apply w-full px-4 lg:w-1/3;
+/* Enhanced animation for bounce loading dots */
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+    40%, 43% {
+        transform: translate3d(0, -8px, 0);
+    }
+    70% {
+        transform: translate3d(0, -4px, 0);
+    }
+    90% {
+        transform: translate3d(0, -2px, 0);
+    }
 }
 
-.col-lg-8 {
-  @apply w-full px-4 lg:w-2/3;
+.animate-bounce {
+    animation: bounce 1.4s infinite both;
 }
 
-.text-muted {
-  @apply text-gray-500;
+/* Ensure proper contrast for text */
+.text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.text-primary {
-  @apply text-blue-600;
-}
-
-.text-success {
-  @apply text-green-600;
-}
-
-.text-danger {
-  @apply text-red-600;
-}
-
-.text-warning {
-  @apply text-yellow-600;
-}
-
-.bg-light {
-  @apply bg-gray-50;
-}
-
-.border {
-  @apply border border-gray-200;
-}
-
-.rounded {
-  @apply rounded-md;
-}
-
-.shadow {
-  @apply shadow-md;
-}
-
-.mt-3 {
-  @apply mt-3;
-}
-
-.mb-3 {
-  @apply mb-3;
-}
-
-.p-3 {
-  @apply p-3;
-}
-
-.p-4 {
-  @apply p-4;
-}
-
-.m-0 {
-  @apply m-0;
-}
-
-.d-none {
-  @apply hidden;
-}
-
-.d-block {
-  @apply block;
-}
-
-.d-flex {
-  @apply flex;
-}
-
-.justify-content-between {
-  @apply justify-between;
-}
-
-.align-items-center {
-  @apply items-center;
-}
-
-.text-center {
-  @apply text-center;
-}
-
-.w-100 {
-  @apply w-full;
-}
-
-.h-100 {
-  @apply h-full;
-}
-
-/* Custom chat styles */
-.chat-container {
-  @apply h-96 overflow-y-auto border border-gray-300 rounded-lg p-4 bg-gray-50;
-}
-
-.message {
-  @apply mb-4 p-3 rounded-lg;
-}
-
-.message-user {
-  @apply bg-blue-100 ml-8 text-right;
-}
-
-.message-assistant {
-  @apply bg-white mr-8 shadow-sm;
-}
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
 
-.typing-indicator {
-  @apply text-gray-500 italic;
-}
-
-/* File upload styles */
-.file-upload-area {
-  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors duration-200;
-}
+    body {
+        background: white !important;
+    }
 
-.file-upload-area.dragover {
-  @apply border-blue-500 bg-blue-50;
+    .shadow-sm,
+    .shadow-md,
+    .shadow-lg {
+        box-shadow: none !important;
+    }
 }
 
-/* Stats cards */
-.stat-card {
-  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg;
-}
-
-.stat-number {
-  @apply text-3xl font-bold;
-}
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .border-gray-200 {
+        border-color: #000 !important;
+    }
 
-.stat-label {
-  @apply text-blue-100 text-sm;
+    .text-gray-500 {
+        color: #333 !important;
+    }
 }
 
-/* Loading spinner */
-.spinner {
-  @apply animate-spin rounded-full h-6 w-6 border-b-2 border-white;
-}
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .animate-spin,
+    .animate-bounce {
+        animation: none !important;
+    }
 
-/* Responsive utilities */
-@media (max-width: 768px) {
-  .container {
-    @apply px-2;
-  }
-
-  .card-body {
-    @apply px-4 py-3;
-  }
-
-  .btn {
-    @apply w-full mb-2;
-  }
+    .transition-all {
+        transition: none !important;
+    }
 }

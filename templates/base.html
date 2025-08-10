@@ -3,35 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Baby Shop AI Assistant{% endblock %}</title>
+    <title>{% block title %}RAG AI Assistant{% endblock %}</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <!-- Heroicons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/style.css">
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center py-4">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-robot text-blue-600 text-2xl mr-3"></i>
-                    <span class="navbar-brand">AI Assistant</span>
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">RAG Assistant</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">AI-Powered Knowledge Base</p>
+                    </div>
                 </div>
 
-                <div class="d-flex space-x-1">
-                    <a href="{{ url_for('home') }}" class="nav-link {% if request.url.path == '/' %}active{% endif %}">
-                        <i class="fas fa-comments mr-2"></i>Chat
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-1">
+                    <a href="{{ url_for('home') }}" class="flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 {% if request.url.path == '/' %}bg-primary-50 text-primary-700 border border-primary-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        Chat
                     </a>
-                    <a href="{{ url_for('documents') }}" class="nav-link {% if request.url.path == '/documents' %}active{% endif %}">
-                        <i class="fas fa-database mr-2"></i>Documents
+                    <a href="{{ url_for('documents') }}" class="flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 {% if request.url.path == '/documents' %}bg-primary-50 text-primary-700 border border-primary-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50{% endif %}">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Documents
                     </a>
                 </div>
             </div>
@@ -39,15 +78,15 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container py-8">
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="container py-6">
-            <div class="text-center text-gray-600">
-                <p>&copy; 2024 AI Assistant. Powered by RAG technology.</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="text-center text-sm text-gray-500">
+                <p>&copy; 2024 RAG AI Assistant. Powered by advanced retrieval technology.</p>
             </div>
         </div>
     </footer>
