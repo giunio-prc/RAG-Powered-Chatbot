@@ -27,5 +27,5 @@ async def query_agent_with_stream_response(
             yield chunk
     except TooManyRequestsError:
         for char in "I am not available at the moment, please contact the support":
-            await sleep(0.05*random())
+            await sleep(0.05 * random())
             yield char
