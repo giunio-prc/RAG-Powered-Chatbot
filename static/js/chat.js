@@ -187,13 +187,22 @@ class ChatManager {
         return messageDiv;
     }
 
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     formatMessageContent(content) {
         if (!content) return '';
 
-        // Convert line breaks to HTML
-        let formatted = content.replace(/\n/g, '<br>');
+        // First escape all HTML special characters to prevent XSS
+        let escaped = this.escapeHtml(content);
 
-        // Simple markdown-like formatting
+        // Convert line breaks to HTML
+        let formatted = escaped.replace(/\n/g, '<br>');
+
+        // Apply markdown-like formatting on the escaped text
         formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
