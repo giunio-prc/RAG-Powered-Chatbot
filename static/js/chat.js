@@ -84,7 +84,7 @@ class ChatManager {
             // Create new AbortController for this request
             this.abortController = new AbortController();
 
-            const response = await fetch('/prompt/query_stream', {
+            const response = await fetch('/query-stream', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
