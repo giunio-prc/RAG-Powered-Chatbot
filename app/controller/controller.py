@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
+from app.interfaces.errors import TooManyRequestsError
 
 
 async def add_content_into_db(db: DatabaseManagerInterface, content: str):
@@ -18,6 +19,9 @@ async def query_agent(
 async def query_agent_with_stream_response(
     db: DatabaseManagerInterface, ai_agent: AIAgentInterface, question: str
 ) -> AsyncGenerator[str, None]:
-    context = await db.get_context(question)
-    async for chunk in ai_agent.get_stream_response(question, context):
-        yield chunk
+    try:
+        context = await db.get_context(question)
+        async for chunk in ai_agent.get_stream_response(question, context):
+            yield chunk
+    except TooManyRequestsError:
+        yield "Too many requests"

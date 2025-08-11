@@ -2,6 +2,7 @@ from os import PathLike, getenv
 
 from chromadb import HttpClient
 from chromadb.api import ClientAPI
+from cohere.errors import TooManyRequestsError as CohereTooManyRequestError
 from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_chroma.vectorstores import Chroma
@@ -10,6 +11,7 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents.base import Document
 
 from app.interfaces.database import DatabaseManagerInterface
+from app.interfaces.errors import TooManyRequestsError
 
 load_dotenv()
 
@@ -50,7 +52,10 @@ class ChromaDatabase(DatabaseManagerInterface):
         return self.db.get()["documents"]
 
     async def get_context(self, question) -> str:
-        documents = await self.db.asimilarity_search(question)
+        try:
+            documents = await self.db.asimilarity_search(question)
+        except CohereTooManyRequestError as err:
+            raise TooManyRequestsError(content=err.body)
         if not documents:
             return "there is no context, you are not allowed to answer"
 

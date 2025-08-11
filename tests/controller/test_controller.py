@@ -62,6 +62,7 @@ In that case, you may return the item after delivery following our return policy
         + "you can contact customer service to modify or cancel it."
     )
     assert expected_content_chunk in chunks
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("vector_database", [pytest.param(FakeDatabase(), id="fake_database")])
 @pytest.mark.parametrize("ai_agent", [pytest.param(CohereAgent(), id="cohere_agent")])
@@ -81,8 +82,9 @@ async def test_controller__can_stream_from_fake_agent(vector_database, ai_agent)
     assert len(response) == 196
     assert response[0] == "Y"
 
+@pytest.mark.skip("Using real agent")
 @pytest.mark.asyncio
-@pytest.mark.parametrize("vector_database", [pytest.param(FakeDatabase(), id="fake_database")])
+@pytest.mark.parametrize("vector_database", [pytest.param(ChromaDatabase(), id="chroma_database")])
 @pytest.mark.parametrize("ai_agent", [pytest.param(CohereAgent(), id="cohere_agent")])
 async def test_controller__can_stream_from_cohere_agent(vector_database, ai_agent):
     streaming_response_generator = query_agent_with_stream_response(vector_database, ai_agent, "What time is it?")
