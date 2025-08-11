@@ -170,8 +170,8 @@ db_chroma/              # ChromaDB storage (when using persistent mode)
 - `POST /query-stream` - Send a query and get streaming response
 
 ### Document Management
-- `POST /database/add-content` - Upload document content to knowledge base
-- `GET /database/stats` - Get database statistics
+- `POST /add-content` - Upload document content to knowledge base
+- `GET /stats` - Get database statistics
 
 ### Frontend
 - `GET /` - Chat interface
