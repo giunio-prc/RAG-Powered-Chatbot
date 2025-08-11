@@ -1,4 +1,6 @@
+from asyncio import sleep
 from collections.abc import AsyncGenerator
+from random import random
 
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 from app.interfaces.errors import TooManyRequestsError
@@ -24,4 +26,6 @@ async def query_agent_with_stream_response(
         async for chunk in ai_agent.get_stream_response(question, context):
             yield chunk
     except TooManyRequestsError:
-        yield "Too many requests"
+        for char in "I am not available at the moment, please contact the support":
+            await sleep(0.05*random())
+            yield char
