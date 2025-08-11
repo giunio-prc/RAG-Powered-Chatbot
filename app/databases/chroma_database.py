@@ -50,7 +50,7 @@ class ChromaDatabase(DatabaseManagerInterface):
         return self.db.get()["documents"]
 
     async def get_context(self, question) -> str:
-        documents = self.db.similarity_search(question)
+        documents = await self.db.asimilarity_search(question)
         if not documents:
             return "there is no context, you are not allowed to answer"
 

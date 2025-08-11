@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body
+from cohere.errors import TooManyRequestsError
+from fastapi import APIRouter, Body, HTTPException, status
 from fastapi.responses import StreamingResponse
 
 from app.api.dependencies import (
@@ -18,9 +19,14 @@ async def query_agent_endpoint(
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
 ):
-    response = await query_agent(db, agent, question)
-
-    return response
+    try:
+        response = await query_agent(db, agent, question)
+        return response
+    except TooManyRequestsError:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many requests. Please try again later."
+        )
 
 @router.post("/query-stream")
 async def query_with_stream_response(
@@ -28,4 +34,11 @@ async def query_with_stream_response(
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
 ):
-    return StreamingResponse(query_agent_with_stream_response(db, agent, question))
+    async def safe_stream():
+        try:
+            async for chunk in query_agent_with_stream_response(db, agent, question):
+                yield chunk
+        except TooManyRequestsError:
+            yield "Too many requests. Please try again later."
+
+    return StreamingResponse(safe_stream(), media_type="text/plain")
