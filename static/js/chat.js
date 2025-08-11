@@ -11,6 +11,7 @@ class ChatManager {
 
         this.isStreaming = false;
         this.currentStreamingMessage = null;
+        this.abortController = null;
 
         this.initializeEventListeners();
     }
@@ -80,12 +81,16 @@ class ChatManager {
 
     async streamResponse(question) {
         try {
-            const response = await fetch('/query-stream', {
+            // Create new AbortController for this request
+            this.abortController = new AbortController();
+
+            const response = await fetch('/prompt/query_stream', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(question)
+                body: JSON.stringify(question),
+                signal: this.abortController.signal
             });
 
             if (!response.ok) {
@@ -118,6 +123,11 @@ class ChatManager {
             }
 
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Request was aborted');
+                // Don't throw abort errors as they are intentional
+                return;
+            }
             console.error('Streaming error:', error);
             throw error;
         }
@@ -194,6 +204,12 @@ class ChatManager {
         this.isStreaming = isStreaming;
         this.sendButton.disabled = isStreaming;
         this.messageInput.disabled = isStreaming;
+        this.clearChatButton.disabled = isStreaming;
+
+        // Disable example question buttons during streaming
+        document.querySelectorAll('.example-question').forEach(button => {
+            button.disabled = isStreaming;
+        });
 
         if (isStreaming) {
             this.loadingIndicator.classList.remove('hidden');
@@ -213,6 +229,8 @@ class ChatManager {
                 <span class="sr-only">Send message</span>
             `;
             this.currentStreamingMessage = null;
+            // Reset AbortController when streaming stops
+            this.abortController = null;
         }
     }
 
@@ -229,6 +247,12 @@ class ChatManager {
     }
 
     clearChat() {
+        // Abort any ongoing streaming request
+        if (this.abortController && this.isStreaming) {
+            this.abortController.abort();
+            this.setStreamingState(false);
+        }
+
         // Clear all messages except the welcome message
         const messagesContainer = this.chatMessages.querySelector('.p-4.space-y-4');
         const messages = messagesContainer.children;
