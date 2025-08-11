@@ -1,6 +1,7 @@
 import logging
 from collections.abc import AsyncIterator
 
+from cohere.errors import TooManyRequestsError as CohereTooManyRequestError
 from dotenv import load_dotenv
 from langchain.prompts import (
     ChatPromptTemplate,
@@ -12,6 +13,7 @@ from langchain_cohere import ChatCohere
 from langchain_core.runnables import RunnableSequence
 
 from app.interfaces.agent import AIAgentInterface
+from app.interfaces.errors import TooManyRequestsError
 
 load_dotenv()
 
@@ -59,7 +61,10 @@ class CohereAgent(AIAgentInterface):
         self, question: str, context: str
     ) -> AsyncIterator[str]:
 
-        async for message in self.chain.astream(
-            {"question": question, "context": context}
-        ):
-            yield message
+        try:
+            async for message in self.chain.astream(
+                {"question": question, "context": context}
+            ):
+                yield message
+        except CohereTooManyRequestError as err:
+            raise TooManyRequestsError(content=err.body)

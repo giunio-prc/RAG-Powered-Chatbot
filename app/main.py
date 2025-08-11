@@ -3,7 +3,6 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import TypedDict
 
-from cohere.errors import TooManyRequestsError
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -13,6 +12,7 @@ from app.agents.cohere_agent import CohereAgent
 from app.api import database, prompting
 from app.databases.chroma_database import ChromaDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
+from app.interfaces.errors import TooManyRequestsError
 
 logger = logging.getLogger(__name__)
 
