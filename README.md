@@ -166,8 +166,8 @@ db_chroma/              # ChromaDB storage (when using persistent mode)
 ## API Endpoints
 
 ### Chat Endpoints
-- `POST /prompt/query` - Send a query and get response
-- `POST /prompt/query-stream` - Send a query and get streaming response
+- `POST /query` - Send a query and get response
+- `POST /query-stream` - Send a query and get streaming response
 
 ### Document Management
 - `POST /database/add-content` - Upload document content to knowledge base
