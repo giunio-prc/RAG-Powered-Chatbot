@@ -19,7 +19,7 @@ class FakeDatabase(DatabaseManagerInterface):
     async def get_context(self, question) -> str:
         if self.db == []:
             return "there is no context, you are not allowed to answer"
-        return "\n\n".join(self.db)
+        return "\n\n".join(["This is a fake", "context"])
 
     async def add_text_to_db(self, text: str):
         chunks = self.text_splitter.split_text(text)
