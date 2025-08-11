@@ -8,9 +8,9 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.agents.cohere_agent import CohereAgent
+from app.agents import CohereAgent
 from app.api import database, prompting
-from app.databases.chroma_database import ChromaDatabase
+from app.databases import ChromaDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 from app.interfaces.errors import TooManyRequestsError
 
