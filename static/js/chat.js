@@ -276,5 +276,13 @@ class ChatManager {
 
 // Initialize chat manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    window.chatManager = new ChatManager();
+    // Check if chat elements exist before initializing ChatManager
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+
+    // Only initialize ChatManager if essential chat elements are present
+    if (chatMessages && chatForm && messageInput) {
+        window.chatManager = new ChatManager();
+    }
 });
