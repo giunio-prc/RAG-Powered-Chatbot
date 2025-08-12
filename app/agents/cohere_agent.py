@@ -28,7 +28,7 @@ class CohereAgent(AIAgentInterface):
         """
         Initializes the CohereAgent with a chat model, prompt templates, and a runnable response chain.
         """
-        self.model = ChatCohere(model="command-r-plus")
+        model = ChatCohere(model="command-r-plus")
         system_message_prompt = SystemMessagePromptTemplate.from_template(
             self.prompt_template
         )
@@ -38,7 +38,7 @@ class CohereAgent(AIAgentInterface):
         chat_prompt_template = ChatPromptTemplate.from_messages(
             [system_message_prompt, human_message_prompt]
         )
-        self.chain = chat_prompt_template | self.model | StrOutputParser()
+        self.chain = chat_prompt_template | model | StrOutputParser()
 
     async def query_with_context(self, question: str, context: str) -> str:
         """

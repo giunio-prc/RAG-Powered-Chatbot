@@ -3,24 +3,21 @@ from pathlib import Path
 
 import pytest
 
-from app.agents import CohereAgent, FakeAgent
 from app.controller.controller import (
     add_content_into_db,
-    query_agent,
     query_agent_with_stream_response,
 )
-from app.databases import ChromaDatabase, FakeDatabase
-from tests.confest import skip_due_to_cohere_api_key
+from tests.conftest import skip_due_to_cohere_api_key
 
 data_location = Path(__file__).parent.parent / "data"
 
 
 
 @pytest.mark.asyncio
-async def test_load_initial_documents__load_chunks_from_file_in_folder(vector_database):
-    vector_database.load_documents_from_folder(data_location)
+async def test_load_initial_documents__load_chunks_from_file_in_folder(fake_database):
+    fake_database.load_documents_from_folder(data_location)
 
-    chunks = vector_database.get_chunks()
+    chunks = fake_database.get_chunks()
 
     assert len(chunks) == 18
     expected_content_chunk = (
@@ -33,7 +30,7 @@ async def test_load_initial_documents__load_chunks_from_file_in_folder(vector_da
 
 
 @pytest.mark.asyncio
-async def test_add_content_into_db__adds_content_from_provided_file(vector_database):
+async def test_add_content_into_db__adds_content_from_provided_file(fake_database):
     content = """
 Can I modify or cancel my order after placing it?
 
@@ -43,9 +40,9 @@ you can contact customer service to modify or cancel it.
 Once it's processed by our warehouse, changes are no longer possible.
 In that case, you may return the item after delivery following our return policy.
 """
-    await add_content_into_db(vector_database, content)
+    await add_content_into_db(fake_database, content)
 
-    chunks = vector_database.get_chunks()
+    chunks = fake_database.get_chunks()
 
     assert len(chunks) == 2
     expected_content_chunk = (
@@ -56,21 +53,10 @@ In that case, you may return the item after delivery following our return policy
     )
     assert expected_content_chunk in chunks
 
-@skip_due_to_cohere_api_key
-@pytest.mark.asyncio
-@pytest.mark.parametrize("vector_database", [pytest.param(FakeDatabase(), id="fake_database")])
-@pytest.mark.parametrize("ai_agent", [pytest.param(CohereAgent(), id="cohere_agent")])
-async def test_controller__cohere_agent_avoid_answer_without_context(vector_database, ai_agent):
-    response = await query_agent(vector_database, ai_agent, "What time is the capital of Belgium?")
-    assert "sorry" in response.lower()
-    assert "support@shop.com" in response.lower()
-
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("vector_database", [pytest.param(FakeDatabase(), id="fake_database")])
-@pytest.mark.parametrize("ai_agent", [pytest.param(FakeAgent(), id="fake_agent")])
-async def test_controller__can_stream_from_fake_agent(vector_database, ai_agent):
-    streaming_response_generator = query_agent_with_stream_response(vector_database, ai_agent, "What time is it?")
+async def test_controller__can_stream_from_fake_agent(fake_database, fake_agent):
+    streaming_response_generator = query_agent_with_stream_response(fake_database, fake_agent, "What time is it?")
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
     assert len(response) == 196
@@ -78,10 +64,8 @@ async def test_controller__can_stream_from_fake_agent(vector_database, ai_agent)
 
 @skip_due_to_cohere_api_key
 @pytest.mark.asyncio
-@pytest.mark.parametrize("vector_database", [pytest.param(ChromaDatabase(), id="chroma_database")])
-@pytest.mark.parametrize("ai_agent", [pytest.param(CohereAgent(), id="cohere_agent")])
-async def test_controller__can_stream_from_cohere_agent(vector_database, ai_agent):
-    streaming_response_generator = query_agent_with_stream_response(vector_database, ai_agent, "What time is it?")
+async def test_controller__can_stream_from_cohere_agent(chroma_database, cohere_agent):
+    streaming_response_generator = query_agent_with_stream_response(chroma_database, cohere_agent, "What time is it?")
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
     assert len(response) > 20

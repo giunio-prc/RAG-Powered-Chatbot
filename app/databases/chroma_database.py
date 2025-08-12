@@ -34,15 +34,19 @@ elif CHROMA_SERVER_HOST is not None:
 
 
 class ChromaDatabase(DatabaseManagerInterface):
-    db: Chroma = Chroma(
+    db: Chroma
+    text_splitter: CharacterTextSplitter
+
+    def __init__(self):
+        self.db = Chroma(
         embedding_function=CohereEmbeddings(
             model="embed-v4.0"  # type: ignore
         ),
         client=client,
-    )
-    text_splitter: CharacterTextSplitter = CharacterTextSplitter(
+        )
+        self.text_splitter = CharacterTextSplitter(
         chunk_size=200, chunk_overlap=0, separator="\n"
-    )
+        )
 
     async def add_text_to_db(self, text: str):
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
