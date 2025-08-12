@@ -1,5 +1,4 @@
-import os
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator
 from pathlib import Path
 
 import pytest
@@ -11,24 +10,11 @@ from app.controller.controller import (
     query_agent_with_stream_response,
 )
 from app.databases import ChromaDatabase, FakeDatabase
-from app.interfaces.database import DatabaseManagerInterface
+from tests.confest import skip_due_to_cohere_api_key
 
 data_location = Path(__file__).parent.parent / "data"
 
-skip_due_to_cohere_api_key = pytest.mark.skipif(
-    "COHERE_API_KEY" not in os.environ,
-    reason="COHERE_API_KEY required"
-)
 
-@pytest.fixture(
-    params=[
-        pytest.param(FakeDatabase(), id="fake_database"),
-        pytest.param(ChromaDatabase(), id="chroma_database", marks=skip_due_to_cohere_api_key)],
-)
-def vector_database(request) -> Generator[DatabaseManagerInterface]:
-    database = request.param
-    yield database
-    database.empty_database()
 
 @pytest.mark.asyncio
 async def test_load_initial_documents__load_chunks_from_file_in_folder(vector_database):
