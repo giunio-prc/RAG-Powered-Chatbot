@@ -7,7 +7,6 @@ from app.controller.controller import (
     add_content_into_db,
     query_agent_with_stream_response,
 )
-from tests.conftest import skip_due_to_cohere_api_key
 
 data_location = Path(__file__).parent.parent / "data"
 
@@ -62,7 +61,6 @@ async def test_controller__can_stream_from_fake_agent(fake_database, fake_agent)
     assert len(response) == 196
     assert response[0] == "Y"
 
-@skip_due_to_cohere_api_key
 @pytest.mark.asyncio
 async def test_controller__can_stream_from_cohere_agent(chroma_database, cohere_agent):
     streaming_response_generator = query_agent_with_stream_response(chroma_database, cohere_agent, "What time is it?")
