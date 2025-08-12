@@ -1,3 +1,4 @@
+import os
 from collections.abc import AsyncGenerator, Generator
 from pathlib import Path
 
@@ -14,9 +15,15 @@ from app.interfaces.database import DatabaseManagerInterface
 
 data_location = Path(__file__).parent.parent / "data"
 
+skip_due_to_cohere_api_key = pytest.mark.skipif(
+    "COHERE_API_KEY" not in os.environ,
+    reason="COHERE_API_KEY required"
+)
 
 @pytest.fixture(
-    params=[FakeDatabase(), ChromaDatabase()], ids=["fake_database", "chroma_database"]
+    params=[
+        pytest.param(FakeDatabase(), id="fake_database"),
+        pytest.param(ChromaDatabase(), id="chroma_database", marks=skip_due_to_cohere_api_key)],
 )
 def vector_database(request) -> Generator[DatabaseManagerInterface]:
     database = request.param
@@ -63,6 +70,7 @@ In that case, you may return the item after delivery following our return policy
     )
     assert expected_content_chunk in chunks
 
+@skip_due_to_cohere_api_key
 @pytest.mark.asyncio
 @pytest.mark.parametrize("vector_database", [pytest.param(FakeDatabase(), id="fake_database")])
 @pytest.mark.parametrize("ai_agent", [pytest.param(CohereAgent(), id="cohere_agent")])
@@ -82,7 +90,7 @@ async def test_controller__can_stream_from_fake_agent(vector_database, ai_agent)
     assert len(response) == 196
     assert response[0] == "Y"
 
-@pytest.mark.skip("Using real agent")
+@skip_due_to_cohere_api_key
 @pytest.mark.asyncio
 @pytest.mark.parametrize("vector_database", [pytest.param(ChromaDatabase(), id="chroma_database")])
 @pytest.mark.parametrize("ai_agent", [pytest.param(CohereAgent(), id="cohere_agent")])
