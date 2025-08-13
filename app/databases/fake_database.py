@@ -1,5 +1,6 @@
 from difflib import get_close_matches
 from os import PathLike
+from typing import AsyncIterator
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader
@@ -22,9 +23,11 @@ class FakeDatabase(DatabaseManagerInterface):
         context = get_close_matches(question, self.db, n=1, cutoff=0.1 )
         return "\n\n".join(context) if context else "there is no context, you are not allowed to answer"
 
-    async def add_text_to_db(self, text: str):
+    async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
         chunks = self.text_splitter.split_text(text)
-        self.db.extend(chunks)
+        for progress, chunk in enumerate(chunks):
+            self.db.append(chunk)
+            yield (progress + 1) / len(chunks) * 100
 
     def get_chunks(self) -> list[str]:
         return self.db

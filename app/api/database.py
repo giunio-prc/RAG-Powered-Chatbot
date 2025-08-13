@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi.responses import StreamingResponse
 
 from app.api.dependencies import get_db_from_state_annotation
 from app.controller.controller import add_content_into_db
@@ -19,7 +20,8 @@ async def add_document_endpoint(db: get_db_from_state_annotation, file: UploadFi
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="The file cannot be uploaded"
         )
-    await add_content_into_db(db, file_content)
+    return StreamingResponse(add_content_into_db(db, file_content), media_type="text/plain")
+
 
 
 @router.get("/get-vectors-data")

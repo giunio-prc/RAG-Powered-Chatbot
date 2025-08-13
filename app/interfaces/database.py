@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from os import PathLike
+from typing import AsyncIterator
 
 
 class DatabaseManagerInterface(ABC):
@@ -10,7 +11,7 @@ class DatabaseManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def add_text_to_db(self, text: str):
+    async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
         pass
 
     @abstractmethod
