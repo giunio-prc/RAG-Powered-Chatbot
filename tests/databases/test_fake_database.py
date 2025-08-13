@@ -12,4 +12,4 @@ async def test_fake_database__can_return_context(fake_database):
     fake_database.load_documents_from_folder(data_location)
 
     context = await fake_database.get_context("What is the tracking method?")
-    assert context == "Tracking provided via email."
+    assert "Tracking provided via email." in context

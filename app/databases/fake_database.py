@@ -20,7 +20,7 @@ class FakeDatabase(DatabaseManagerInterface):
     async def get_context(self, question) -> str:
 
         context = get_close_matches(question, self.db, n=1, cutoff=0.1 )
-        return "\n\n".join(context)
+        return "\n\n".join(context) if context else "there is no context, you are not allowed to answer"
 
     async def add_text_to_db(self, text: str):
         chunks = self.text_splitter.split_text(text)
