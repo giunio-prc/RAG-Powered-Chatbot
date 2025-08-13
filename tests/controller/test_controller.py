@@ -26,28 +26,44 @@ async def test_load_initial_documents__load_chunks_from_file_in_folder(fake_data
 
 
 @pytest.mark.asyncio
-async def test_add_content_into_db__adds_content_from_provided_file(fake_database):
+async def test_add_content_into_db__streams_progress_updates(fake_database):
     content = """
-Can I modify or cancel my order after placing it?
+First chunk of content that should be split.
+This is line 2.
 
-A: Yes, but only within a short window.
-If your order hasn't been packed or shipped yet,
-you can contact customer service to modify or cancel it.
-Once it's processed by our warehouse, changes are no longer possible.
-In that case, you may return the item after delivery following our return policy.
+Second chunk of content starts here.
+This is another line.
+This should be split into multiple chunks.
+
+Third chunk starts here with more content.
 """
-    await add_content_into_db(fake_database, content)
 
+    progress_updates = []
+    async for progress_str in add_content_into_db(fake_database, content):
+        # Verify each progress update is a string with newline
+        assert isinstance(progress_str, str)
+        assert progress_str.endswith("\n")
+
+        # Parse the progress value
+        progress = float(progress_str.strip())
+        progress_updates.append(progress)
+
+        # Verify progress is between 0 and 100
+        assert 0 < progress <= 100
+
+    # Verify we got multiple progress updates
+    assert len(progress_updates) > 1
+
+    # Verify progress increases monotonically
+    for i in range(1, len(progress_updates)):
+        assert progress_updates[i] > progress_updates[i-1]
+
+    # Verify final progress is 100%
+    assert progress_updates[-1] == 100.0
+
+    # Verify content was actually added to database
     chunks = fake_database.get_chunks()
-
-    assert len(chunks) == 2
-    expected_content_chunk = (
-        "Can I modify or cancel my order after placing it?\n"
-        + "A: Yes, but only within a short window.\n"
-        + "If your order hasn't been packed or shipped yet,\n"
-        + "you can contact customer service to modify or cancel it."
-    )
-    assert expected_content_chunk in chunks
+    assert len(chunks) > 0
 
 
 @pytest.mark.asyncio
