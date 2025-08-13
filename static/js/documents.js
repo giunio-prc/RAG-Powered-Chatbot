@@ -81,11 +81,17 @@ class DocumentManager {
         try {
             for (let i = 0; i < validFiles.length; i++) {
                 const file = validFiles[i];
-                await this.uploadFile(file);
 
-                // Update progress
-                const progress = ((i + 1) / validFiles.length) * 100;
-                this.updateProgress(progress);
+                // Update status to show which file is being processed
+                if (validFiles.length > 1) {
+                    this.uploadStatus.innerHTML = `
+                        <div class="text-sm text-gray-600 mb-2">
+                            Processing file ${i + 1} of ${validFiles.length}: ${file.name}
+                        </div>
+                    `;
+                }
+
+                await this.uploadFile(file);
             }
 
             this.showUploadSuccess(validFiles.length);
@@ -111,6 +117,45 @@ class DocumentManager {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.detail || `Failed to upload ${file.name}`);
+        }
+
+        // Handle streaming response
+        if (response.body) {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // Process complete lines from buffer
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (line.trim()) {
+                            const progress = parseFloat(line.trim());
+                            if (!isNaN(progress)) {
+                                this.updateProgress(progress);
+                            }
+                        }
+                    }
+                }
+
+                // Process any remaining data in buffer
+                if (buffer.trim()) {
+                    const progress = parseFloat(buffer.trim());
+                    if (!isNaN(progress)) {
+                        this.updateProgress(progress);
+                    }
+                }
+            } finally {
+                reader.releaseLock();
+            }
         }
 
         return response;

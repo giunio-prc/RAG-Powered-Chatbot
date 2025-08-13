@@ -1,4 +1,5 @@
 from os import PathLike, getenv
+from typing import AsyncIterator
 
 from chromadb import HttpClient
 from chromadb.api import ClientAPI
@@ -48,10 +49,13 @@ class ChromaDatabase(DatabaseManagerInterface):
         chunk_size=200, chunk_overlap=0, separator="\n"
         )
 
-    async def add_text_to_db(self, text: str):
+    async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
         try:
-            await self.db.aadd_documents(chunks)
+            for progress, chunk in enumerate(chunks):
+                await self.db.aadd_documents([chunk])
+                yield (progress + 1) / len(chunks) * 100
+
         except CohereTooManyRequestsError as err:
             raise TooManyRequestsError(content=err.body)
 

@@ -7,7 +7,8 @@ from app.interfaces.errors import TooManyRequestsError
 
 
 async def add_content_into_db(db: DatabaseManagerInterface, content: str):
-    await db.add_text_to_db(content)
+    async for percentage in db.add_text_to_db(content):
+        yield f"{percentage}\n"
 
 
 async def query_agent(
