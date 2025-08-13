@@ -9,8 +9,6 @@ from app.databases import ChromaDatabase, FakeDatabase
 
 data_location = Path(__file__).parent / "data"
 
-missing_cohere_key_in_env = "COHERE_API_KEY" not in os.environ
-
 @pytest.fixture
 def fake_database() -> Generator[FakeDatabase]:
     database = FakeDatabase()
@@ -19,7 +17,8 @@ def fake_database() -> Generator[FakeDatabase]:
 
 @pytest.fixture
 def chroma_database() -> Generator[ChromaDatabase]:
-    if missing_cohere_key_in_env:
+
+    if "COHERE_API_KEY" not in os.environ:
         pytest.skip()
     database = ChromaDatabase()
     yield database
@@ -32,7 +31,7 @@ def fake_agent() -> FakeAgent:
 
 @pytest.fixture
 def cohere_agent() -> CohereAgent:
-    if missing_cohere_key_in_env:
+    if "COHERE_API_KEY" not in os.environ:
         pytest.skip()
     agent = CohereAgent()
     return agent
