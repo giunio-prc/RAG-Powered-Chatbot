@@ -1,10 +1,13 @@
 import os
 from collections.abc import Generator
+from pathlib import Path
 
 import pytest
 
 from app.agents.fake_agent import FakeAgent
 from app.databases.fake_database import FakeDatabase
+
+data_location = Path(__file__).parent / "data"
 
 missing_cohere_key_in_env = "COHERE_API_KEY" not in os.environ,
 
@@ -21,7 +24,7 @@ def fake_database() -> Generator[FakeDatabase]:
 
 @pytest.fixture
 @skip_due_to_cohere_api_key
-def chroma_database() -> Generator["_ChromaDatabase"]:
+def chroma_database() -> Generator["_ChromaDatabase"]: # noqa: F821
     if missing_cohere_key_in_env:
         pytest.skip()
     from app.databases import ChromaDatabase as _ChromaDatabase  # type: ignore
@@ -36,7 +39,7 @@ def fake_agent() -> FakeAgent:
 
 @pytest.fixture
 @skip_due_to_cohere_api_key
-def cohere_agent() -> "_CohereAgent":
+def cohere_agent() -> "_CohereAgent": # noqa: F821
     if missing_cohere_key_in_env:
         pytest.skip()
     from app.agents import CohereAgent as _CohereAgent  # type: ignore
