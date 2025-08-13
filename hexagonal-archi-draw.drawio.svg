@@ -197,8 +197,8 @@
     <path d="M 472.76 175.78 L 475.21 167.69 L 476.63 171.34 L 480.45 172.85 Z" fill="#01579b" stroke="#01579b" stroke-width="3" stroke-miterlimit="10" pointer-events="all"/>
 
     <!-- API to Interface connections -->
-    <path d="M 400 450 L 400 370" fill="none" stroke="#01579b" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke"/>
-    <path d="M 400 375 L 396.5 367 L 400 370 L 403.5 367 Z" fill="#01579b" stroke="#01579b" stroke-width="3" stroke-miterlimit="10" pointer-events="all"/>
+    <path d="M 400 370 L 400 450" fill="none" stroke="#01579b" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke"/>
+    <path d="M 400 445 L 396.5 440 L 400 450 L 403.5 440 Z" fill="#01579b" stroke="#01579b" stroke-width="3" stroke-miterlimit="10" pointer-events="all"/>
 
     <!-- Primary adapter connections -->
     <path d="M 300 540 L 366.36 516.36" fill="none" stroke="#2e7d32" stroke-width="2" stroke-miterlimit="10" pointer-events="stroke"/>
