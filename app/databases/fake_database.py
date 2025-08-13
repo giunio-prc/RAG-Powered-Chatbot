@@ -1,3 +1,4 @@
+from difflib import get_close_matches
 from os import PathLike
 
 from langchain.text_splitter import CharacterTextSplitter
@@ -17,9 +18,9 @@ class FakeDatabase(DatabaseManagerInterface):
         self.db = []
 
     async def get_context(self, question) -> str:
-        if self.db == []:
-            return "there is no context, you are not allowed to answer"
-        return "\n\n".join(["This is a fake", "context"])
+
+        context = get_close_matches(question, self.db, n=1, cutoff=0.1 )
+        return "\n\n".join(context)
 
     async def add_text_to_db(self, text: str):
         chunks = self.text_splitter.split_text(text)
