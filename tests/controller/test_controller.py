@@ -1,5 +1,4 @@
 from collections.abc import AsyncGenerator
-from pathlib import Path
 
 import pytest
 
@@ -7,9 +6,7 @@ from app.controller.controller import (
     add_content_into_db,
     query_agent_with_stream_response,
 )
-
-data_location = Path(__file__).parent.parent / "data"
-
+from tests.conftest import data_location
 
 
 @pytest.mark.asyncio
