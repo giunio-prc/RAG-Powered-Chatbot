@@ -82,13 +82,19 @@ class DocumentManager {
             for (let i = 0; i < validFiles.length; i++) {
                 const file = validFiles[i];
 
+                // Reset progress indicator to 0 before each file upload
+                this.updateProgress(0);
+
                 // Update status to show which file is being processed
                 if (validFiles.length > 1) {
-                    this.uploadStatus.innerHTML = `
-                        <div class="text-sm text-gray-600 mb-2">
-                            Processing file ${i + 1} of ${validFiles.length}: ${file.name}
-                        </div>
-                    `;
+                    // Clear existing content first
+                    this.uploadStatus.innerHTML = '';
+
+                    // Create safe DOM elements to prevent XSS
+                    const statusDiv = document.createElement('div');
+                    statusDiv.className = 'text-sm text-gray-600 mb-2';
+                    statusDiv.textContent = `Processing file ${i + 1} of ${validFiles.length}: ${file.name}`;
+                    this.uploadStatus.appendChild(statusDiv);
                 }
 
                 await this.uploadFile(file);
