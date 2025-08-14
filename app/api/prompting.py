@@ -34,11 +34,5 @@ async def query_with_stream_response(
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
 ):
-    async def safe_stream():
-        try:
-            async for chunk in query_agent_with_stream_response(db, agent, question):
-                yield chunk
-        except TooManyRequestsError:
-            yield "Too many requests. Please try again later."
 
-    return StreamingResponse(safe_stream(), media_type="text/plain")
+    return StreamingResponse(query_agent_with_stream_response(db, agent, question), media_type="text/plain")
