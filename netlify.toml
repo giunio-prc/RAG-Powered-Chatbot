@@ -1,0 +1,14 @@
+[build]
+  command = "uv install"
+
+[build.environment]
+  PYTHON_VERSION = "3.12"
+  UV_PYTHON = "3.12"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api"
+  status = 200
+
+[functions]
+  python_runtime = "python3.12"

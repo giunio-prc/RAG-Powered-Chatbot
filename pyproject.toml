@@ -13,7 +13,8 @@ dependencies = [
   "onnxruntime==1.20.1; platform_system == 'Windows'",
   "chromadb>=1.0.13",
   "langchain-chroma>=0.2.3",
-  "protobuf<=3.20"
+  "protobuf<=3.20",
+  "mangum>=0.18.0"
 ]
 
 [tool.ruff]
