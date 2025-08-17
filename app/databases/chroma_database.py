@@ -12,7 +12,7 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents.base import Document
 
 from app.interfaces.database import DatabaseManagerInterface
-from app.interfaces.errors import TooManyRequestsError
+from app.interfaces.errors import EmbeddingAPILimitError, TooManyRequestsError
 
 load_dotenv()
 
@@ -51,13 +51,32 @@ class ChromaDatabase(DatabaseManagerInterface):
 
     async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
+        uploaded_chunk_ids = []
+
         try:
             for progress, chunk in enumerate(chunks):
-                await self.db.aadd_documents([chunk])
+                # Add document and capture the IDs for potential rollback
+                result = await self.db.aadd_documents([chunk])
+                if hasattr(result, "ids") and result.ids:
+                    uploaded_chunk_ids.extend(result.ids)
                 yield (progress + 1) / len(chunks) * 100
 
         except CohereTooManyRequestsError as err:
-            raise TooManyRequestsError(content=err.body)
+            # If we have uploaded chunks, we need to roll them back
+            if uploaded_chunk_ids:
+                await self._rollback_chunks(uploaded_chunk_ids)
+            raise EmbeddingAPILimitError(content=err.body, chunks_uploaded=len(uploaded_chunk_ids))
+
+
+    async def _rollback_chunks(self, chunk_ids: list[str]) -> None:
+        """Remove uploaded chunks from the database"""
+        try:
+            # Remove the uploaded documents by their IDs
+            self.db.delete(ids=chunk_ids)
+        except Exception:
+            # If rollback fails, we log it but don't raise another exception
+            # to avoid masking the original API limit error
+            pass
 
     def get_chunks(self) -> list[str]:
         return self.db.get()["documents"]
