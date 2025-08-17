@@ -78,6 +78,11 @@ class DocumentManager {
 
         this.showUploadProgress();
 
+        const results = {
+            successful: [],
+            failed: []
+        };
+
         try {
             for (let i = 0; i < validFiles.length; i++) {
                 const file = validFiles[i];
@@ -97,14 +102,33 @@ class DocumentManager {
                     this.uploadStatus.appendChild(statusDiv);
                 }
 
-                await this.uploadFile(file);
+                try {
+                    await this.uploadFile(file);
+                    results.successful.push(file.name);
+                } catch (fileError) {
+                    results.failed.push({ name: file.name, error: fileError.message });
+                }
             }
 
-            this.showUploadSuccess(validFiles.length);
-            this.loadStatistics(); // Refresh stats after upload
-            this.addRecentActivity(`Uploaded ${validFiles.length} file(s)`);
+            // Show appropriate message based on results
+            if (results.failed.length === 0) {
+                // All files succeeded
+                this.showUploadSuccess(results.successful.length);
+                this.loadStatistics(); // Refresh stats after upload
+                this.addRecentActivity(`Uploaded ${results.successful.length} file(s)`);
+            } else if (results.successful.length === 0) {
+                // All files failed
+                const firstError = results.failed[0];
+                this.showUploadError(new Error(firstError.error));
+            } else {
+                // Mixed results - some succeeded, some failed
+                this.showMixedUploadResults(results);
+                this.loadStatistics(); // Refresh stats for successful uploads
+                this.addRecentActivity(`Uploaded ${results.successful.length} of ${validFiles.length} file(s)`);
+            }
 
         } catch (error) {
+            // This should only catch unexpected errors
             this.showUploadError(error);
         } finally {
             this.hideUploadProgress();
@@ -130,6 +154,8 @@ class DocumentManager {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
+            let hasValidProgress = false;
+            let lastProgress = 0;
 
             try {
                 while (true) {
@@ -151,7 +177,12 @@ class DocumentManager {
 
                             const progress = parseFloat(line.trim());
                             if (!isNaN(progress)) {
+                                hasValidProgress = true;
+                                lastProgress = progress;
                                 this.updateProgress(progress);
+                            } else {
+                                // Log non-numeric content that might be an error
+                                console.warn('Unexpected content in upload stream:', line.trim());
                             }
                         }
                     }
@@ -166,12 +197,30 @@ class DocumentManager {
 
                     const progress = parseFloat(buffer.trim());
                     if (!isNaN(progress)) {
+                        hasValidProgress = true;
+                        lastProgress = progress;
                         this.updateProgress(progress);
+                    } else {
+                        console.warn('Unexpected content in upload stream buffer:', buffer.trim());
                     }
                 }
+
+                // If we didn't receive any valid progress updates, something went wrong
+                if (!hasValidProgress) {
+                    throw new Error(`Upload failed: No progress data received for ${file.name}`);
+                }
+
+                // If the last progress wasn't 100%, the upload may have failed
+                if (lastProgress < 100) {
+                    throw new Error(`Upload incomplete: Only ${lastProgress}% of ${file.name} was processed`);
+                }
+
             } finally {
                 reader.releaseLock();
             }
+        } else {
+            // No response body at all is suspicious for a streaming endpoint
+            throw new Error(`Upload failed: No response data received for ${file.name}`);
         }
 
         return response;
@@ -229,6 +278,36 @@ class DocumentManager {
         `;
         const toastType = isAPILimitError ? 'warning' : 'danger';
         toast.show(message, toastType);
+    }
+
+    showMixedUploadResults(results) {
+        const successCount = results.successful.length;
+        const failCount = results.failed.length;
+        const totalCount = successCount + failCount;
+        
+        // Create failed files list
+        const failedFilesList = results.failed.map(f => `• ${f.name}: ${f.error}`).join('<br>');
+        
+        this.uploadStatus.innerHTML = `
+            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 mr-3 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="font-medium">Partial upload completed</p>
+                        <p class="text-sm mt-1">${successCount} of ${totalCount} files uploaded successfully</p>
+                        <details class="mt-2">
+                            <summary class="cursor-pointer text-sm font-medium">View failed files (${failCount})</summary>
+                            <div class="mt-2 text-sm font-mono bg-yellow-100 p-2 rounded">
+                                ${failedFilesList}
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        `;
+        toast.show(`${successCount} of ${totalCount} files uploaded successfully`, 'warning');
     }
 
     async loadStatistics() {
