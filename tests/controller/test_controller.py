@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from unittest.mock import patch
 
 import pytest
 
@@ -6,6 +7,7 @@ from app.controller.controller import (
     add_content_into_db,
     query_agent_with_stream_response,
 )
+from app.interfaces.errors import EmbeddingAPILimitError
 from tests.conftest import data_location
 
 
@@ -80,3 +82,61 @@ async def test_controller__can_stream_from_cohere_agent(chroma_database, cohere_
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
     assert len(response) > 20
+
+
+@pytest.mark.asyncio
+async def test_add_content_into_db__handles_api_limit_error_gracefully(fake_database):
+    content = """
+First chunk of content that should be split.
+This is line 2.
+
+Second chunk of content starts here.
+This is another line.
+This should be split into multiple chunks.
+
+Third chunk starts here with more content.
+"""
+
+    # Mock the add_text_to_db method to simulate API limit error after partial upload
+    async def mock_add_text_with_api_limit(text: str):
+        chunks = fake_database.text_splitter.split_text(text)
+        # Simulate successful upload of first chunk, then API limit error
+        fake_database.db.append(chunks[0])  # Upload first chunk
+        yield 25.0  # First chunk progress
+
+        # Simulate API limit error during second chunk
+        raise EmbeddingAPILimitError(content="API limit exceeded", chunks_uploaded=1)
+
+    # Patch the fake_database method
+    with patch.object(fake_database, "add_text_to_db", side_effect=mock_add_text_with_api_limit):
+        # Collect all responses from the controller
+        responses = []
+        async for response in add_content_into_db(fake_database, content):
+            responses.append(response.strip())
+
+        # Verify we got progress update followed by API limit signal
+        assert len(responses) == 2
+        assert responses[0] == "25.0"  # Progress update
+        assert responses[1] == "API_LIMIT_EXCEEDED"  # Error signal
+
+
+@pytest.mark.asyncio
+async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(fake_database):
+    content = "First chunk that will fail immediately."
+
+    # Mock the add_text_to_db method to simulate immediate API limit error
+    async def mock_add_text_immediate_failure(text: str):
+        # Simulate API limit error before any chunks are uploaded
+        raise EmbeddingAPILimitError(content="API limit exceeded", chunks_uploaded=0)
+        yield  # This line will never be reached
+
+    # Patch the fake_database method
+    with patch.object(fake_database, "add_text_to_db", side_effect=mock_add_text_immediate_failure):
+        # Collect all responses from the controller
+        responses = []
+        async for response in add_content_into_db(fake_database, content):
+            responses.append(response.strip())
+
+        # Verify we only got the API limit signal with no progress updates
+        assert len(responses) == 1
+        assert responses[0] == "API_LIMIT_EXCEEDED"

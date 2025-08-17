@@ -3,12 +3,17 @@ from collections.abc import AsyncGenerator
 from random import random
 
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
-from app.interfaces.errors import TooManyRequestsError
+from app.interfaces.errors import EmbeddingAPILimitError, TooManyRequestsError
 
 
 async def add_content_into_db(db: DatabaseManagerInterface, content: str):
-    async for percentage in db.add_text_to_db(content):
-        yield f"{percentage}\n"
+    try:
+        async for percentage in db.add_text_to_db(content):
+            yield f"{percentage}\n"
+    except EmbeddingAPILimitError:
+        # Return a special signal to indicate API limit reached
+        # The frontend should look for this specific string
+        yield "API_LIMIT_EXCEEDED\n"
 
 
 async def query_agent(

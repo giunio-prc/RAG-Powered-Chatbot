@@ -144,6 +144,11 @@ class DocumentManager {
 
                     for (const line of lines) {
                         if (line.trim()) {
+                            // Check for API limit exceeded signal
+                            if (line.trim() === 'API_LIMIT_EXCEEDED') {
+                                throw new Error('API key limit exceeded. Please try again later.');
+                            }
+
                             const progress = parseFloat(line.trim());
                             if (!isNaN(progress)) {
                                 this.updateProgress(progress);
@@ -154,6 +159,11 @@ class DocumentManager {
 
                 // Process any remaining data in buffer
                 if (buffer.trim()) {
+                    // Check for API limit exceeded signal in remaining buffer
+                    if (buffer.trim() === 'API_LIMIT_EXCEEDED') {
+                        throw new Error('API key limit exceeded. Please try again later.');
+                    }
+
                     const progress = parseFloat(buffer.trim());
                     if (!isNaN(progress)) {
                         this.updateProgress(progress);
@@ -198,16 +208,27 @@ class DocumentManager {
     }
 
     showUploadError(error) {
+        const isAPILimitError = error.message.includes('API key limit exceeded');
         const message = `Upload failed: ${error.message}`;
+        const bgColor = isAPILimitError ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-red-50 border-red-200 text-red-800';
+        const iconColor = isAPILimitError ? 'text-yellow-600' : 'text-red-600';
+        const icon = isAPILimitError
+            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>'
+            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+
         this.uploadStatus.innerHTML = `
-            <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 flex items-center">
-                <svg class="w-5 h-5 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <div class="${bgColor} rounded-lg p-4 flex items-center">
+                <svg class="w-5 h-5 mr-3 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${icon}
                 </svg>
-                ${message}
+                <div class="flex-1">
+                    <p class="font-medium">${message}</p>
+                    ${isAPILimitError ? '<p class="text-sm mt-1">Any partially uploaded data has been removed. Please wait and try again.</p>' : ''}
+                </div>
             </div>
         `;
-        toast.show(message, 'danger');
+        const toastType = isAPILimitError ? 'warning' : 'danger';
+        toast.show(message, toastType);
     }
 
     async loadStatistics() {
