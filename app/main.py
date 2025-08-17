@@ -1,4 +1,5 @@
 import logging
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import TypedDict
@@ -8,9 +9,9 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.agents import CohereAgent
+from app.agents import CohereAgent,FakeAgent
 from app.api import database, prompting
-from app.databases import ChromaDatabase
+from app.databases import ChromaDatabase, FakeDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 from app.interfaces.errors import TooManyRequestsError
 
@@ -24,7 +25,14 @@ class State(TypedDict):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[State]:
-    yield {"db": ChromaDatabase(), "agent": CohereAgent()}
+    if not os.getenv("COHERE_API_KEY"):
+        logger.warning(
+            "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
+        )
+        # Use fake implementations for testing purposes
+        yield {"db": FakeDatabase(), "agent": FakeAgent()}
+    else:
+        yield {"db": ChromaDatabase(), "agent": CohereAgent()}
 
 
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
