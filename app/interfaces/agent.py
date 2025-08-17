@@ -16,7 +16,7 @@ template: str = """
     -----------
     if you don't know the answer,
     you will ask the user to rephrase the question
-    or redirect the user the support@shop.com
+    or redirect the user the support@avenueit.be
     always be friendly and helpful
     at the end of the conversation,
     ask the user if they are satisfied with the answer
