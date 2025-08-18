@@ -1,6 +1,6 @@
 # RAG Powered Chatbot
-## 🚀 Live Demo                                                                                                                                                
-**Try the application live at: [https://rag.avenueit.be](https://rag.avenueit.be)**                                                                                        
+## 🚀 Live Demo
+**Try the application live at: [https://rag.avenueit.be](https://rag.avenueit.be)**
 
 ![workflow](https://github.com/giunio-prc/rag-powered-chatbot/actions/workflows/python-tests.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

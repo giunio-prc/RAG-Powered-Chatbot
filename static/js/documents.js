@@ -284,10 +284,10 @@ class DocumentManager {
         const successCount = results.successful.length;
         const failCount = results.failed.length;
         const totalCount = successCount + failCount;
-        
+
         // Create failed files list
         const failedFilesList = results.failed.map(f => `• ${f.name}: ${f.error}`).join('<br>');
-        
+
         this.uploadStatus.innerHTML = `
             <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
                 <div class="flex items-start">

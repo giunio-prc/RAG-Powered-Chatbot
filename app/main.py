@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.agents import CohereAgent,FakeAgent
+from app.agents import CohereAgent, FakeAgent
 from app.api import database, prompting
 from app.databases import ChromaDatabase, FakeDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
@@ -58,6 +58,11 @@ async def documents(request: Request):
     """Serve the document management interface"""
     return templates.TemplateResponse("documents.html", {"request": request})
 
+
+@app.get("/healthz")
+async def health_check():
+    """Health check endpoint"""
+    return JSONResponse(content={"status": "ok"})
 
 @app.exception_handler(TooManyRequestsError)
 async def too_many_request_error(request: Request, exc: TooManyRequestsError):
