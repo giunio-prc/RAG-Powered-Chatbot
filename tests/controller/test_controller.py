@@ -58,7 +58,7 @@ Third chunk starts here with more content.
 
     # Verify progress increases monotonically
     for i in range(1, len(progress_updates)):
-        assert progress_updates[i] > progress_updates[i-1]
+        assert progress_updates[i] > progress_updates[i - 1]
 
     # Verify final progress is 100%
     assert progress_updates[-1] == 100.0
@@ -70,15 +70,20 @@ Third chunk starts here with more content.
 
 @pytest.mark.asyncio
 async def test_controller__can_stream_from_fake_agent(fake_database, fake_agent):
-    streaming_response_generator = query_agent_with_stream_response(fake_database, fake_agent, "What time is it?")
+    streaming_response_generator = query_agent_with_stream_response(
+        fake_database, fake_agent, "What time is it?"
+    )
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
     assert len(response) == 196
     assert response[0] == "Y"
 
+
 @pytest.mark.asyncio
 async def test_controller__can_stream_from_cohere_agent(chroma_database, cohere_agent):
-    streaming_response_generator = query_agent_with_stream_response(chroma_database, cohere_agent, "What time is it?")
+    streaming_response_generator = query_agent_with_stream_response(
+        chroma_database, cohere_agent, "What time is it?"
+    )
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
     assert len(response) > 20
@@ -108,7 +113,9 @@ Third chunk starts here with more content.
         raise EmbeddingAPILimitError(content="API limit exceeded", chunks_uploaded=1)
 
     # Patch the fake_database method
-    with patch.object(fake_database, "add_text_to_db", side_effect=mock_add_text_with_api_limit):
+    with patch.object(
+        fake_database, "add_text_to_db", side_effect=mock_add_text_with_api_limit
+    ):
         # Collect all responses from the controller
         responses = []
         async for response in add_content_into_db(fake_database, content):
@@ -121,7 +128,9 @@ Third chunk starts here with more content.
 
 
 @pytest.mark.asyncio
-async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(fake_database):
+async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
+    fake_database,
+):
     content = "First chunk that will fail immediately."
 
     # Mock the add_text_to_db method to simulate immediate API limit error
@@ -131,7 +140,9 @@ async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(fake_
         yield  # This line will never be reached
 
     # Patch the fake_database method
-    with patch.object(fake_database, "add_text_to_db", side_effect=mock_add_text_immediate_failure):
+    with patch.object(
+        fake_database, "add_text_to_db", side_effect=mock_add_text_immediate_failure
+    ):
         # Collect all responses from the controller
         responses = []
         async for response in add_content_into_db(fake_database, content):

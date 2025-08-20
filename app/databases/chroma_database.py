@@ -40,13 +40,13 @@ class ChromaDatabase(DatabaseManagerInterface):
 
     def __init__(self):
         self.db = Chroma(
-        embedding_function=CohereEmbeddings(
-            model="embed-v4.0"  # type: ignore
-        ),
-        client=client,
+            embedding_function=CohereEmbeddings(  # type: ignore
+                model="embed-v4.0"
+            ),
+            client=client,
         )
         self.text_splitter = CharacterTextSplitter(
-        chunk_size=200, chunk_overlap=0, separator="\n"
+            chunk_size=200, chunk_overlap=0, separator="\n"
         )
 
     async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
@@ -64,7 +64,9 @@ class ChromaDatabase(DatabaseManagerInterface):
             # If we have uploaded chunks, we need to roll them back
             if uploaded_chunk_ids:
                 await self.db.adelete(ids=uploaded_chunk_ids)
-            raise EmbeddingAPILimitError(content=err.body, chunks_uploaded=len(uploaded_chunk_ids))
+            raise EmbeddingAPILimitError(
+                content=err.body, chunks_uploaded=len(uploaded_chunk_ids)
+            )
 
     def get_chunks(self) -> list[str]:
         return self.db.get()["documents"]
@@ -78,7 +80,6 @@ class ChromaDatabase(DatabaseManagerInterface):
             return "there is no context, you are not allowed to answer"
 
         return "\n\n".join(doc.page_content for doc in documents)
-
 
     def get_number_of_vectors(self) -> int:
         return len(self.db.get()["documents"])

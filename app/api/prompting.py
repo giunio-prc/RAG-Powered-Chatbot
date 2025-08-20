@@ -25,8 +25,9 @@ async def query_agent_endpoint(
     except TooManyRequestsError:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many requests. Please try again later."
+            detail="Too many requests. Please try again later.",
         )
+
 
 @router.post("/query-stream")
 async def query_with_stream_response(
@@ -34,5 +35,6 @@ async def query_with_stream_response(
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
 ):
-
-    return StreamingResponse(query_agent_with_stream_response(db, agent, question), media_type="text/plain")
+    return StreamingResponse(
+        query_agent_with_stream_response(db, agent, question), media_type="text/plain"
+    )
