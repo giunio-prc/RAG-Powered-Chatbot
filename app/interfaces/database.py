@@ -1,17 +1,17 @@
 from abc import ABC, abstractmethod
 from os import PathLike
-from typing import AsyncIterator
+from typing import Any, AsyncGenerator
 
 
 class DatabaseManagerInterface(ABC):
-    db: object
+    db: Any
 
     @abstractmethod
     def get_chunks(self) -> list[str]:
         pass
 
     @abstractmethod
-    async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
+    async def add_text_to_db(self, text: str) -> AsyncGenerator[float]:
         pass
 
     @abstractmethod
