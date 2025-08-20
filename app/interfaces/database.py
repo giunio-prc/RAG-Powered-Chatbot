@@ -11,7 +11,7 @@ class DatabaseManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def add_text_to_db(self, text: str) -> AsyncGenerator[float]:
+    async def add_text_to_db(self, text: str) -> AsyncGenerator[float, None]:
         pass
 
     @abstractmethod
