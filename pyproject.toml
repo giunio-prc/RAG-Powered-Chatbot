@@ -29,7 +29,6 @@ asyncio_default_fixture_loop_scope = "session"
 [dependency-groups]
 dev = [
   "pre-commit",
-  "ruff",
   "pytest",
   "pytest-cov",
   "pytest-asyncio>=1.0.0",
