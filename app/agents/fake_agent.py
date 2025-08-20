@@ -6,7 +6,6 @@ from app.interfaces.agent import AIAgentInterface
 
 
 class FakeAgent(AIAgentInterface):
-
     async def query_with_context(self, question: str, context: str) -> str:
         return (
             f'You asked me the following question:\n "{question}" \n'
@@ -16,8 +15,7 @@ class FakeAgent(AIAgentInterface):
 
     async def get_stream_response(
         self, question: str, context: str
-        ) -> AsyncIterator[str]:
-
+    ) -> AsyncIterator[str]:
         char_sleep = 5.0 / len(f"{context}{question}")
         phrase_sleep = char_sleep * 2
 
@@ -32,7 +30,6 @@ class FakeAgent(AIAgentInterface):
             yield char
 
         await sleep(phrase_sleep * random())
-
 
         for char in f'With the following context "{context}"\n':
             await sleep(char_sleep * random())
