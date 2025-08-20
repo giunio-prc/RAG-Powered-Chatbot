@@ -33,6 +33,5 @@ dev = [
   "pytest",
   "pytest-cov",
   "mypy",
-  "pytest-asyncio>=1.0.0",
-  "faker>=37.3.0"
+  "pytest-asyncio>=1.0.0"
 ]
