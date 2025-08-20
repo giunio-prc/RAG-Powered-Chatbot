@@ -35,6 +35,6 @@ repos:
         types: [python]
     -   id: ty
         name: ty (local)
-        entry: uvx ty check
+        entry: uv run ty check
         language: system
         types: [python]
