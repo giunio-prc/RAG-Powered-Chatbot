@@ -1,5 +1,5 @@
 from os import PathLike, getenv
-from typing import AsyncIterator
+from typing import AsyncGenerator
 
 from chromadb import HttpClient
 from chromadb.api import ClientAPI
@@ -49,7 +49,7 @@ class ChromaDatabase(DatabaseManagerInterface):
             chunk_size=200, chunk_overlap=0, separator="\n"
         )
 
-    async def add_text_to_db(self, text: str) -> AsyncIterator[float]:
+    async def add_text_to_db(self, text: str) -> AsyncGenerator[float]:
         chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
         uploaded_chunk_ids = []
 
