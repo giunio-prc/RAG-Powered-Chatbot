@@ -29,7 +29,7 @@ async def query_agent_with_stream_response(
 ) -> AsyncGenerator[str, None]:
     try:
         context = await db.get_context(question)
-        async for chunk in ai_agent.get_stream_response( # type: ignore non-iterable
+        async for chunk in ai_agent.get_stream_response(  # type: ignore non-iterable
             question, context
         ):
             yield chunk
