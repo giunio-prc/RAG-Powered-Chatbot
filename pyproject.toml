@@ -33,5 +33,5 @@ dev = [
   "pytest-cov",
   "pytest-asyncio>=1.0.0",
   "ruff>=0.12.9",
-  "ty>=0.0.1a19"
+  "ty>=0.0.1a19",
 ]
