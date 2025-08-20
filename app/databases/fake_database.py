@@ -26,7 +26,7 @@ class FakeDatabase(DatabaseManagerInterface):
             else "there is no context, you are not allowed to answer"
         )
 
-    async def add_text_to_db(self, text: str) -> AsyncGenerator[float]:
+    async def add_text_to_db(self, text: str) -> AsyncGenerator[float, None]:
         chunks = self.text_splitter.split_text(text)
         for progress, chunk in enumerate(chunks):
             self.db.append(chunk)
