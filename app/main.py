@@ -64,6 +64,7 @@ async def health_check():
     """Health check endpoint"""
     return JSONResponse(content={"status": "ok"})
 
+
 @app.exception_handler(TooManyRequestsError)
 async def too_many_request_error(request: Request, exc: TooManyRequestsError):
     return JSONResponse(

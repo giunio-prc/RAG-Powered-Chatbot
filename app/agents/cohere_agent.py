@@ -56,11 +56,9 @@ class CohereAgent(AIAgentInterface):
         response = await self.chain.ainvoke({"question": question, "context": context})
         return response
 
-
     async def get_stream_response(
         self, question: str, context: str
     ) -> AsyncIterator[str]:
-
         try:
             async for message in self.chain.astream(
                 {"question": question, "context": context}

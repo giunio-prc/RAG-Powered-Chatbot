@@ -11,17 +11,19 @@ router = APIRouter()
 async def add_document_endpoint(db: get_db_from_state_annotation, file: UploadFile):
     if file.content_type != "text/plain":
         raise HTTPException(
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail="Invalid file. The app only supprt text files"
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Invalid file. The app only supprt text files",
         )
     try:
         file_content = file.file.read().decode()
     except UnicodeError:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="The file cannot be uploaded"
+            detail="The file cannot be uploaded",
         )
-    return StreamingResponse(add_content_into_db(db, file_content), media_type="text/plain")
-
+    return StreamingResponse(
+        add_content_into_db(db, file_content), media_type="text/plain"
+    )
 
 
 @router.get("/get-vectors-data")

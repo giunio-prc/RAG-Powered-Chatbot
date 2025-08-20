@@ -32,5 +32,7 @@ class AIAgentInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_stream_response(self, question: str, context: str) -> AsyncIterator[str]:
+    async def get_stream_response(
+        self, question: str, context: str
+    ) -> AsyncIterator[str]:
         pass
