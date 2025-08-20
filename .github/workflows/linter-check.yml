@@ -24,8 +24,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Run format check with ruff
-        run: uvx ruff check
+        run: uv run ruff check
 
       - name: Run type check with ty
-        run: uvx ty check --ignore unresolved-imports
+        run: uv run ty check
 
