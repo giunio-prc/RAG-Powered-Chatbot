@@ -36,7 +36,7 @@ uv run fastapi run
 uv run ruff check --fix
 
 # Run type checking (currently commented out in pre-commit)
-uv run mypy
+uv run ty
 
 # Run tests
 uv run pytest
