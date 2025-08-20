@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
 from os import PathLike
-from typing import Any, AsyncGenerator
+from typing import AsyncGenerator, Generic, TypeVar
+
+DB = TypeVar("DB")
 
 
-class DatabaseManagerInterface(ABC):
-    db: Any
+class DatabaseManagerInterface(ABC, Generic[DB]):
+    db: DB
 
     @abstractmethod
     def get_chunks(self) -> list[str]:
