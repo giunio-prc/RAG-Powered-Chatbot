@@ -28,4 +28,3 @@ jobs:
 
       - name: Run type check with ty
         run: uv run ty check
-
