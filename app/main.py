@@ -37,6 +37,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
 
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
 
+# include analytics
+if os.getenv("ANALYTICS_ID"):
+    from api_analytics.fastapi import Analytics
+
+    app.add_middleware(Analytics, api_key=os.getenv("ANALYTICS_ID"))
+
+
 # Include API routers
 app.include_router(database.router)
 app.include_router(prompting.router)

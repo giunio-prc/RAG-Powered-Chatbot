@@ -13,7 +13,8 @@ dependencies = [
   "onnxruntime==1.20.1; platform_system == 'Windows'",
   "chromadb>=1.0.13",
   "langchain-chroma>=0.2.3",
-  "protobuf<=3.20"
+  "protobuf<=3.20",
+  "api-analytics[fastapi]>=1.2.7"
 ]
 
 [tool.ruff]
@@ -33,5 +34,5 @@ dev = [
   "pytest-cov",
   "pytest-asyncio>=1.0.0",
   "ruff>=0.12.9",
-  "ty>=0.0.1a19",
+  "ty>=0.0.1a19"
 ]

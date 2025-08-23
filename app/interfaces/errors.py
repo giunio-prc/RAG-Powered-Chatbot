@@ -1,5 +1,3 @@
-
-
 class TooManyRequestsError(Exception):
     status_code: int = 429
     content: object
