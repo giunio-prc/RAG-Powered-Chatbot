@@ -16,7 +16,7 @@ class FakeAgent(AIAgentInterface):
     async def get_stream_response(
         self, question: str, context: str
     ) -> AsyncIterator[str]:
-        char_sleep = 5.0 / len(f"{context}{question}")
+        char_sleep = 2.0 / len(f"{context}{question}")
         phrase_sleep = char_sleep * 2
 
         for char in "You asked me the following question:\n":
