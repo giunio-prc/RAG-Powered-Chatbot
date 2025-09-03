@@ -12,8 +12,10 @@ class ChatManager {
         this.isStreaming = false;
         this.currentStreamingMessage = null;
         this.abortController = null;
+        this.storageKey = 'rag-chatbot-history';
 
         this.initializeEventListeners();
+        setTimeout(() => this.loadChatHistory(), 100);
     }
 
     initializeEventListeners() {
@@ -122,6 +124,9 @@ class ChatManager {
                 this.scrollToBottom();
             }
 
+            // Save chat history after streaming is complete
+            setTimeout(() => this.saveChatHistory(), 100);
+
         } catch (error) {
             if (error.name === 'AbortError') {
                 console.log('Request was aborted');
@@ -136,6 +141,8 @@ class ChatManager {
     addMessage(content, sender) {
         const messageElement = this.createMessageElement(content, sender);
         this.scrollToBottom();
+        // Delay saving to ensure DOM is fully updated
+        setTimeout(() => this.saveChatHistory(), 100);
         return messageElement;
     }
 
@@ -270,7 +277,104 @@ class ChatManager {
             messages[i].remove();
         }
 
+        // Clear stored chat history
+        this.clearChatHistory();
+
         toast.show('Chat cleared successfully', 'success');
+    }
+
+    saveChatHistory() {
+        const messagesContainer = this.chatMessages.querySelector('.p-4.space-y-4');
+        const messages = Array.from(messagesContainer.children);
+
+        // Skip the welcome message (first child) and only save user/assistant messages
+        const chatHistory = messages.slice(1).map(messageDiv => {
+            const isUser = messageDiv.classList.contains('justify-end');
+            const contentElement = messageDiv.querySelector('.message-content');
+            const timeElement = messageDiv.querySelector('.text-xs');
+
+            return {
+                content: contentElement ? contentElement.innerHTML : '',
+                sender: isUser ? 'user' : 'assistant',
+                timestamp: timeElement ? timeElement.textContent : this.formatTime(new Date())
+            };
+        });
+
+        localStorage.setItem(this.storageKey, JSON.stringify(chatHistory));
+    }
+
+    loadChatHistory() {
+        try {
+            const stored = localStorage.getItem(this.storageKey);
+            if (!stored) return;
+
+            const chatHistory = JSON.parse(stored);
+            console.log('Loading chat history:', chatHistory.length, 'messages');
+            const messagesContainer = this.chatMessages.querySelector('.p-4.space-y-4');
+
+            // Restore each message
+            chatHistory.forEach(message => {
+                const messageElement = this.createStoredMessageElement(message);
+                messagesContainer.appendChild(messageElement);
+            });
+
+            this.scrollToBottom();
+        } catch (error) {
+            console.error('Failed to load chat history:', error);
+            // Clear corrupted data
+            localStorage.removeItem(this.storageKey);
+        }
+    }
+
+    createStoredMessageElement(messageData) {
+        const messageDiv = document.createElement('div');
+        const isUser = messageData.sender === 'user';
+
+        if (isUser) {
+            messageDiv.className = 'flex justify-end mb-4';
+            messageDiv.innerHTML = `
+                <div class="flex items-start space-x-3 max-w-xs lg:max-w-md">
+                    <div class="flex-1 bg-primary-600 text-white rounded-lg p-4 shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-primary-100">You</span>
+                            <span class="text-xs text-primary-200">${messageData.timestamp}</span>
+                        </div>
+                        <div class="message-content leading-relaxed">${messageData.content}</div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            messageDiv.className = 'flex items-start space-x-3 mb-4';
+            messageDiv.innerHTML = `
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex-1 bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-600">AI Assistant</span>
+                        <span class="text-xs text-gray-500">${messageData.timestamp}</span>
+                    </div>
+                    <div class="message-content text-gray-800 leading-relaxed">${messageData.content}</div>
+                </div>
+            `;
+        }
+
+        return messageDiv;
+    }
+
+    clearChatHistory() {
+        localStorage.removeItem(this.storageKey);
     }
 }
 
