@@ -16,7 +16,7 @@ class DocumentManager {
         this.recentActivityElement = document.getElementById('recent-activity');
 
         this.initializeEventListeners();
-        this.loadStatistics();
+        this.loadStatistics(false); // Don't show toast on initial load
     }
 
     initializeEventListeners() {
@@ -54,7 +54,7 @@ class DocumentManager {
 
         // Refresh stats button
         this.refreshStatsButton.addEventListener('click', () => {
-            this.loadStatistics();
+            this.loadStatistics(true); // Show toast when manually refreshed
         });
     }
 
@@ -114,7 +114,7 @@ class DocumentManager {
             if (results.failed.length === 0) {
                 // All files succeeded
                 this.showUploadSuccess(results.successful.length);
-                this.loadStatistics(); // Refresh stats after upload
+                this.loadStatistics(false); // Refresh stats after upload, no toast
                 this.addRecentActivity(`Uploaded ${results.successful.length} file(s)`);
             } else if (results.successful.length === 0) {
                 // All files failed
@@ -123,7 +123,7 @@ class DocumentManager {
             } else {
                 // Mixed results - some succeeded, some failed
                 this.showMixedUploadResults(results);
-                this.loadStatistics(); // Refresh stats for successful uploads
+                this.loadStatistics(false); // Refresh stats for successful uploads, no toast
                 this.addRecentActivity(`Uploaded ${results.successful.length} of ${validFiles.length} file(s)`);
             }
 
@@ -310,7 +310,7 @@ class DocumentManager {
         toast.show(`${successCount} of ${totalCount} files uploaded successfully`, 'warning');
     }
 
-    async loadStatistics() {
+    async loadStatistics(showToast = false) {
         utils.setLoading(this.refreshStatsButton, true);
 
         try {
@@ -321,7 +321,9 @@ class DocumentManager {
             this.longestVectorElement.textContent = utils.formatNumber(data.longest_vector);
             this.lastUpdatedElement.textContent = utils.formatDate(new Date());
 
-            toast.show('Statistics updated successfully', 'success');
+            if (showToast) {
+                toast.show('Statistics updated successfully', 'success');
+            }
 
         } catch (error) {
             handleError(error, 'Failed to load statistics');
