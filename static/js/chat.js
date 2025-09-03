@@ -300,12 +300,12 @@ class ChatManager {
             };
         });
 
-        localStorage.setItem(this.storageKey, JSON.stringify(chatHistory));
+        sessionStorage.setItem(this.storageKey, JSON.stringify(chatHistory));
     }
 
     loadChatHistory() {
         try {
-            const stored = localStorage.getItem(this.storageKey);
+            const stored = sessionStorage.getItem(this.storageKey);
             if (!stored) return;
 
             const chatHistory = JSON.parse(stored);
@@ -322,7 +322,7 @@ class ChatManager {
         } catch (error) {
             console.error('Failed to load chat history:', error);
             // Clear corrupted data
-            localStorage.removeItem(this.storageKey);
+            sessionStorage.removeItem(this.storageKey);
         }
     }
 
@@ -374,7 +374,7 @@ class ChatManager {
     }
 
     clearChatHistory() {
-        localStorage.removeItem(this.storageKey);
+        sessionStorage.removeItem(this.storageKey);
     }
 }
 
