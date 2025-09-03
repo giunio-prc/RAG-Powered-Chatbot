@@ -14,9 +14,11 @@ class DocumentManager {
         this.longestVectorElement = document.getElementById('longest-vector');
         this.lastUpdatedElement = document.getElementById('last-updated');
         this.recentActivityElement = document.getElementById('recent-activity');
+        this.activityStorageKey = 'rag-chatbot-recent-activity';
 
         this.initializeEventListeners();
         this.loadStatistics(false); // Don't show toast on initial load
+        this.loadRecentActivity();
     }
 
     initializeEventListeners() {
@@ -335,17 +337,8 @@ class DocumentManager {
     }
 
     addRecentActivity(activity) {
-        const activityElement = document.createElement('div');
-        activityElement.className = 'border-l-4 border-purple-500 bg-purple-50 pl-4 py-3 rounded-r-lg mb-3';
-        activityElement.innerHTML = `
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <span class="text-sm text-gray-700 font-medium">${activity}</span>
-                </div>
-                <span class="text-xs text-gray-500">${this.formatTime(new Date())}</span>
-            </div>
-        `;
+        const timestamp = this.formatTime(new Date());
+        const activityElement = this.createActivityElement(activity, timestamp);
 
         // Clear "no activity" message if present
         const noActivity = this.recentActivityElement.querySelector('.text-center');
@@ -361,6 +354,9 @@ class DocumentManager {
         if (activities.length > 5) {
             activities[activities.length - 1].remove();
         }
+
+        // Save to localStorage with delay to ensure DOM is updated
+        setTimeout(() => this.saveRecentActivity(), 100);
     }
 
     formatTime(date) {
@@ -369,6 +365,62 @@ class DocumentManager {
             minute: '2-digit',
             hour12: true
         });
+    }
+
+    saveRecentActivity() {
+        const activities = Array.from(this.recentActivityElement.querySelectorAll('.border-l-4'));
+
+        const activityHistory = activities.map(activityDiv => {
+            const textElement = activityDiv.querySelector('.text-sm.text-gray-700.font-medium');
+            const timeElement = activityDiv.querySelector('.text-xs.text-gray-500');
+
+            return {
+                text: textElement ? textElement.textContent : '',
+                timestamp: timeElement ? timeElement.textContent : this.formatTime(new Date())
+            };
+        });
+
+        sessionStorage.setItem(this.activityStorageKey, JSON.stringify(activityHistory));
+    }
+
+    loadRecentActivity() {
+        try {
+            const stored = sessionStorage.getItem(this.activityStorageKey);
+            if (!stored) return;
+
+            const activityHistory = JSON.parse(stored);
+
+            // Clear the "no activity" message if present
+            const noActivity = this.recentActivityElement.querySelector('.text-center');
+            if (noActivity) {
+                noActivity.remove();
+            }
+
+            // Restore each activity
+            activityHistory.forEach(activity => {
+                const activityElement = this.createActivityElement(activity.text, activity.timestamp);
+                this.recentActivityElement.appendChild(activityElement);
+            });
+
+        } catch (error) {
+            // Clear corrupted data
+            sessionStorage.removeItem(this.activityStorageKey);
+        }
+    }
+
+    createActivityElement(text, timestamp) {
+        const activityElement = document.createElement('div');
+        activityElement.className = 'border-l-4 border-purple-500 bg-purple-50 pl-4 py-3 rounded-r-lg mb-3';
+        activityElement.innerHTML = `
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span class="text-sm text-gray-700 font-medium">${text}</span>
+                </div>
+                <span class="text-xs text-gray-500">${timestamp}</span>
+            </div>
+        `;
+        return activityElement;
     }
 }
 
