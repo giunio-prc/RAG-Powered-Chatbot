@@ -49,8 +49,13 @@ class ChromaDatabase(DatabaseManagerInterface):
             chunk_size=200, chunk_overlap=0, separator="\n"
         )
 
-    async def add_text_to_db(self, text: str) -> AsyncGenerator[float, None]:
-        chunks = [Document(chunk) for chunk in self.text_splitter.split_text(text)]
+    async def add_text_to_db(
+        self, text: str, cookie: str | None = None
+    ) -> AsyncGenerator[float, None]:
+        chunks = [
+            Document(chunk, metadata={"session": cookie or "default"})
+            for chunk in self.text_splitter.split_text(text)
+        ]
         uploaded_chunk_ids = []
 
         try:
@@ -68,12 +73,15 @@ class ChromaDatabase(DatabaseManagerInterface):
                 content=err.body, chunks_uploaded=len(uploaded_chunk_ids)
             )
 
-    def get_chunks(self) -> list[str]:
-        return self.db.get()["documents"]
+    def get_chunks(self, cookie: str | None = None) -> list[str]:
+        return self.db.get(where={"session": cookie or "default"})["documents"]
 
-    async def get_context(self, question) -> str:
+    async def get_context(self, question, cookie: str | None = None) -> str:
         try:
-            documents = await self.db.asimilarity_search(question)
+            documents = await self.db.asimilarity_search(
+                question,
+                filter={"session": cookie or "default"},
+            )
         except CohereTooManyRequestsError as err:
             raise TooManyRequestsError(content=err.body)
         if not documents:
@@ -81,18 +89,20 @@ class ChromaDatabase(DatabaseManagerInterface):
 
         return "\n\n".join(doc.page_content for doc in documents)
 
-    def get_number_of_vectors(self) -> int:
-        return len(self.db.get()["documents"])
+    def get_number_of_vectors(self, cookie: str | None = None) -> int:
+        return len(self.db.get(where={"session": cookie or "default"})["documents"])
 
-    def get_length_of_longest_vector(self) -> int:
-        documents = self.db.get()["documents"]
+    def get_length_of_longest_vector(self, cookie: str | None = None) -> int:
+        documents = self.db.get(where={"session": cookie or "default"})["documents"]
         if not documents:
             return 0
         return len(max(documents, key=len))
 
-    def empty_database(self):
-        self.db.reset_collection()
+    def empty_database(self, cookie: str | None = None):
+        self.db.delete(where={"session": cookie or "default"})
 
-    def load_documents_from_folder(self, folder: PathLike):
+    def load_documents_from_folder(self, folder: PathLike, cookie: str | None = None):
         documents = DirectoryLoader(str(folder), "*.txt").load()
+        for doc in documents:
+            doc.metadata["session"] = cookie or "default"
         self.db.add_documents(self.text_splitter.split_documents(documents))

@@ -103,10 +103,10 @@ Third chunk starts here with more content.
 """
 
     # Mock the add_text_to_db method to simulate API limit error after partial upload
-    async def mock_add_text_with_api_limit(text: str):
+    async def mock_add_text_with_api_limit(text: str, cookie: str | None = None):
         chunks = fake_database.text_splitter.split_text(text)
         # Simulate successful upload of first chunk, then API limit error
-        fake_database.db.append(chunks[0])  # Upload first chunk
+        fake_database.db["default"].append(chunks[0])  # Upload first chunk
         yield 25.0  # First chunk progress
 
         # Simulate API limit error during second chunk
@@ -134,10 +134,10 @@ async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
     content = "First chunk that will fail immediately."
 
     # Mock the add_text_to_db method to simulate immediate API limit error
-    async def mock_add_text_immediate_failure(text: str):
+    async def mock_add_text_immediate_failure(text: str, cookie: str | None = None):
         # Simulate API limit error before any chunks are uploaded
         raise EmbeddingAPILimitError(content="API limit exceeded", chunks_uploaded=0)
-        yield  # This line will never be reached
+        yield  # Necessary for async for syntax
 
     # Patch the fake_database method
     with patch.object(

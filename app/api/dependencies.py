@@ -21,3 +21,7 @@ async def get_agent_from_state(request: Request) -> AIAgentInterface:
 get_agent_from_state_annotation = Annotated[
     AIAgentInterface, Depends(get_agent_from_state, use_cache=True)
 ]
+
+
+async def get_cookie_session(request: Request) -> str:
+    return request.cookies.get("SESSION", "default")

@@ -14,6 +14,7 @@ from app.api import database, prompting
 from app.databases import ChromaDatabase, FakeDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 from app.interfaces.errors import TooManyRequestsError
+from app.middleware import SessionCookieMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +31,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
             "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
         )
         # Use fake implementations for testing purposes
-        yield {"db": FakeDatabase(), "agent": FakeAgent()}
+        yield {"db": FakeDatabase(), "agent": FakeAgent(), "cookies": set()}
     else:
-        yield {"db": ChromaDatabase(), "agent": CohereAgent()}
+        yield {"db": ChromaDatabase(), "agent": CohereAgent(), "cookies": set()}
 
 
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
@@ -43,6 +44,7 @@ if os.getenv("ANALYTICS_ID"):
 
     app.add_middleware(Analytics, api_key=os.getenv("ANALYTICS_ID"))
 
+app.add_middleware(SessionCookieMiddleware, cookie_name="SESSION")
 
 # Include API routers
 app.include_router(database.router)
