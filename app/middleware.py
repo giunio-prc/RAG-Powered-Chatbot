@@ -26,6 +26,7 @@ class SessionCookieMiddleware(BaseHTTPMiddleware):
                 key=self.cookie_name,
                 value=request.cookies[self.cookie_name],
                 httponly=True,
+                expires=3600,
             )
 
         return response
