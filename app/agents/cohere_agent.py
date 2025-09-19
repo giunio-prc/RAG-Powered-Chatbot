@@ -1,4 +1,5 @@
 import logging
+import os
 from collections.abc import AsyncIterator
 
 from cohere.errors import TooManyRequestsError as CohereTooManyRequestError
@@ -28,7 +29,11 @@ class CohereAgent(AIAgentInterface):
         """
         Initializes the CohereAgent with a chat model, prompt templates, and a runnable response chain.
         """
-        model = ChatCohere(model="command-r-plus")
+        cohere_model = os.getenv("COHERE_MODEL")
+        if not cohere_model:
+            raise ValueError("COHERE_MODEL environment variable is not set.")
+
+        model = ChatCohere(model=cohere_model)
         system_message_prompt = SystemMessagePromptTemplate.from_template(
             self.prompt_template
         )
