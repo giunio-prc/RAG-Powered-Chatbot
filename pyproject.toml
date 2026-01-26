@@ -1,6 +1,6 @@
 [project]
 name = "rag-powered-chatbot"
-requires-python = "==3.12"
+requires-python = "~=3.13"
 version = "0.0.0"
 dependencies = [
   "loguru",
