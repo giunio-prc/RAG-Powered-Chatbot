@@ -1,10 +1,10 @@
 [project]
 name = "rag-powered-chatbot"
-requires-python = ">=3.12"
+requires-python = "==3.12"
 version = "0.0.0"
 dependencies = [
   "loguru",
-  "fastapi[standard]>=0.115.12",
+  "fastapi[standard]>=0.118.0",
   "python-dotenv>=1.1.0",
   "unstructured>=0.17.2",
   "langchain>=0.3.25",
