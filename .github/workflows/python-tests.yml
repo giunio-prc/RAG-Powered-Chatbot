@@ -23,5 +23,19 @@ jobs:
           version: 0.7.19 # workaround for uv error on ubuntu: sqlite3.OperationalError: no such module: fts5
           python-version: ${{ matrix.python-version }}
 
-      - name: Run tests with pytest
-        run: uv run pytest tests
+      - name: Run tests with pytest and coverage
+        run: uv run pytest tests --cov=app --cov-report=xml --cov-report=term
+
+      - name: Generate coverage badge
+        if: matrix.python-version == '3.13' && github.ref == 'refs/heads/main'
+        uses: tj-actions/coverage-badge-py@v2
+        with:
+          output: coverage.svg
+
+      - name: Commit coverage badge
+        if: matrix.python-version == '3.13' && github.ref == 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update coverage badge"
+          file_pattern: coverage.svg
+          skip_dirty_check: false
