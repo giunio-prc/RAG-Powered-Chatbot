@@ -2,7 +2,9 @@
 ## 🚀 Live Demo
 **Try the application live at: [https://rag.avenueit.be](https://rag.avenueit.be)**
 
-![workflow](https://github.com/giunio-prc/rag-powered-chatbot/actions/workflows/python-tests.yml/badge.svg)
+![Tests](https://github.com/giunio-prc/rag-powered-chatbot/actions/workflows/python-tests.yml/badge.svg)
+![Linter](https://github.com/giunio-prc/rag-powered-chatbot/actions/workflows/linter-check.yml/badge.svg)
+![Coverage](coverage.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A modern AI-driven customer support assistant that leverages Retrieval-Augmented Generation (RAG) to provide accurate, context-aware responses. Built with FastAPI and following hexagonal architecture principles for maintainability and testability.
