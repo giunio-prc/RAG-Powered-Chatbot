@@ -108,6 +108,10 @@ class ChatManager {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let accumulatedText = '';
+            let buffer = '';
+
+            // Regex to match complete SSE data events: data: "content"\n\n
+            const ssePattern = /data: ("[^"\\]*(?:\\.[^"\\]*)*")\n\n/g;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -115,7 +119,26 @@ class ChatManager {
                 if (done) break;
 
                 const chunk = decoder.decode(value, { stream: true });
-                accumulatedText += chunk;
+                buffer += chunk;
+
+                // Extract all complete SSE messages from buffer
+                let match;
+                let lastIndex = 0;
+                while ((match = ssePattern.exec(buffer)) !== null) {
+                    try {
+                        const parsed = JSON.parse(match[1]);
+                        accumulatedText += parsed;
+                    } catch {
+                        // If parsing fails, skip this match
+                    }
+                    lastIndex = ssePattern.lastIndex;
+                }
+
+                // Keep only unprocessed part in buffer
+                if (lastIndex > 0) {
+                    buffer = buffer.slice(lastIndex);
+                    ssePattern.lastIndex = 0;
+                }
 
                 // Update the message content
                 contentElement.innerHTML = this.formatMessageContent(accumulatedText);
