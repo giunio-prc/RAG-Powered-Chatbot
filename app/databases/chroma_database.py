@@ -1,5 +1,5 @@
+from collections.abc import AsyncGenerator
 from os import PathLike, getenv
-from typing import AsyncGenerator
 
 from chromadb import HttpClient
 from chromadb.api import ClientAPI
