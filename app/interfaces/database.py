@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
 from os import PathLike
-from typing import AsyncGenerator, Generic, TypeVar
-
-DB = TypeVar("DB")
 
 
-class DatabaseManagerInterface(ABC, Generic[DB]):
+class DatabaseManagerInterface[DB](ABC):
     db: DB
 
     @abstractmethod

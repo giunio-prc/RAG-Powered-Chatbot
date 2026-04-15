@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterable
 from typing import Annotated
 
 from cohere.errors import TooManyRequestsError
@@ -18,7 +19,7 @@ async def query_agent_endpoint(
     db: get_db_from_state_annotation,
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
-):
+) -> str:
     try:
         response = await query_agent(db, agent, question)
         return response

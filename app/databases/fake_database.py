@@ -1,7 +1,7 @@
 from collections import defaultdict
+from collections.abc import AsyncGenerator
 from difflib import get_close_matches
 from os import PathLike
-from typing import AsyncGenerator
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader
