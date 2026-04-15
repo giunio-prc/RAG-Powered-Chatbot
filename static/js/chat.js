@@ -99,10 +99,11 @@ class ChatManager {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Create assistant message container
+            // Create assistant message container and hide loading indicator
             const messageElement = this.createMessageElement('', 'assistant');
             const contentElement = messageElement.querySelector('.message-content');
             this.currentStreamingMessage = contentElement;
+            this.loadingIndicator.classList.add('hidden');
 
             // Read the stream
             const reader = response.body.getReader();
