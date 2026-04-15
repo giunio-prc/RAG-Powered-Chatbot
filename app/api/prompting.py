@@ -2,7 +2,7 @@ from typing import Annotated
 
 from cohere.errors import TooManyRequestsError
 from fastapi import APIRouter, Body, HTTPException, status
-from fastapi.responses import StreamingResponse
+from fastapi.sse import EventSourceResponse
 
 from app.api.dependencies import (
     get_agent_from_state_annotation,
@@ -29,12 +29,11 @@ async def query_agent_endpoint(
         )
 
 
-@router.post("/query-stream")
+@router.post("/query-stream", response_class=EventSourceResponse)
 async def query_with_stream_response(
     db: get_db_from_state_annotation,
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
-):
-    return StreamingResponse(
-        query_agent_with_stream_response(db, agent, question), media_type="text/plain"
-    )
+) -> AsyncIterable[str]:
+    async for token in query_agent_with_stream_response(db, agent, question):
+        yield token
