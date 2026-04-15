@@ -41,7 +41,7 @@ async def query_agent_with_stream_response(
             question, context
         ):
             yield chunk
-    except TooManyRequestsError:
+    except TooManyRequestsError:  # pragma: no cover
         for char in "API key limit exceeded. Please try again later.":
             await sleep(0.05 * random())
             yield char
