@@ -75,8 +75,8 @@ async def test_controller__can_stream_from_fake_agent(fake_database, fake_agent)
     )
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
-    assert len(response) == 196
-    assert response[0] == "Y"
+    assert len(response) == 38
+    assert response[0] == "You "
 
 
 @pytest.mark.asyncio
