@@ -3,24 +3,16 @@
 import json
 from datetime import datetime
 
-import httpx
-from nicegui import app, context, ui
+from nicegui import app, ui
 
 from app.ui.components.layout import page_layout
-
-
-def format_time(dt: datetime) -> str:
-    """Format datetime for display."""
-    return dt.strftime("%I:%M %p")
+from app.ui.http_client import create_client
+from app.ui.utils import format_time
 
 
 @ui.page("/")
 async def chat_page():
     """Chat interface page."""
-
-    # Get base URL for API calls
-    request = context.client.request
-    base_url = f"{request.url.scheme}://{request.url.netloc}"
 
     # Use browser local storage for chat history
     storage = app.storage.browser
@@ -150,10 +142,10 @@ async def chat_page():
             try:
                 # Stream the response from API endpoint
                 full_response = ""
-                async with httpx.AsyncClient() as client:
+                async with create_client() as client:
                     async with client.stream(
                         "POST",
-                        f"{base_url}/query-stream",
+                        "/query-stream",
                         json=question,
                         headers={"Content-Type": "application/json"},
                     ) as response:
