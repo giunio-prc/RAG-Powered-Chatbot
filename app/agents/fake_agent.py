@@ -16,16 +16,7 @@ class FakeAgent(AIAgentInterface):
     async def get_stream_response(
         self, question: str, context: str
     ) -> AsyncIterator[str]:
-        word_sleep = 0.01
-
-        phrases = [
-            "You asked me the following question:\n",
-            f'"{question}" \n',
-            f'With the following context "{context}"\n',
-            "Unfortunately I am a fake agent I am not able to answer you",
-        ]
-
-        for phrase in phrases:
-            for word in phrase.split(" "):
-                await sleep(word_sleep * random())
-                yield word + " "
+        response = await self.query_with_context(question, context)
+        for word in response.split(" "):
+            await sleep(0.01 * random())
+            yield word + " "
