@@ -26,7 +26,7 @@ def page_layout(active_page: Literal["chat", "documents"] = "chat"):
     """)
 
     # Header with navigation
-    with ui.header().classes("bg-blue-600 text-white shadow-lg"):
+    with ui.header().classes("bg-blue-600 text-white"):
         with ui.row().classes(
             "w-full max-w-6xl mx-auto items-center justify-between px-4"
         ):
@@ -41,13 +41,17 @@ def page_layout(active_page: Literal["chat", "documents"] = "chat"):
                 chat_classes += (
                     "bg-blue-700" if active_page == "chat" else "hover:bg-blue-500"
                 )
-                ui.link("Chat", "/").classes(chat_classes)
+                ui.link("Chat", "/").classes(chat_classes).style(
+                    "color: #ffffff; text-decoration: none"
+                )
 
                 docs_classes = "px-4 py-2 rounded-lg font-medium transition-colors "
                 docs_classes += (
                     "bg-blue-700" if active_page == "documents" else "hover:bg-blue-500"
                 )
-                ui.link("Documents", "/documents").classes(docs_classes)
+                ui.link("Documents", "/documents").classes(docs_classes).style(
+                    "color: #ffffff; text-decoration: none"
+                )
 
     # Main content area
     with ui.column().classes("w-full max-w-6xl mx-auto p-4 flex-grow"):
