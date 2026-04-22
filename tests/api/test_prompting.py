@@ -42,6 +42,6 @@ def test_query_stream_endpoint_returns_sse_response(client: TestClient):
     assert 'data: "asked "' in content
     assert 'data: "following "' in content
     assert 'data: "question:\\n "' in content
-    assert 'data: "Unfortunately "' in content
+    assert 'data: "\\nUnfortunately "' in content
     assert 'data: "fake "' in content
     assert 'data: "agent "' in content
