@@ -210,10 +210,14 @@ async def chat_page():
                 "bg-blue-600 hover:bg-blue-700 text-white"
             )
 
-        # Handle Enter key (without Shift) to send
+        # Handle Enter key (without Shift) to send, Shift+Enter for new line
         input_field.on(
-            "keydown.enter",
+            "keydown.enter.prevent",
             lambda e: send_message() if not e.args.get("shiftKey", False) else None,
+        )
+        input_field.on(
+            "keydown.shift.enter",
+            lambda: input_field.set_value(input_field.value + "\n"),
         )
 
         # Clear button handler
