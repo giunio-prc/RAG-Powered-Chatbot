@@ -26,7 +26,7 @@ class State(TypedDict):
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[State]:
+async def lifespan(_app: FastAPI) -> AsyncIterator[State]:
     if not os.getenv("COHERE_API_KEY"):
         logger.warning(
             "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
@@ -67,6 +67,7 @@ async def health_check():
 
 @app.exception_handler(TooManyRequestsError)
 async def too_many_request_error(request: Request, exc: TooManyRequestsError):
+    _ = request
     return JSONResponse(
         status_code=exc.status_code or status.HTTP_429_TOO_MANY_REQUESTS,
         content={"message": "Too Many requests"},
