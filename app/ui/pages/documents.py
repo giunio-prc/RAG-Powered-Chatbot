@@ -42,20 +42,18 @@ async def documents_page():
                         """Handle file upload."""
 
                         filename = e.file.name
-                        content = await e.file.text()
-
+                        try:
+                            content = await e.file.text()
+                        except UnicodeDecodeError:
+                            ui.notify(
+                                f"Invalid encoding: {filename}. UTF-8 is required.",
+                                type="negative",
+                            )
+                            return
                         # Validate file type
                         if not filename.endswith(".txt"):
                             ui.notify(
                                 f"Invalid file type: {filename}. Only .txt files allowed.",
-                                type="negative",
-                            )
-                            return
-
-                        # Validate file size (10MB max)
-                        if len(content) > 10 * 1024 * 1024:
-                            ui.notify(
-                                f"File too large: {filename}. Max size is 10MB.",
                                 type="negative",
                             )
                             return
@@ -122,6 +120,7 @@ async def documents_page():
                         on_upload=handle_upload,
                         auto_upload=True,
                         multiple=True,
+                        max_file_size=10 * 1024 * 1024,
                     ).classes("w-full").props('accept=".txt" flat bordered')
 
                     # File requirements info
