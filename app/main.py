@@ -7,7 +7,8 @@ from typing import TypedDict
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from nicegui import app as nicegui_app
+from nicegui import ui
 
 from app.agents import CohereAgent, FakeAgent
 from app.api import database, prompting
@@ -15,6 +16,7 @@ from app.databases import ChromaDatabase, FakeDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 from app.interfaces.errors import TooManyRequestsError
 from app.middleware import SessionCookieMiddleware
+from app.ui import setup_pages
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +33,17 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
             "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
         )
         # Use fake implementations for testing purposes
-        yield {"db": FakeDatabase(), "agent": FakeAgent(), "cookies": set()}
+        db = FakeDatabase()
+        agent = FakeAgent()
     else:
-        yield {"db": ChromaDatabase(), "agent": CohereAgent(), "cookies": set()}
+        db = ChromaDatabase()
+        agent = CohereAgent()
+
+    # Store in NiceGUI's general storage for access from UI pages
+    nicegui_app.storage.general["db"] = db
+    nicegui_app.storage.general["agent"] = agent
+
+    yield {"db": db, "agent": agent, "cookies": set()}
 
 
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
@@ -50,22 +60,8 @@ app.add_middleware(SessionCookieMiddleware, cookie_name="SESSION")
 app.include_router(database.router)
 app.include_router(prompting.router)
 
-# Set up static files and templates
+# Set up static files (for favicon)
 app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-
-
-# Frontend routes
-@app.get("/")
-async def home(request: Request):
-    """Serve the chat interface"""
-    return templates.TemplateResponse("chat.html", {"request": request})
-
-
-@app.get("/documents")
-async def documents(request: Request):
-    """Serve the document management interface"""
-    return templates.TemplateResponse("documents.html", {"request": request})
 
 
 @app.get("/healthz")
@@ -80,3 +76,13 @@ async def too_many_request_error(request: Request, exc: TooManyRequestsError):
         status_code=exc.status_code or status.HTTP_429_TOO_MANY_REQUESTS,
         content={"message": "Too Many requests"},
     )
+
+
+# Initialize NiceGUI pages and mount on FastAPI
+setup_pages()
+
+# Run NiceGUI with FastAPI - storage_secret enables persistent user storage
+ui.run_with(
+    app,
+    storage_secret=os.getenv("NICEGUI_STORAGE_SECRET", "rag-chatbot-secret-key"),
+)
