@@ -77,6 +77,7 @@ async def documents_page():
                                         )
                                     },
                                 ) as response:
+                                    response.raise_for_status()
                                     async for line in response.aiter_lines():
                                         progress_text = line.strip()
                                         if progress_text == "API_LIMIT_EXCEEDED":
@@ -182,6 +183,7 @@ async def documents_page():
                         try:
                             async with create_client() as client:
                                 response = await client.get("/get-vectors-data")
+                                response.raise_for_status()
                                 data = response.json()
 
                             num_vectors = data.get("number_of_vectors", 0)
