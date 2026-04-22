@@ -14,7 +14,8 @@ dependencies = [
   "chromadb>=1.0.13",
   "langchain-chroma>=0.2.3",
   "protobuf<=3.20",
-  "api-analytics[fastapi]>=1.2.7"
+  "api-analytics[fastapi]>=1.2.7",
+  "nicegui>=3.10.0"
 ]
 
 [tool.ruff]
