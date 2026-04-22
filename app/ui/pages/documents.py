@@ -2,16 +2,12 @@
 
 from datetime import datetime
 
-import httpx
-from nicegui import app, context, ui
+from nicegui import app, ui
 from nicegui.events import UploadEventArguments
 
 from app.ui.components.layout import page_layout
-
-
-def format_time(dt: datetime) -> str:
-    """Format datetime for display."""
-    return dt.strftime("%I:%M %p")
+from app.ui.http_client import create_client
+from app.ui.utils import format_time
 
 
 def format_number(num: int) -> str:
@@ -22,10 +18,6 @@ def format_number(num: int) -> str:
 @ui.page("/documents")
 async def documents_page():
     """Document management page."""
-
-    # Get base URL for API calls
-    request = context.client.request
-    base_url = f"{request.url.scheme}://{request.url.netloc}"
 
     # Use browser local storage
     storage = app.storage.browser
@@ -75,10 +67,10 @@ async def documents_page():
 
                         try:
                             # Upload via API endpoint
-                            async with httpx.AsyncClient() as client:
+                            async with create_client() as client:
                                 async with client.stream(
                                     "POST",
-                                    f"{base_url}/add-document",
+                                    "/add-document",
                                     files={
                                         "file": (
                                             filename,
@@ -189,10 +181,8 @@ async def documents_page():
                     async def refresh_stats(show_toast: bool = False):
                         """Refresh database statistics."""
                         try:
-                            async with httpx.AsyncClient() as client:
-                                response = await client.get(
-                                    f"{base_url}/get-vectors-data"
-                                )
+                            async with create_client() as client:
+                                response = await client.get("/get-vectors-data")
                                 data = response.json()
 
                             num_vectors = data.get("number_of_vectors", 0)
