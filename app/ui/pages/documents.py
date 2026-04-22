@@ -2,7 +2,9 @@
 
 from datetime import datetime
 
-from nicegui import app, ui
+import httpx
+from nicegui import app, context, ui
+from nicegui.events import UploadEventArguments
 
 from app.ui.components.layout import page_layout
 
@@ -20,6 +22,10 @@ def format_number(num: int) -> str:
 @ui.page("/documents")
 async def documents_page():
     """Document management page."""
+
+    # Get base URL for API calls
+    request = context.client.request
+    base_url = f"{request.url.scheme}://{request.url.netloc}"
 
     # Initialize session storage
     if "recent_activity" not in app.storage.user:
@@ -41,101 +47,84 @@ async def documents_page():
                     ).classes("w-full mb-2")
                     progress_bar.visible = False
 
-                    async def handle_upload(e):
+                    async def handle_upload(e: UploadEventArguments):
                         """Handle file upload."""
-                        files = e.files if hasattr(e, "files") else [e]
 
-                        for file_info in files:
-                            # Get file content
-                            content = file_info.content.read()
+                        filename = e.file.name
+                        content = await e.file.text()
 
-                            # Validate file type
-                            if not file_info.name.endswith(".txt"):
-                                ui.notify(
-                                    f"Invalid file type: {file_info.name}. Only .txt files allowed.",
-                                    type="negative",
-                                )
-                                continue
+                        # Validate file type
+                        if not filename.endswith(".txt"):
+                            ui.notify(
+                                f"Invalid file type: {filename}. Only .txt files allowed.",
+                                type="negative",
+                            )
+                            return
 
-                            # Validate file size (10MB max)
-                            if len(content) > 10 * 1024 * 1024:
-                                ui.notify(
-                                    f"File too large: {file_info.name}. Max size is 10MB.",
-                                    type="negative",
-                                )
-                                continue
+                        # Validate file size (10MB max)
+                        if len(content) > 10 * 1024 * 1024:
+                            ui.notify(
+                                f"File too large: {filename}. Max size is 10MB.",
+                                type="negative",
+                            )
+                            return
 
-                            try:
-                                text_content = content.decode("utf-8")
-                            except UnicodeDecodeError:
-                                ui.notify(
-                                    f"Cannot decode file: {file_info.name}. Ensure UTF-8 encoding.",
-                                    type="negative",
-                                )
-                                continue
+                        # Show progress
+                        progress_bar.visible = True
+                        progress_bar.set_value(0)
+                        upload_status.set_text(f"Uploading {filename}...")
 
-                            # Show progress
-                            progress_bar.visible = True
-                            progress_bar.set_value(0)
-                            upload_status.set_text(f"Uploading {file_info.name}...")
-
-                            try:
-                                # Get db from storage
-                                db = app.storage.general.get("db")
-                                if db is None:
-                                    ui.notify(
-                                        "Database not initialized", type="negative"
-                                    )
-                                    continue
-
-                                # Get session cookie
-                                cookie = app.storage.user.get("session_id", "default")
-
-                                # Import controller function
-                                from app.controller.controller import (
-                                    add_content_into_db,
-                                )
-
-                                # Process upload with streaming progress
-                                async for progress in add_content_into_db(
-                                    db, text_content, cookie
-                                ):
-                                    progress = progress.strip()
-                                    if progress == "API_LIMIT_EXCEEDED":
-                                        ui.notify(
-                                            "API limit exceeded. Please try again later.",
-                                            type="warning",
+                        try:
+                            # Upload via API endpoint
+                            async with httpx.AsyncClient() as client:
+                                async with client.stream(
+                                    "POST",
+                                    f"{base_url}/add-document",
+                                    files={
+                                        "file": (
+                                            filename,
+                                            content,
+                                            "text/plain",
                                         )
-                                        break
-                                    try:
-                                        pct = int(progress)
-                                        progress_bar.set_value(pct / 100)
-                                        upload_status.set_text(
-                                            f"Processing {file_info.name}: {pct}%"
-                                        )
-                                    except ValueError:
-                                        pass
+                                    },
+                                ) as response:
+                                    async for line in response.aiter_lines():
+                                        progress_text = line.strip()
+                                        if progress_text == "API_LIMIT_EXCEEDED":
+                                            ui.notify(
+                                                "API limit exceeded. Please try again later.",
+                                                type="warning",
+                                            )
+                                            return
+                                        try:
+                                            pct = int(progress_text)
+                                            progress_bar.set_value(pct / 100)
+                                            upload_status.set_text(
+                                                f"Processing {filename}: {pct}%"
+                                            )
+                                        except ValueError:
+                                            pass
 
-                                # Success
-                                progress_bar.set_value(1)
-                                upload_status.set_text(f"Uploaded: {file_info.name}")
-                                ui.notify(
-                                    f"Successfully uploaded {file_info.name}",
-                                    type="positive",
-                                )
+                            # Success
+                            progress_bar.set_value(1)
+                            upload_status.set_text(f"Uploaded: {filename}")
+                            ui.notify(
+                                f"Successfully uploaded {filename}",
+                                type="positive",
+                            )
 
-                                # Add to recent activity
-                                add_activity(f"Uploaded: {file_info.name}")
+                            # Add to recent activity
+                            add_activity(f"Uploaded: {filename}")
 
-                                # Refresh stats
-                                await refresh_stats()
+                            # Refresh stats
+                            await refresh_stats()
 
-                            except Exception as ex:
-                                ui.notify(f"Upload failed: {ex!s}", type="negative")
-                                upload_status.set_text(f"Failed: {file_info.name}")
+                        except Exception as ex:
+                            ui.notify(f"Upload failed: {ex!s}", type="negative")
+                            upload_status.set_text(f"Failed: {filename}")
 
-                            finally:
-                                progress_bar.visible = False
+                        finally:
+                            progress_bar.visible = False
 
                     ui.upload(
                         label="Drop files here or click to browse",
@@ -201,13 +190,14 @@ async def documents_page():
                     async def refresh_stats(show_toast: bool = False):
                         """Refresh database statistics."""
                         try:
-                            db = app.storage.general.get("db")
-                            if db is None:
-                                return
+                            async with httpx.AsyncClient() as client:
+                                response = await client.get(
+                                    f"{base_url}/get-vectors-data"
+                                )
+                                data = response.json()
 
-                            cookie = app.storage.user.get("session_id", "default")
-                            num_vectors = db.get_number_of_vectors(cookie)
-                            longest = db.get_length_of_longest_vector(cookie)
+                            num_vectors = data.get("number_of_vectors", 0)
+                            longest = data.get("longest_vector", 0)
 
                             vector_count_label.set_text(format_number(num_vectors))
                             longest_vector_label.set_text(format_number(longest))

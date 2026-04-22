@@ -7,7 +7,6 @@ from typing import TypedDict
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from nicegui import app as nicegui_app
 from nicegui import ui
 
 from app.agents import CohereAgent, FakeAgent
@@ -38,10 +37,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     else:
         db = ChromaDatabase()
         agent = CohereAgent()
-
-    # Store in NiceGUI's general storage for access from UI pages
-    nicegui_app.storage.general["db"] = db
-    nicegui_app.storage.general["agent"] = agent
 
     yield {"db": db, "agent": agent, "cookies": set()}
 

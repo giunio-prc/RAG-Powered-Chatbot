@@ -1,8 +1,10 @@
 """Chat page implementation using NiceGUI."""
 
+import json
 from datetime import datetime
 
-from nicegui import app, ui
+import httpx
+from nicegui import app, context, ui
 
 from app.ui.components.layout import page_layout
 
@@ -15,6 +17,10 @@ def format_time(dt: datetime) -> str:
 @ui.page("/")
 async def chat_page():
     """Chat interface page."""
+
+    # Get base URL for API calls
+    request = context.client.request
+    base_url = f"{request.url.scheme}://{request.url.netloc}"
 
     # Initialize session storage for chat history
     if "chat_history" not in app.storage.user:
@@ -34,14 +40,16 @@ async def chat_page():
             )
 
         # Chat container
-        chat_container = ui.column().classes(
-            "w-full bg-white rounded-xl shadow-lg border border-gray-200 p-4 "
-            "chat-container overflow-y-auto"
-        )
-        chat_container.style("height: 500px")
-
-        # Message display area
-        messages_area = ui.column().classes("w-full gap-4")
+        with (
+            ui.column()
+            .classes(
+                "w-full bg-white rounded-xl shadow-lg border border-gray-200 p-4 "
+                "chat-container overflow-y-auto"
+            )
+            .style("height: 500px")
+        ):
+            # Message display area
+            messages_area = ui.column().classes("w-full gap-4")
 
         def add_message_to_ui(role: str, content: str, timestamp: str | None = None):
             """Add a message bubble to the chat UI."""
@@ -141,35 +149,28 @@ async def chat_page():
             loading_spinner = ui.spinner("dots", size="lg").classes("text-blue-600")
 
             try:
-                # Get streaming response from API
-                from app.controller.controller import query_agent_with_stream_response
-
-                # Get db and agent from NiceGUI's general storage (set during lifespan)
-                db = app.storage.general.get("db")
-                agent = app.storage.general.get("agent")
-
-                if db is None or agent is None:
-                    response_label.set_text(
-                        "Error: Database or agent not initialized. Please refresh the page."
-                    )
-                    is_loading["value"] = False
-                    send_btn.enable()
-                    loading_spinner.delete()
-                    return
-
-                # Get session cookie
-                cookie = app.storage.user.get("session_id", "default")
-
-                # Stream the response
+                # Stream the response from API endpoint
                 full_response = ""
-                async for chunk in query_agent_with_stream_response(
-                    db, agent, question, cookie
-                ):
-                    full_response += chunk
-                    response_label.set_text(full_response)
-                    await ui.run_javascript(
-                        "window.scrollTo(0, document.body.scrollHeight)"
-                    )
+                async with httpx.AsyncClient() as client:
+                    async with client.stream(
+                        "POST",
+                        f"{base_url}/query-stream",
+                        json=question,
+                        headers={"Content-Type": "application/json"},
+                    ) as response:
+                        async for line in response.aiter_lines():
+                            # SSE format: "data: <json-encoded-content>"
+                            if line.startswith("data: "):
+                                chunk_data = line[6:]
+                                try:
+                                    chunk = json.loads(chunk_data)
+                                except json.JSONDecodeError:
+                                    chunk = chunk_data
+                                full_response += chunk
+                                response_label.set_text(full_response)
+                                await ui.run_javascript(
+                                    "window.scrollTo(0, document.body.scrollHeight)"
+                                )
 
                 # Save AI response to history
                 history.append(
@@ -197,8 +198,7 @@ async def chat_page():
             ui.notify("Chat cleared", type="info")
 
         # Load existing chat history
-        with chat_container:
-            load_chat_history()
+        load_chat_history()
 
         # Input area
         with ui.row().classes("w-full gap-2 mt-4"):
