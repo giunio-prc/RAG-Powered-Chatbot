@@ -5,11 +5,11 @@ from chromadb import HttpClient
 from chromadb.api import ClientAPI
 from cohere.errors import TooManyRequestsError as CohereTooManyRequestsError
 from dotenv import load_dotenv
-from langchain.text_splitter import CharacterTextSplitter
 from langchain_chroma.vectorstores import Chroma
 from langchain_cohere import CohereEmbeddings
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents.base import Document
+from langchain_text_splitters import CharacterTextSplitter
 
 from app.interfaces.database import DatabaseManagerInterface
 from app.interfaces.errors import EmbeddingAPILimitError, TooManyRequestsError

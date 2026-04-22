@@ -10,7 +10,7 @@ async def add_content_into_db(
     db: DatabaseManagerInterface, content: str, cookie: str | None = None
 ) -> AsyncGenerator[str, None]:
     try:
-        async for percentage in db.add_text_to_db(content, cookie):  # type: ignore non-iterable
+        async for percentage in db.add_text_to_db(content, cookie):
             yield f"{percentage}\n"
     except EmbeddingAPILimitError:
         # Return a special signal to indicate API limit reached
@@ -37,9 +37,7 @@ async def query_agent_with_stream_response(
 ) -> AsyncGenerator[str, None]:
     try:
         context = await db.get_context(question, cookie)
-        async for chunk in ai_agent.get_stream_response(  # type: ignore non-iterable
-            question, context
-        ):
+        async for chunk in ai_agent.get_stream_response(question, context):
             yield chunk
     except TooManyRequestsError:  # pragma: no cover
         for char in "API key limit exceeded. Please try again later.":
