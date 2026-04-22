@@ -3,8 +3,8 @@ from collections.abc import AsyncGenerator
 from difflib import get_close_matches
 from os import PathLike
 
-from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader
+from langchain_text_splitters import CharacterTextSplitter
 
 from app.interfaces import DatabaseManagerInterface
 

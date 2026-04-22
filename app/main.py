@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 class State(TypedDict):
     db: DatabaseManagerInterface
     agent: AIAgentInterface
+    cookies: set[str]
 
 
 @asynccontextmanager
@@ -44,10 +45,10 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[State]:
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
 
 # include analytics
-if os.getenv("ANALYTICS_ID"):
+if analytics_id := os.getenv("ANALYTICS_ID"):
     from api_analytics.fastapi import Analytics
 
-    app.add_middleware(Analytics, api_key=os.getenv("ANALYTICS_ID"))
+    app.add_middleware(Analytics, api_key=analytics_id)
 
 app.add_middleware(SessionCookieMiddleware, cookie_name="SESSION")
 

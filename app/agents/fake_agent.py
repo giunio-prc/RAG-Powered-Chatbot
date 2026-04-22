@@ -1,5 +1,5 @@
 from asyncio import sleep
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from random import random
 
 from app.interfaces.agent import AIAgentInterface
@@ -15,7 +15,7 @@ class FakeAgent(AIAgentInterface):
 
     async def get_stream_response(
         self, question: str, context: str
-    ) -> AsyncIterator[str]:
+    ) -> AsyncGenerator[str, None]:
         response = await self.query_with_context(question, context)
         for word in response.split(" "):
             await sleep(0.01 * random())

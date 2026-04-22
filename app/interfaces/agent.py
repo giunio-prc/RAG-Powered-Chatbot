@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 
 template: str = """
     You are a customer support Chatbot.
@@ -32,7 +32,7 @@ class AIAgentInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_stream_response(
+    def get_stream_response(
         self, question: str, context: str
-    ) -> AsyncIterator[str]:
+    ) -> AsyncGenerator[str, None]:
         pass

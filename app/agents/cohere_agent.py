@@ -1,17 +1,17 @@
 import logging
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 
 from cohere.errors import TooManyRequestsError as CohereTooManyRequestError
 from dotenv import load_dotenv
-from langchain.prompts import (
+from langchain_cohere import ChatCohere
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
-from langchain.schema import StrOutputParser
-from langchain_cohere import ChatCohere
-from langchain_core.runnables import RunnableSequence
+from langchain_core.runnables import RunnableSerializable
 
 from app.interfaces.agent import AIAgentInterface
 from app.interfaces.errors import TooManyRequestsError
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class CohereAgent(AIAgentInterface):
-    chain: RunnableSequence
+    chain: RunnableSerializable
 
     def __init__(self):
         """
@@ -63,7 +63,7 @@ class CohereAgent(AIAgentInterface):
 
     async def get_stream_response(
         self, question: str, context: str
-    ) -> AsyncIterator[str]:
+    ) -> AsyncGenerator[str, None]:
         try:
             async for message in self.chain.astream(
                 {"question": question, "context": context}

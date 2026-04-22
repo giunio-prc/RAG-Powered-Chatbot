@@ -11,7 +11,7 @@ class DatabaseManagerInterface[DB](ABC):
         pass
 
     @abstractmethod
-    async def add_text_to_db(
+    def add_text_to_db(
         self, text: str, cookie: str | None = None
     ) -> AsyncGenerator[float, None]:
         pass

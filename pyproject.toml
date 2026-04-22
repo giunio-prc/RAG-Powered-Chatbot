@@ -15,7 +15,8 @@ dependencies = [
   "langchain-chroma>=0.2.3",
   "protobuf<=3.20",
   "api-analytics[fastapi]>=1.2.7",
-  "nicegui>=3.10.0"
+  "nicegui>=3.10.0",
+  "langchain-text-splitters>=1.1.2"
 ]
 
 [tool.ruff]
