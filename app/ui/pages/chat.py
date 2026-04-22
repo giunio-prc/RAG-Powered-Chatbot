@@ -10,7 +10,7 @@ from app.ui.http_client import create_client
 from app.ui.utils import format_time
 
 
-@ui.page("/")
+@ui.page("/", favicon="static/favicon.svg", title="RAG Chatbot")
 async def chat_page():
     """Chat interface page."""
 
