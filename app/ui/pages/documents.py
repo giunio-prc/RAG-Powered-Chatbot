@@ -27,9 +27,8 @@ async def documents_page():
     request = context.client.request
     base_url = f"{request.url.scheme}://{request.url.netloc}"
 
-    # Initialize session storage
-    if "recent_activity" not in app.storage.user:
-        app.storage.user["recent_activity"] = []
+    # Use browser local storage
+    storage = app.storage.browser
 
     with page_layout(active_page="documents"):
         ui.label("Document Management").classes("text-2xl font-bold text-gray-800 mb-4")
@@ -233,7 +232,7 @@ async def documents_page():
 
                     def add_activity(message: str):
                         """Add an activity to the recent activity list."""
-                        activities = app.storage.user.get("recent_activity", [])
+                        activities = storage.get("recent_activity", [])
                         activities.insert(
                             0,
                             {
@@ -243,13 +242,13 @@ async def documents_page():
                         )
                         # Keep only last 5
                         activities = activities[:5]
-                        app.storage.user["recent_activity"] = activities
+                        storage["recent_activity"] = activities
                         render_activities()
 
                     def render_activities():
                         """Render the activity list."""
                         activity_container.clear()
-                        activities = app.storage.user.get("recent_activity", [])
+                        activities = storage.get("recent_activity", [])
 
                         if not activities:
                             with activity_container:
