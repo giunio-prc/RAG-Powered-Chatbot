@@ -119,7 +119,7 @@ async def documents_page():
                         label="Drop files here or click to browse",
                         on_upload=handle_upload,
                         auto_upload=True,
-                        multiple=True,
+                        multiple=False,
                         max_file_size=10 * 1024 * 1024,
                     ).classes("w-full").props('accept=".txt" flat bordered')
 
