@@ -22,9 +22,8 @@ async def chat_page():
     request = context.client.request
     base_url = f"{request.url.scheme}://{request.url.netloc}"
 
-    # Initialize session storage for chat history
-    if "chat_history" not in app.storage.user:
-        app.storage.user["chat_history"] = []
+    # Use browser local storage for chat history
+    storage = app.storage.browser
 
     # State variables
     is_loading = {"value": False}
@@ -91,7 +90,7 @@ async def chat_page():
         def load_chat_history():
             """Load and display chat history from storage."""
             messages_area.clear()
-            history = app.storage.user.get("chat_history", [])
+            history = storage.get("chat_history", [])
 
             if not history:
                 # Show welcome message
@@ -121,7 +120,7 @@ async def chat_page():
             add_message_to_ui("user", question, timestamp)
 
             # Save to history
-            history = app.storage.user.get("chat_history", [])
+            history = storage.get("chat_history", [])
             history.append(
                 {"role": "user", "content": question, "timestamp": timestamp}
             )
@@ -180,7 +179,7 @@ async def chat_page():
                         "timestamp": ai_timestamp,
                     }
                 )
-                app.storage.user["chat_history"] = history
+                storage["chat_history"] = history
 
             except Exception as e:
                 response_label.set_text(f"Error: {e!s}")
@@ -193,7 +192,7 @@ async def chat_page():
 
         async def clear_chat():
             """Clear chat history."""
-            app.storage.user["chat_history"] = []
+            storage["chat_history"] = []
             load_chat_history()
             ui.notify("Chat cleared", type="info")
 
