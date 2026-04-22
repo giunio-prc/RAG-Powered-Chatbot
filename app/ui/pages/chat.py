@@ -26,8 +26,8 @@ async def chat_page():
             ui.label("Chat with AI Assistant").classes(
                 "text-2xl font-bold text-gray-800"
             )
-            clear_btn = ui.button("Clear Chat", icon="delete").classes(
-                "bg-red-500 hover:bg-red-600 text-white"
+            clear_btn = ui.button("Clear Chat", icon="delete").props(
+                "unelevated color=red"
             )
 
         # Chat container
@@ -198,8 +198,8 @@ async def chat_page():
                 .classes("flex-grow")
                 .props("outlined autogrow rows=1")
             )
-            send_btn = ui.button("Send", icon="send", on_click=send_message).classes(
-                "bg-blue-600 hover:bg-blue-700 text-white"
+            send_btn = ui.button("Send", icon="send", on_click=send_message).props(
+                "unelevated color=primary"
             )
 
         # Handle Enter key (without Shift) to send, Shift+Enter for new line
