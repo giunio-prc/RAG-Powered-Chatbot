@@ -15,7 +15,7 @@ def format_number(num: int) -> str:
     return f"{num:,}"
 
 
-@ui.page("/documents")
+@ui.page("/documents", favicon="static/favicon.svg", title="RAG Chatbot - Documents")
 async def documents_page():
     """Document management page."""
 
