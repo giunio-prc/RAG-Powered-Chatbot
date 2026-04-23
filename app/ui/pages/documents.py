@@ -117,13 +117,21 @@ async def documents_page():
                             progress_bar.set_visibility(False)
                             upload_component.reset()
 
+                    def handle_rejected():
+                        """Handle rejected file uploads (e.g., file too large)."""
+                        ui.notify(
+                            "File too large. Maximum size is 100KB.",
+                            type="warning",
+                        )
+
                     upload_component = (
                         ui.upload(
                             label="Drop files here or click to browse",
                             on_upload=handle_upload,
+                            on_rejected=handle_rejected,
                             auto_upload=True,
                             multiple=False,
-                            max_file_size=10 * 1024 * 1024,
+                            max_file_size=100 * 1024,  # 100KB
                         )
                         .classes("w-full")
                         .props('accept=".txt" flat bordered')
@@ -136,7 +144,7 @@ async def documents_page():
                         )
                         with ui.column().classes("gap-1 text-xs text-gray-600"):
                             ui.label("- Text files only (.txt)")
-                            ui.label("- Maximum file size: 10MB")
+                            ui.label("- Maximum file size: 100KB (~500 lines)")
                             ui.label("- UTF-8 encoding required")
 
             # Right column - Stats
@@ -224,7 +232,9 @@ async def documents_page():
                             await refresh_stats()
 
                         except Exception as ex:
-                            ui.notify(f"Failed to empty database: {ex!s}", type="negative")
+                            ui.notify(
+                                f"Failed to empty database: {ex!s}", type="negative"
+                            )
 
                     with ui.row().classes("gap-2"):
                         empty_btn = ui.button(
