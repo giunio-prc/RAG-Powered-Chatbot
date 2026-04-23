@@ -202,6 +202,51 @@ async def documents_page():
 
                     refresh_btn.on_click(lambda: refresh_stats(show_toast=True))
 
+                # Database actions card
+                with ui.card().classes("w-full mt-4"):
+                    ui.label("Database Actions").classes("text-lg font-semibold mb-4")
+
+                    async def empty_database():
+                        """Empty the database for the current session."""
+                        try:
+                            async with create_client() as client:
+                                response = await client.delete("/empty-database")
+                                response.raise_for_status()
+
+                            ui.notify("Database emptied successfully", type="positive")
+                            add_activity("Emptied database")
+                            await refresh_stats()
+
+                        except Exception as ex:
+                            ui.notify(f"Failed to empty database: {ex!s}", type="negative")
+
+                    with ui.row().classes("gap-2"):
+                        empty_btn = ui.button(
+                            "Empty Database", icon="delete_forever"
+                        ).props("color=red unelevated")
+
+                    async def confirm_and_delete():
+                        """Close dialog and empty database."""
+                        confirm_dialog.close()
+                        await empty_database()
+
+                    # Confirmation dialog
+                    with ui.dialog() as confirm_dialog, ui.card():
+                        ui.label("Are you sure?").classes("text-lg font-semibold")
+                        ui.label(
+                            "This will permanently delete all your uploaded documents."
+                        ).classes("text-gray-600")
+                        with ui.row().classes("w-full justify-end gap-2 mt-4"):
+                            ui.button("Cancel", on_click=confirm_dialog.close).props(
+                                "flat"
+                            )
+                            ui.button(
+                                "Delete All",
+                                on_click=confirm_and_delete,
+                            ).props("color=red unelevated")
+
+                    empty_btn.on_click(confirm_dialog.open)
+
                 # Health card
                 with ui.card().classes("w-full mt-4"):
                     ui.label("Database Health").classes("text-lg font-semibold mb-4")
