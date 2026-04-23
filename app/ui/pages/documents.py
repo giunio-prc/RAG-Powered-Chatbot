@@ -36,7 +36,7 @@ async def documents_page():
                     progress_bar = ui.linear_progress(
                         value=0, show_value=False
                     ).classes("w-full mb-2")
-                    progress_bar.visible = False
+                    progress_bar.set_visibility(False)
 
                     async def handle_upload(e: UploadEventArguments):
                         """Handle file upload."""
@@ -59,9 +59,10 @@ async def documents_page():
                             return
 
                         # Show progress
-                        progress_bar.visible = True
+                        progress_bar.set_visibility(True)
                         progress_bar.set_value(0)
-                        upload_status.set_text(f"Uploading {filename}...")
+                        upload_status.set_text(f"Ingesting {filename} into the database")
+                        await ui.context.client.connected()
 
                         try:
                             # Upload via API endpoint
@@ -80,6 +81,7 @@ async def documents_page():
                                     response.raise_for_status()
                                     async for line in response.aiter_lines():
                                         progress_text = line.strip()
+                                        print(progress_text)
                                         if progress_text == "API_LIMIT_EXCEEDED":
                                             ui.notify(
                                                 "API limit exceeded. Please try again later.",
@@ -87,7 +89,7 @@ async def documents_page():
                                             )
                                             return
                                         try:
-                                            pct = int(progress_text)
+                                            pct = int(float(progress_text))
                                             progress_bar.set_value(pct / 100)
                                             upload_status.set_text(
                                                 f"Processing {filename}: {pct}%"
@@ -98,10 +100,6 @@ async def documents_page():
                             # Success
                             progress_bar.set_value(1)
                             upload_status.set_text(f"Uploaded: {filename}")
-                            ui.notify(
-                                f"Successfully uploaded {filename}",
-                                type="positive",
-                            )
 
                             # Add to recent activity
                             add_activity(f"Uploaded: {filename}")
@@ -114,9 +112,10 @@ async def documents_page():
                             upload_status.set_text(f"Failed: {filename}")
 
                         finally:
-                            progress_bar.visible = False
+                            progress_bar.set_visibility(False)
+                            upload_component.reset()
 
-                    ui.upload(
+                    upload_component = ui.upload(
                         label="Drop files here or click to browse",
                         on_upload=handle_upload,
                         auto_upload=True,
