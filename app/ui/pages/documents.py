@@ -83,7 +83,6 @@ async def documents_page():
                                     response.raise_for_status()
                                     async for line in response.aiter_lines():
                                         progress_text = line.strip()
-                                        print(progress_text)
                                         if progress_text == "API_LIMIT_EXCEEDED":
                                             ui.notify(
                                                 "API limit exceeded. Please try again later.",
