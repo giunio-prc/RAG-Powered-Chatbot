@@ -82,7 +82,7 @@ class TestSessionCookieMiddleware:
         # Check that cookie has httponly flag
         cookie_header = response.headers.get("set-cookie", "")
         assert "HttpOnly" in cookie_header
-        assert "expires" in cookie_header
+        assert "Max-Age" in cookie_header
 
     def test_concurrent_sessions(self, client):
         """Test that multiple sessions can be created and tracked."""
