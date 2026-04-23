@@ -15,7 +15,8 @@ def app():
     from contextlib import asynccontextmanager
 
     @asynccontextmanager
-    async def lifespan(_app: FastAPI) -> AsyncIterator[dict]:
+    async def lifespan(app: FastAPI) -> AsyncIterator[dict]:
+        _ = app
         # Set up state similar to main app
         yield {"cookies": set()}
 

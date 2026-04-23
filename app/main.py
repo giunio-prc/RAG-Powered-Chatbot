@@ -27,7 +27,8 @@ class State(TypedDict):
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI) -> AsyncIterator[State]:
+async def lifespan(app: FastAPI) -> AsyncIterator[State]:
+    _ = app
     if not os.getenv("COHERE_API_KEY"):
         logger.warning(
             "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
