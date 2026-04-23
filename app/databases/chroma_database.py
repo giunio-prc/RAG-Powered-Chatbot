@@ -59,11 +59,13 @@ class ChromaDatabase(DatabaseManagerInterface):
         uploaded_chunk_ids = []
 
         try:
+            total_nb_of_chunks = len(chunks)
             for progress, chunk in enumerate(chunks):
-                # Add document and capture the IDs for potential rollback
+            #    # Add document and capture the IDs for potential rollback
+                print(f"ingesting chunks {progress} out of {total_nb_of_chunks}")
                 result = await self.db.aadd_documents([chunk])
                 uploaded_chunk_ids.extend(result)
-                yield (progress + 1) / len(chunks) * 100
+                yield (progress + 1) / total_nb_of_chunks * 100
 
         except CohereTooManyRequestsError as err:
             # If we have uploaded chunks, we need to roll them back
@@ -82,8 +84,13 @@ class ChromaDatabase(DatabaseManagerInterface):
                 question,
                 filter={"session": cookie or "default"},
             )
+            print("************************************")
+            print(documents)
         except CohereTooManyRequestsError as err:
             raise TooManyRequestsError(content=err.body)
+        except Exception as err:
+            print(err)
+            raise err
         if not documents:
             return "there is no context, you are not allowed to answer"
 
