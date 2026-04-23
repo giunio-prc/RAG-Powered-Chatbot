@@ -61,7 +61,9 @@ async def documents_page():
                         # Show progress
                         progress_bar.set_visibility(True)
                         progress_bar.set_value(0)
-                        upload_status.set_text(f"Ingesting {filename} into the database")
+                        upload_status.set_text(
+                            f"Ingesting {filename} into the database"
+                        )
                         await ui.context.client.connected()
 
                         try:
@@ -115,13 +117,17 @@ async def documents_page():
                             progress_bar.set_visibility(False)
                             upload_component.reset()
 
-                    upload_component = ui.upload(
-                        label="Drop files here or click to browse",
-                        on_upload=handle_upload,
-                        auto_upload=True,
-                        multiple=False,
-                        max_file_size=10 * 1024 * 1024,
-                    ).classes("w-full").props('accept=".txt" flat bordered')
+                    upload_component = (
+                        ui.upload(
+                            label="Drop files here or click to browse",
+                            on_upload=handle_upload,
+                            auto_upload=True,
+                            multiple=False,
+                            max_file_size=10 * 1024 * 1024,
+                        )
+                        .classes("w-full")
+                        .props('accept=".txt" flat bordered')
+                    )
 
                     # File requirements info
                     with ui.card().classes("w-full mt-4 bg-gray-50"):
