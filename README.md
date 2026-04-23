@@ -18,8 +18,9 @@ A modern AI-driven customer support assistant that leverages Retrieval-Augmented
 - **Vector Database**: ChromaDB integration for efficient similarity search and document retrieval
 - **AI Integration**: Cohere Command-R-Plus model for natural language generation
 - **Real-time Chat**: FastAPI-powered REST API with streaming support
-- **Document Management**: Upload and manage knowledge base documents
-- **Web Interface**: Simple HTML/JavaScript frontend for chat and document management
+- **Document Management**: Upload and manage knowledge base documents (max 100KB per file)
+- **Modern Web UI**: NiceGUI-powered reactive interface with real-time updates
+- **Session Isolation**: Per-user document storage with cookie-based sessions (30-day persistence)
 - **Testing**: Comprehensive test suite with mock implementations
 - **Development Tools**: Pre-commit hooks, linting, and type checking
 
@@ -43,6 +44,9 @@ The application follows hexagonal architecture principles with clear separation 
 
 - **Controller** (`app/controller/controller.py`): Business logic orchestration
 - **API Layer** (`app/api/`): FastAPI routers and HTTP handling
+- **UI Layer** (`app/ui/`): NiceGUI pages and components
+  - `pages/chat.py`: Real-time chat interface with streaming responses
+  - `pages/documents.py`: Document upload and database management
 
 ## Quick Start
 
@@ -106,6 +110,7 @@ Create a `.env` file in the project root with the following variables:
 | `COHERE_API_KEY` | Yes | Your Cohere API key for embeddings and language models |
 | `CHROMA_SERVER_HOST` | No | Host for external Chroma server (defaults to in-memory) |
 | `CHROMA_SERVER_PORT` | No | Port for external Chroma server |
+| `NICEGUI_STORAGE_SECRET` | No | Secret key for NiceGUI session storage (defaults to built-in key) |
 
 ## Development
 
@@ -158,10 +163,13 @@ app/
 ├── controller/          # Business logic orchestration
 ├── databases/           # Vector database implementations
 ├── interfaces/          # Abstract base classes
+├── ui/                  # NiceGUI pages and components
+│   ├── pages/           # Page implementations (chat, documents)
+│   └── components/      # Reusable UI components
+├── middleware.py        # Session cookie middleware
 └── main.py             # FastAPI application entry point
 
-static/                 # Frontend assets (CSS, JavaScript)
-templates/              # HTML templates
+static/                 # Static assets (favicon, images)
 tests/                  # Test suite mirroring app structure
 docs/                   # Sample documents for testing
 db_chroma/              # ChromaDB storage (when using persistent mode)
@@ -171,19 +179,21 @@ db_chroma/              # ChromaDB storage (when using persistent mode)
 
 ### Chat Endpoints
 - `POST /query` - Send a query and get response
-- `POST /query-stream` - Send a query and get streaming response
+- `POST /query-stream` - Send a query and get streaming response (SSE)
 
 ### Document Management
-- `POST /add-content` - Upload document content to knowledge base
-- `GET /stats` - Get database statistics
+- `POST /add-document` - Upload document to knowledge base (max 100KB, .txt only)
+- `GET /get-vectors-data` - Get database statistics (vector count, longest vector)
+- `DELETE /empty-database` - Clear all documents for current session
 
-### Frontend
-- `GET /` - Chat interface
-- `GET /documents` - Document management interface
+### Web Interface (NiceGUI)
+- `GET /` - Chat interface with real-time streaming responses
+- `GET /documents` - Document upload, statistics, and database management
 
 ## Technology Stack
 
 - **FastAPI**: Modern, fast web framework for building APIs
+- **NiceGUI**: Python-based reactive web UI framework
 - **LangChain**: Framework for developing applications with large language models
 - **ChromaDB**: Open-source embedding database for vector similarity search
 - **Cohere**: AI platform providing embeddings and language generation models
