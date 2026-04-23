@@ -28,7 +28,9 @@ async def add_document_endpoint(
             detail="The file cannot be uploaded",
         )
     return StreamingResponse(
-        add_content_into_db(db, file_content, cookie_session), media_type="text/plain"
+        add_content_into_db(db, file_content, cookie_session),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
