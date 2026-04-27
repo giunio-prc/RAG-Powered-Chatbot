@@ -29,6 +29,9 @@ select = ["I", "E4", "F", "Q", "FAST", "UP", "ARG"]
 pythonpath = "."
 asyncio_default_fixture_loop_scope = "session"
 
+[tool.coverage.run]
+omit = ["app/ui/*"]
+
 [dependency-groups]
 dev = [
   "pre-commit",
