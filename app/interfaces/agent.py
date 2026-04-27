@@ -30,10 +30,10 @@ class AIAgentInterface(ABC):
 
     @abstractmethod
     async def query_with_context(self, question: str, context: str) -> str:
-        pass
+        """Query the agent with a question and context."""
 
     @abstractmethod
     def get_stream_response(
         self, question: str, context: str
     ) -> AsyncGenerator[str, None]:
-        pass
+        """Stream the response for a question with context."""

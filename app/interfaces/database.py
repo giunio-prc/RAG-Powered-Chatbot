@@ -8,30 +8,30 @@ class DatabaseManagerInterface[DB](ABC):
 
     @abstractmethod
     def get_chunks(self, cookie: str | None = None) -> list[str]:
-        pass
+        """Return all chunks stored in the database."""
 
     @abstractmethod
     def add_text_to_db(
         self, text: str, cookie: str | None = None
     ) -> AsyncGenerator[float, None]:
-        pass
+        """Add text to the database, yielding progress percentage."""
 
     @abstractmethod
     async def get_context(self, question: str, cookie: str | None = None) -> str:
-        pass
+        """Retrieve relevant context for a question."""
 
     @abstractmethod
     def get_number_of_vectors(self, cookie: str | None = None) -> int:
-        pass
+        """Return the number of vectors in the database."""
 
     @abstractmethod
     def get_length_of_longest_vector(self, cookie: str | None = None) -> int:
-        pass
+        """Return the length of the longest vector."""
 
     @abstractmethod
     def empty_database(self, cookie: str | None = None):
-        pass
+        """Clear all data from the database."""
 
     @abstractmethod
     def load_documents_from_folder(self, folder: PathLike, cookie: str | None = None):
-        pass
+        """Load documents from a folder into the database."""
