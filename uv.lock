@@ -1722,7 +1722,7 @@ wheels = [
 
 [[package]]
 name = "nicegui"
-version = "3.10.0"
+version = "3.11.1"
 source = {registry = "https://pypi.org/simple"}
 dependencies = [
   {name = "aiofiles"},
@@ -1735,22 +1735,25 @@ dependencies = [
   {name = "ifaddr"},
   {name = "itsdangerous"},
   {name = "jinja2"},
+  {name = "lxml"},
   {name = "lxml-html-clean"},
   {name = "markdown2"},
   {name = "orjson", marker = "platform_machine != 'i386' and platform_machine != 'i686' and platform_python_implementation != 'PyPy'"},
   {name = "pydantic-core"},
   {name = "pygments"},
+  {name = "python-dotenv"},
   {name = "python-engineio"},
   {name = "python-multipart"},
   {name = "python-socketio", extra = ["asyncio-client"]},
   {name = "starlette"},
+  {name = "tinycss2"},
   {name = "typing-extensions"},
   {name = "uvicorn", extra = ["standard"]},
   {name = "watchfiles"}
 ]
-sdist = {url = "https://files.pythonhosted.org/packages/d9/df/736d1e17db943d2a8425de22a69284b0374b8ed17efdcde10a5ba6d181f8/nicegui-3.10.0.tar.gz", hash = "sha256:10bca0ed1957c91506e54e02a8d2ad8860777e121fb54bfe59797493ba87ec14", size = 19147081, upload-time = "2026-04-07T09:27:33.09Z"}
+sdist = {url = "https://files.pythonhosted.org/packages/ec/5f/c03d3d9253c3e67b560749ad344dd74de61bba3c35788a029ad9ad0f7a4f/nicegui-3.11.1.tar.gz", hash = "sha256:d6d176c458a012fff926faf196f6cb3eb86c22203eea4aa335a4d0162291e92c", size = 19231328, upload-time = "2026-04-25T20:00:57.052Z"}
 wheels = [
-  {url = "https://files.pythonhosted.org/packages/de/44/73cd2dda7bd46a903751ea3fd93624ac3a97afdfb6a02e0aead6ee4cb0d1/nicegui-3.10.0-py3-none-any.whl", hash = "sha256:0c7f084b1c9036e645ce43727ac354d89214d355dededb25adc3ba2f4d08aaa3", size = 19711706, upload-time = "2026-04-07T09:27:29.203Z"}
+  {url = "https://files.pythonhosted.org/packages/33/44/350aed50d86abbd192cfc4e4b7bd3d7ba7c50a7cde7dc9e9a7c57f8799a8/nicegui-3.11.1-py3-none-any.whl", hash = "sha256:7e0e63e86dc35ece491aa5dd00a0ff8c28b443b0d58e48b0f425690e1578cc54", size = 19801682, upload-time = "2026-04-25T20:01:01.802Z"}
 ]
 
 [[package]]
@@ -2623,7 +2626,7 @@ requires-dist = [
   {name = "langchain-community", specifier = ">=0.3.23"},
   {name = "langchain-text-splitters", specifier = ">=1.1.2"},
   {name = "loguru"},
-  {name = "nicegui", specifier = ">=3.10.0"},
+  {name = "nicegui", specifier = ">=3.11.0"},
   {name = "onnxruntime", marker = "sys_platform == 'win32'", specifier = "==1.20.1"},
   {name = "protobuf", specifier = "<=3.20"},
   {name = "python-dotenv", specifier = ">=1.1.0"},
@@ -3197,6 +3200,18 @@ wheels = [
   {url = "https://files.pythonhosted.org/packages/f1/22/b84dbdc6be5055bbdb2a7352e2c393f67e8593c137f1b83c82bf1e062b6e/thinc-8.3.13-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:e676edd21a747afbe3e6b9f3fca8b962e36d146ded03b070cb0c28e2dfbe9499", size = 5018099, upload-time = "2026-03-23T07:22:18.356Z"},
   {url = "https://files.pythonhosted.org/packages/0f/a8/763cd7ba949334c9d2cddc92dadb68b344cb9546dc01b8d4a733dcaa16c1/thinc-8.3.13-cp313-cp313-win_amd64.whl", hash = "sha256:8ad40307f20e83f77af28ff5c6be0b86af7a8b251d1231c545508d2763157d8f", size = 1720309, upload-time = "2026-03-23T07:22:19.81Z"},
   {url = "https://files.pythonhosted.org/packages/f5/15/a11f7bb3cbc97dfecf32a90552f5a8f8a5c99316a99c6c17bdabf5baf256/thinc-8.3.13-cp313-cp313-win_arm64.whl", hash = "sha256:723949cab11d1925c15447928513a718276316cec6e0de28337cca0a62be0521", size = 1644606, upload-time = "2026-03-23T07:22:21.339Z"}
+]
+
+[[package]]
+name = "tinycss2"
+version = "1.5.1"
+source = {registry = "https://pypi.org/simple"}
+dependencies = [
+  {name = "webencodings"}
+]
+sdist = {url = "https://files.pythonhosted.org/packages/a3/ae/2ca4913e5c0f09781d75482874c3a95db9105462a92ddd303c7d285d3df2/tinycss2-1.5.1.tar.gz", hash = "sha256:d339d2b616ba90ccce58da8495a78f46e55d4d25f9fd71dfd526f07e7d53f957", size = 88195, upload-time = "2025-11-23T10:29:10.082Z"}
+wheels = [
+  {url = "https://files.pythonhosted.org/packages/60/45/c7b5c3168458db837e8ceab06dc77824e18202679d0463f0e8f002143a97/tinycss2-1.5.1-py3-none-any.whl", hash = "sha256:3415ba0f5839c062696996998176c4a3751d18b7edaaeeb658c9ce21ec150661", size = 28404, upload-time = "2025-11-23T10:29:08.676Z"}
 ]
 
 [[package]]

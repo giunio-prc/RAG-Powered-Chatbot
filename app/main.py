@@ -7,6 +7,7 @@ from typing import TypedDict
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from nicegui.ui_run_with import run_with
 
 from app.agents import CohereAgent, FakeAgent
 from app.api import database, prompting
@@ -14,7 +15,6 @@ from app.databases import ChromaDatabase, FakeDatabase
 from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 from app.interfaces.errors import TooManyRequestsError
 from app.middleware import SessionCookieMiddleware
-from app.nicegui_patch import safe_run_with
 from app.ui import setup_pages
 
 logger = logging.getLogger(__name__)
@@ -79,8 +79,8 @@ async def too_many_request_error(request: Request, exc: TooManyRequestsError):
 # Initialize NiceGUI pages and mount on FastAPI
 setup_pages()
 
-# Run NiceGUI with FastAPI - using safe_run_with to handle gc.get_objects ReferenceError
-safe_run_with(
+# Run NiceGUI with FastAPI
+run_with(
     app,
     storage_secret=os.getenv("NICEGUI_STORAGE_SECRET", "rag-chatbot-secret-key"),
 )
