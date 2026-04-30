@@ -14,8 +14,10 @@ from app.ui.utils import format_time
 async def chat_page():
     """Chat interface page."""
 
-    # Use browser local storage for chat history
-    storage = app.storage.browser
+    # Use user storage for chat history (server-side, persists across navigation)
+    storage = app.storage.user
+    if "chat_history" not in storage:
+        storage["chat_history"] = []
 
     # State variables
     is_loading = {"value": False}
@@ -85,14 +87,21 @@ async def chat_page():
             history = storage.get("chat_history", [])
 
             if not history:
-                # Show welcome message
-                add_message_to_ui(
-                    "assistant",
+                # Show and save welcome message
+                welcome_timestamp = format_time(datetime.now())
+                welcome_content = (
                     "Hello! I'm your AI assistant powered by RAG technology. "
                     "I can answer questions based on the documents you've uploaded. "
-                    "How can I help you today?",
-                    format_time(datetime.now()),
+                    "How can I help you today?"
                 )
+                add_message_to_ui("assistant", welcome_content, welcome_timestamp)
+                storage["chat_history"] = [
+                    {
+                        "role": "assistant",
+                        "content": welcome_content,
+                        "timestamp": welcome_timestamp,
+                    }
+                ]
             else:
                 for msg in history:
                     add_message_to_ui(msg["role"], msg["content"], msg.get("timestamp"))
@@ -111,11 +120,12 @@ async def chat_page():
             timestamp = format_time(datetime.now())
             add_message_to_ui("user", question, timestamp)
 
-            # Save to history
+            # Save user message to history immediately
             history = storage.get("chat_history", [])
             history.append(
                 {"role": "user", "content": question, "timestamp": timestamp}
             )
+            storage["chat_history"] = history
 
             # Create placeholder for AI response
             ai_timestamp = format_time(datetime.now())
@@ -164,6 +174,7 @@ async def chat_page():
                                 )
 
                 # Save AI response to history
+                history = storage.get("chat_history", [])
                 history.append(
                     {
                         "role": "assistant",
@@ -172,7 +183,6 @@ async def chat_page():
                     }
                 )
                 storage["chat_history"] = history
-
             except Exception as e:
                 response_label.set_text(f"Error: {e!s}")
                 ui.notify(f"Error: {e!s}", type="negative")
@@ -188,8 +198,9 @@ async def chat_page():
             load_chat_history()
             ui.notify("Chat cleared", type="info")
 
-        # Load existing chat history
-        load_chat_history()
+        # Load existing chat history after the page is fully connected
+        # Using a one-shot timer ensures browser storage is available
+        ui.timer(0.1, load_chat_history, once=True)
 
         # Input area
         with ui.row().classes("w-full gap-2 mt-4"):
