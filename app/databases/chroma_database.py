@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import AsyncGenerator
 from os import PathLike, getenv
 
@@ -60,11 +61,14 @@ class ChromaDatabase(DatabaseManagerInterface):
 
         try:
             total_nb_of_chunks = len(chunks)
-            for progress, chunk in enumerate(chunks):
+            tasks = [self.db.aadd_documents([chunk]) for chunk in chunks]
+            completed = 0
+            for coro in asyncio.as_completed(tasks):
                 # Add document and capture the IDs for potential rollback
-                result = await self.db.aadd_documents([chunk])
+                result = await coro
                 uploaded_chunk_ids.extend(result)
-                yield (progress + 1) / total_nb_of_chunks * 100
+                completed += 1
+                yield completed / total_nb_of_chunks * 100
 
         except CohereTooManyRequestsError as err:
             # If we have uploaded chunks, we need to roll them back
