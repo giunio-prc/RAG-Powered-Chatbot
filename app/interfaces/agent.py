@@ -33,7 +33,7 @@ class AIAgentInterface(ABC):
         """Query the agent with a question and context."""
 
     @abstractmethod
-    def get_stream_response(
+    def get_stream_response(  # ty workaround
         self, question: str, context: str
     ) -> AsyncGenerator[str, None]:
         """Stream the response for a question with context."""
