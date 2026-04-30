@@ -11,7 +11,7 @@ class DatabaseManagerInterface[DB](ABC):
         """Return all chunks stored in the database."""
 
     @abstractmethod
-    def add_text_to_db(
+    async def add_text_to_db(
         self, text: str, cookie: str | None = None
     ) -> AsyncGenerator[float, None]:
         """Add text to the database, yielding progress percentage."""
