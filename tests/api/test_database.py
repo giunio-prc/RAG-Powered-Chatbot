@@ -177,3 +177,44 @@ class TestSessionCookieHandling:
         assert response.status_code == 200
         data = response.json()
         assert data["number_of_vectors"] == 2
+
+
+class TestGetAgentInfoEndpoint:
+    def test_get_agent_info_returns_fake_agent_info(self, client: TestClient):
+        """Test that /agent-info returns correct info for FakeAgent."""
+        response = client.get("/agent-info")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_fake"] is True
+        assert data["icon"] == "pets"
+        assert data["label"] == "RAG Parrot"
+        assert data["embedding_model"] == "No Embedding Model"
+
+    def test_get_agent_info_returns_cohere_agent_info(
+        self, app_with_mocks: FastAPI, fake_database: FakeDatabase
+    ):
+        """Test that /agent-info returns correct info for CohereAgent."""
+        from unittest.mock import MagicMock
+
+        from app.agents import CohereAgent
+        from app.api.dependencies import get_agent_from_state, get_db_from_state
+
+        # Create a mock CohereAgent (we don't want to actually call the API)
+        mock_cohere_agent = MagicMock(spec=CohereAgent)
+
+        # Override the agent dependency with the mock
+        app_with_mocks.dependency_overrides[get_db_from_state] = lambda: fake_database
+        app_with_mocks.dependency_overrides[get_agent_from_state] = lambda: (
+            mock_cohere_agent
+        )
+
+        client = TestClient(app_with_mocks)
+        response = client.get("/agent-info")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_fake"] is False
+        assert data["icon"] == "smart_toy"
+        assert data["label"] == "RAG Chatbot"
+        assert data["embedding_model"] == "Cohere"

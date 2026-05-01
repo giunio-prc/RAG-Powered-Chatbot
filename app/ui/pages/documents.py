@@ -22,7 +22,7 @@ async def documents_page():
     # Use browser local storage
     storage = app.storage.browser
 
-    with page_layout(active_page="documents"):
+    async with page_layout(active_page="documents") as agent_info:
         ui.label("Document Management").classes("text-2xl font-bold text-gray-800 mb-4")
 
         with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
@@ -273,7 +273,9 @@ async def documents_page():
 
                         with ui.row().classes("items-center gap-2"):
                             ui.icon("memory").classes("text-blue-500")
-                            ui.label("Embedding Model: Cohere").classes("text-sm")
+                            ui.label(
+                                f"Embedding Model: {agent_info['embedding_model']}"
+                            ).classes("text-sm")
 
                 # Recent activity card
                 with ui.card().classes("w-full mt-4"):

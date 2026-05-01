@@ -3,7 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
 
-from app.api.dependencies import get_cookie_session, get_db_from_state_annotation
+from app.agents import FakeAgent
+from app.api.dependencies import (
+    get_agent_from_state_annotation,
+    get_cookie_session,
+    get_db_from_state_annotation,
+)
 from app.controllers import add_content_into_db
 
 router = APIRouter()
@@ -51,3 +56,15 @@ async def empty_database(
 ):
     db.empty_database(cookie_session)
     return {"message": "Database emptied successfully"}
+
+
+@router.get("/agent-info")
+async def get_agent_info(agent: get_agent_from_state_annotation):
+    """Return information about the current AI agent configuration."""
+    is_fake = isinstance(agent, FakeAgent)
+    return {
+        "is_fake": is_fake,
+        "icon": "pets" if is_fake else "smart_toy",
+        "label": "RAG Parrot" if is_fake else "RAG Chatbot",
+        "embedding_model": "No Embedding Model" if is_fake else "Cohere",
+    }

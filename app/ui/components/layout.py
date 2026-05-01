@@ -1,12 +1,14 @@
 """Shared layout components for NiceGUI pages."""
 
 import os
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 
 from loguru import logger
 from nicegui import ui
+
+from app.ui.http_client import create_client
 
 
 def get_qr_code_path() -> Path | None:
@@ -26,14 +28,33 @@ def get_qr_code_path() -> Path | None:
     return None
 
 
-@contextmanager
-def page_layout(active_page: Literal["chat", "documents"] = "chat"):
+async def get_agent_info() -> dict:
+    """Fetch agent info from the API."""
+    try:
+        async with create_client() as client:
+            response = await client.get("/agent-info")
+            response.raise_for_status()
+            return response.json()
+    except Exception:
+        # Default to production settings if API call fails
+        return {
+            "icon": "smart_toy",
+            "label": "RAG Chatbot",
+            "embedding_model": "Cohere",
+        }
+
+
+@asynccontextmanager
+async def page_layout(active_page: Literal["chat", "documents"] = "chat"):
     """
     Shared page layout with navigation header and footer.
 
     Args:
         active_page: The currently active page for nav highlighting
     """
+    # Fetch agent info for dynamic header
+    agent_info = await get_agent_info()
+
     # Add Tailwind CSS and custom styles
     ui.add_head_html("""
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -59,8 +80,8 @@ def page_layout(active_page: Literal["chat", "documents"] = "chat"):
         ):
             # Logo/Title
             with ui.row().classes("items-center gap-2"):
-                ui.icon("smart_toy").classes("text-2xl")
-                ui.label("RAG Chatbot").classes("text-xl font-semibold")
+                ui.icon(agent_info["icon"]).classes("text-2xl")
+                ui.label(agent_info["label"]).classes("text-xl font-semibold")
 
             # Navigation links
             with ui.row().classes("gap-1"):
@@ -95,7 +116,7 @@ def page_layout(active_page: Literal["chat", "documents"] = "chat"):
 
     # Main content area
     with ui.column().classes("w-full max-w-6xl mx-auto p-4 flex-grow"):
-        yield
+        yield agent_info
 
         # QR code inline for mobile - shown at bottom of content, scrollable
         if qr_path:

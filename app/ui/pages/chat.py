@@ -22,7 +22,7 @@ async def chat_page():
     # State variables
     is_loading = {"value": False}
 
-    with page_layout(active_page="chat"):
+    async with page_layout(active_page="chat"):
         # Chat header
         with ui.row().classes("w-full items-center justify-between mb-4"):
             ui.label("Chat with AI Assistant").classes(
