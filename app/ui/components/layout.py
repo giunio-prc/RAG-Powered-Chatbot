@@ -5,16 +5,24 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Literal
 
+from loguru import logger
 from nicegui import ui
 
 
 def get_qr_code_path() -> Path | None:
     """Return the QR code path if configured and file exists."""
     qr_path = os.getenv("QR_CODE_PATH")
+    logger.debug(f"QR_CODE_PATH env var: {qr_path}")
     if qr_path:
         path = Path(qr_path)
+        logger.debug(f"QR code path resolved to: {path.absolute()}")
         if path.exists():
+            logger.info(f"QR code file found: {path.absolute()}")
             return path
+        else:
+            logger.warning(f"QR code file not found: {path.absolute()}")
+    else:
+        logger.debug("QR_CODE_PATH env var not set")
     return None
 
 
