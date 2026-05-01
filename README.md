@@ -2,6 +2,8 @@
 ## 🚀 Live Demo
 **Try the application live at: [https://rag.avenueit.be](https://rag.avenueit.be)**
 
+**RAG Parrot (no API key required): [https://fakerag.avenueit.be](https://fakerag.avenueit.be)** - Mock version
+
 ![Tests](https://github.com/giunio-prc/rag-powered-chatbot/actions/workflows/python-tests.yml/badge.svg)
 ![Linter](https://github.com/giunio-prc/rag-powered-chatbot/actions/workflows/linter-check.yml/badge.svg)
 ![Coverage](coverage.svg)
