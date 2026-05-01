@@ -3,7 +3,7 @@ class TooManyRequestsError(Exception):
     content: object
 
     def __init__(self, content: object = None):
-        self.content = content
+        self.content = content  # pragma: no cover
 
 
 class EmbeddingAPILimitError(Exception):

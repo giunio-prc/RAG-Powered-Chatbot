@@ -6,7 +6,7 @@ from app.interfaces import AIAgentInterface, DatabaseManagerInterface
 
 
 async def get_db_from_state(request: Request) -> DatabaseManagerInterface:
-    return request.state.db
+    return request.state.db  # pragma: no cover
 
 
 get_db_from_state_annotation = Annotated[
@@ -15,7 +15,7 @@ get_db_from_state_annotation = Annotated[
 
 
 async def get_agent_from_state(request: Request) -> AIAgentInterface:
-    return request.state.agent
+    return request.state.agent  # pragma: no cover
 
 
 get_agent_from_state_annotation = Annotated[

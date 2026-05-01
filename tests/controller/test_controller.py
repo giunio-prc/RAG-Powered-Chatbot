@@ -5,6 +5,7 @@ import pytest
 
 from app.controller.controller import (
     add_content_into_db,
+    query_agent,
     query_agent_with_stream_response,
 )
 from app.interfaces.errors import EmbeddingAPILimitError
@@ -153,3 +154,41 @@ async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
         # Verify we only got the API limit signal with no progress updates
         assert len(responses) == 1
         assert responses[0] == "API_LIMIT_EXCEEDED"
+
+
+@pytest.mark.asyncio
+async def test_query_agent__returns_answer_from_fake_agent(fake_database, fake_agent):
+    question = "What time is it?"
+
+    answer = await query_agent(fake_database, fake_agent, question)
+
+    assert isinstance(answer, str)
+    assert question in answer
+    assert "fake agent" in answer.lower()
+    assert "without any context" in answer
+
+
+@pytest.mark.asyncio
+async def test_query_agent__includes_context_when_available(fake_database, fake_agent):
+    # Add some content to the database first
+    content = "The store opens at 9am and closes at 6pm every day."
+    async for _ in fake_database.add_text_to_db(content):
+        pass
+
+    question = "What are the opening hours?"
+
+    answer = await query_agent(fake_database, fake_agent, question)
+
+    assert isinstance(answer, str)
+    assert question in answer
+    assert "With the following context:" in answer
+
+
+@pytest.mark.asyncio
+async def test_query_agent__works_with_cohere_agent(chroma_database, cohere_agent):
+    question = "What time is it?"
+
+    answer = await query_agent(chroma_database, cohere_agent, question)
+
+    assert isinstance(answer, str)
+    assert len(answer) > 0
