@@ -9,7 +9,7 @@
 
 A modern AI-driven customer support assistant that leverages Retrieval-Augmented Generation (RAG) to provide accurate, context-aware responses. Built with FastAPI and following hexagonal architecture principles for maintainability and testability.
 
-![Hexagonal Architecture Diagram](hexagonal-archi-draw.drawio.svg)
+![Hexagonal Architecture Diagram](hexagonal-archi-draw-svg.svg)
 
 ## Features
 
@@ -223,7 +223,7 @@ For questions, issues, or contributions, please contact:
 
 - **Author**: Giunio De Luca
 - **GitHub**: Open an issue in this repository for bugs or feature requests
-- **Email**: giuniodl@live.it
+- **Email**: giunio@avenueit.be
 
 For technical support:
 1. Check existing GitHub issues first
