@@ -127,3 +127,6 @@ data/*
 
 db_chroma/
 .nicegui
+
+.agents/
+.claude/
