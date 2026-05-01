@@ -37,6 +37,9 @@ omit = [
   "app/main.py"
 ]
 
+[tool.coverage.report]
+fail_under = 100
+
 [dependency-groups]
 dev = [
   "pre-commit",
