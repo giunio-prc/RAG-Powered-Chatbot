@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from app.controller.controller import (
+from app.controllers import (
     add_content_into_db,
     query_agent,
     query_agent_with_stream_response,
