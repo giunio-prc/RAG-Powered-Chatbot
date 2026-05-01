@@ -158,21 +158,41 @@ uv run pytest tests/controller/test_controller.py
 
 ```
 app/
-├── agents/              # AI agent implementations
-├── api/                 # FastAPI routers and endpoints
-├── controller/          # Business logic orchestration
-├── databases/           # Vector database implementations
-├── interfaces/          # Abstract base classes
-├── ui/                  # NiceGUI pages and components
-│   ├── pages/           # Page implementations (chat, documents)
-│   └── components/      # Reusable UI components
-├── middleware.py        # Session cookie middleware
-└── main.py             # FastAPI application entry point
+├── agents/                 # AI agent implementations
+│   ├── cohere_agent.py     # Production Cohere implementation
+│   └── fake_agent.py       # Mock implementation for testing
+├── api/                    # FastAPI routers and endpoints
+│   ├── database.py         # Document upload and stats endpoints
+│   ├── dependencies.py     # Dependency injection helpers
+│   └── prompting.py        # Chat query endpoints
+├── controllers/            # Business logic orchestration
+├── databases/              # Vector database implementations
+│   ├── chroma_database.py  # Production ChromaDB implementation
+│   └── fake_database.py    # Mock implementation for testing
+├── interfaces/             # Abstract base classes (contracts)
+│   ├── agent.py            # AIAgentInterface
+│   ├── database.py         # DatabaseManagerInterface
+│   └── errors.py           # Custom exceptions
+├── ui/                     # NiceGUI web interface
+│   ├── components/         # Reusable UI components
+│   │   └── layout.py       # Page layout component
+│   ├── pages/              # Page implementations
+│   │   ├── chat.py         # Real-time chat interface
+│   │   └── documents.py    # Document management page
+│   ├── http_client.py      # HTTP client for API calls
+│   └── utils.py            # UI utility functions
+├── middleware.py           # Session cookie middleware
+└── main.py                 # FastAPI application entry point
 
-static/                 # Static assets (favicon, images)
-tests/                  # Test suite mirroring app structure
-docs/                   # Sample documents for testing
-db_chroma/              # ChromaDB storage (when using persistent mode)
+tests/                      # Test suite mirroring app structure
+├── api/                    # API endpoint tests
+├── controller/             # Controller tests
+└── databases/              # Database tests
+
+static/                     # Static assets (favicon)
+docs/                       # Sample documents for testing
+stack_logos/                # Technology stack logos
+db_chroma/                  # ChromaDB storage (persistent mode)
 ```
 
 ## API Endpoints
@@ -191,6 +211,20 @@ db_chroma/              # ChromaDB storage (when using persistent mode)
 - `GET /documents` - Document upload, statistics, and database management
 
 ## Technology Stack
+
+<p align="center">
+  <a href="https://github.com/fastapi/fastapi">
+    <img src="stack_logos/fatapi-logo.webp" alt="FastAPI" height="60">
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/langchain-ai/langchain">
+    <img src="stack_logos/langchain-logo.webp" alt="LangChain" height="60">
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/zauberzeug/nicegui">
+    <img src="stack_logos/nicegui-logo.png" alt="NiceGUI" height="60">
+  </a>
+</p>
 
 - **FastAPI**: Modern, fast web framework for building APIs
 - **NiceGUI**: Python-based reactive web UI framework
