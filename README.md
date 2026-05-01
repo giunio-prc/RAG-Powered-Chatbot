@@ -42,7 +42,7 @@ The application follows hexagonal architecture principles with clear separation 
     - `ChromaDatabase`: Production implementation using ChromaDB with Cohere embeddings
     - `FakeDatabase`: Mock implementation for testing
 
-- **Controller** (`app/controller/controller.py`): Business logic orchestration
+- **Controller** (`app/controllers`): Business logic orchestration
 - **API Layer** (`app/api/`): FastAPI routers and HTTP handling
 - **UI Layer** (`app/ui/`): NiceGUI pages and components
   - `pages/chat.py`: Real-time chat interface with streaming responses
@@ -52,7 +52,7 @@ The application follows hexagonal architecture principles with clear separation 
 
 ### Prerequisites
 
-- Python 3.12 or higher
+- Python 3.12 or 3.13
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
