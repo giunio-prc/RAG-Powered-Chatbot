@@ -16,6 +16,7 @@ dependencies = [
   "protobuf<=3.20",
   "api-analytics[fastapi]>=1.2.7",
   "nicegui>=3.11.0",
+  "httpx-sse>=0.4.0",
   "langchain-text-splitters>=1.1.2"
 ]
 

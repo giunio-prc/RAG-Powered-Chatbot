@@ -3,6 +3,7 @@
 import json
 from datetime import datetime
 
+from httpx_sse import aconnect_sse
 from nicegui import app, ui
 
 from app.ui.components.layout import page_layout
@@ -150,28 +151,22 @@ async def chat_page():
             loading_spinner = ui.spinner("dots", size="lg").classes("text-blue-600")
 
             try:
-                # Stream the response from API endpoint
+                # Stream the response from API endpoint using SSE
                 full_response = ""
                 async with create_client() as client:
-                    async with client.stream(
-                        "POST",
-                        "/query-stream",
-                        json=question,
-                        headers={"Content-Type": "application/json"},
-                    ) as response:
-                        async for line in response.aiter_lines():
-                            # SSE format: "data: <json-encoded-content>"
-                            if line.startswith("data: "):
-                                chunk_data = line[6:]
-                                try:
-                                    chunk = json.loads(chunk_data)
-                                except json.JSONDecodeError:
-                                    chunk = chunk_data
-                                full_response += chunk
-                                response_label.set_text(full_response)
-                                await ui.run_javascript(
-                                    "window.scrollTo(0, document.body.scrollHeight)"
-                                )
+                    async with aconnect_sse(
+                        client, "POST", "/query-stream", json=question
+                    ) as event_source:
+                        async for sse in event_source.aiter_sse():
+                            try:
+                                chunk = json.loads(sse.data)
+                            except json.JSONDecodeError:
+                                chunk = sse.data
+                            full_response += chunk
+                            response_label.set_text(full_response)
+                            await ui.run_javascript(
+                                "window.scrollTo(0, document.body.scrollHeight)"
+                            )
 
                 # Save AI response to history
                 history = storage.get("chat_history", [])
