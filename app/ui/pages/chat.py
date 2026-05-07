@@ -34,16 +34,13 @@ async def chat_page():
             )
 
         # Chat container
-        with (
-            ui.column()
-            .classes(
-                "w-full bg-white rounded-xl shadow-lg border border-gray-200 p-4 "
-                "chat-container overflow-y-auto"
-            )
-            .style("height: 500px")
+        with ui.card().classes(
+            "w-full bg-white rounded-xl shadow-lg border border-gray-200"
         ):
-            # Message display area
-            messages_area = ui.column().classes("w-full gap-4")
+            chat_container = ui.scroll_area().classes("p-4").style("height: 500px")
+            with chat_container:
+                # Message display area
+                messages_area = ui.column().classes("w-full gap-4")
 
         def add_message_to_ui(role: str, content: str, timestamp: str | None = None):
             """Add a message bubble to the chat UI."""
@@ -164,9 +161,7 @@ async def chat_page():
                                 chunk = sse.data
                             full_response += chunk
                             response_label.set_text(full_response)
-                            await ui.run_javascript(
-                                "window.scrollTo(0, document.body.scrollHeight)"
-                            )
+                            chat_container.scroll_to(percent=1.01)
 
                 # Save AI response to history
                 history = storage.get("chat_history", [])
