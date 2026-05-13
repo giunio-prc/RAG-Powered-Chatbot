@@ -35,7 +35,7 @@ elif CHROMA_SERVER_HOST is not None:
     client = HttpClient(host=CHROMA_SERVER_HOST)
 
 
-class ChromaDatabase(DatabaseManagerInterface):
+class ChromaDatabaseManager(DatabaseManagerInterface):
     db: Chroma
     text_splitter: CharacterTextSplitter
 

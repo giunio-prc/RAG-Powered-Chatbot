@@ -5,23 +5,23 @@ from pathlib import Path
 import pytest
 
 from app.agents import CohereAgent, FakeAgent
-from app.databases import ChromaDatabase, FakeDatabase
+from app.databases import ChromaDatabaseManager, FakeDatabaseManager
 
 data_location = Path(__file__).parent / "data"
 
 
 @pytest.fixture
-def fake_database() -> Generator[FakeDatabase]:
-    database = FakeDatabase()
+def fake_database() -> Generator[FakeDatabaseManager]:
+    database = FakeDatabaseManager()
     yield database
     database.empty_database()
 
 
 @pytest.fixture
-def chroma_database() -> Generator[ChromaDatabase]:
+def chroma_database() -> Generator[ChromaDatabaseManager]:
     if "COHERE_API_KEY" not in os.environ:
         pytest.skip()
-    database = ChromaDatabase()
+    database = ChromaDatabaseManager()
     yield database
     database.empty_database()
 

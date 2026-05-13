@@ -1,4 +1,4 @@
-from app.databases.chroma_database import ChromaDatabase
-from app.databases.fake_database import FakeDatabase
+from app.databases.chroma_database import ChromaDatabaseManager
+from app.databases.fake_database import FakeDatabaseManager
 
-__all__ = ["FakeDatabase", "ChromaDatabase"]
+__all__ = ["FakeDatabaseManager", "ChromaDatabaseManager"]

@@ -3,7 +3,7 @@ import io
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.databases import FakeDatabase
+from app.databases import FakeDatabaseManager
 
 
 class TestAddDocumentEndpoint:
@@ -69,7 +69,7 @@ class TestAddDocumentEndpoint:
         assert "cannot be uploaded" in response.json()["detail"]
 
     def test_add_document_stores_content_in_database(
-        self, client: TestClient, fake_database: FakeDatabase
+        self, client: TestClient, fake_database: FakeDatabaseManager
     ):
         file_content = b"Test content for database storage."
         file = io.BytesIO(file_content)
@@ -95,7 +95,7 @@ class TestGetVectorsDataEndpoint:
         assert data["longest_vector"] == 0
 
     def test_get_vectors_data_returns_correct_stats_after_adding_content(
-        self, client: TestClient, fake_database: FakeDatabase
+        self, client: TestClient, fake_database: FakeDatabaseManager
     ):
         # Add some content to the database
         fake_database.db["test-session"] = ["short", "a longer text chunk here"]
@@ -108,7 +108,7 @@ class TestGetVectorsDataEndpoint:
         assert data["longest_vector"] == len("a longer text chunk here")
 
     def test_get_vectors_data_isolates_sessions(
-        self, client: TestClient, fake_database: FakeDatabase
+        self, client: TestClient, fake_database: FakeDatabaseManager
     ):
         # Add content to a different session
         fake_database.db["other-session"] = ["content from other session"]
@@ -128,7 +128,7 @@ class TestEmptyDatabaseEndpoint:
         assert response.json()["message"] == "Database emptied successfully"
 
     def test_empty_database_clears_content(
-        self, client: TestClient, fake_database: FakeDatabase
+        self, client: TestClient, fake_database: FakeDatabaseManager
     ):
         # Add content first
         fake_database.db["test-session"] = ["chunk1", "chunk2", "chunk3"]
@@ -140,7 +140,7 @@ class TestEmptyDatabaseEndpoint:
         assert fake_database.get_number_of_vectors("test-session") == 0
 
     def test_empty_database_does_not_affect_other_sessions(
-        self, client: TestClient, fake_database: FakeDatabase
+        self, client: TestClient, fake_database: FakeDatabaseManager
     ):
         # Add content to both sessions
         fake_database.db["test-session"] = ["test session content"]
@@ -154,7 +154,7 @@ class TestEmptyDatabaseEndpoint:
 
 class TestSessionCookieHandling:
     def test_endpoints_use_default_session_without_cookie(
-        self, app_with_mocks: FastAPI, fake_database: FakeDatabase
+        self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
     ):
         # Client without SESSION cookie
         client = TestClient(app_with_mocks)
@@ -167,7 +167,7 @@ class TestSessionCookieHandling:
         assert data["number_of_vectors"] == 1
 
     def test_endpoints_use_custom_session_with_cookie(
-        self, app_with_mocks: FastAPI, fake_database: FakeDatabase
+        self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
     ):
         client = TestClient(app_with_mocks, cookies={"SESSION": "custom-session"})
         fake_database.db["custom-session"] = ["custom content", "more content"]
@@ -192,7 +192,7 @@ class TestGetAgentInfoEndpoint:
         assert data["embedding_model"] == "No Embedding Model"
 
     def test_get_agent_info_returns_cohere_agent_info(
-        self, app_with_mocks: FastAPI, fake_database: FakeDatabase
+        self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
     ):
         """Test that /agent-info returns correct info for CohereAgent."""
         from unittest.mock import MagicMock

@@ -11,7 +11,7 @@ from nicegui.ui_run_with import run_with
 
 from app.agents import CohereAgent, FakeAgent
 from app.api import database, prompting
-from app.databases import ChromaDatabase, FakeDatabase
+from app.databases import ChromaDatabaseManager, FakeDatabaseManager
 from app.middleware import SessionCookieMiddleware
 from app.ports import AIAgentInterface, DatabaseManagerInterface
 from app.ports.errors import TooManyRequestsError
@@ -34,10 +34,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
             "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
         )
         # Use fake implementations for testing purposes
-        db = FakeDatabase()
+        db = FakeDatabaseManager()
         agent = FakeAgent()
     else:
-        db = ChromaDatabase()
+        db = ChromaDatabaseManager()
         agent = CohereAgent()
 
     yield {"db": db, "agent": agent, "cookies": set()}

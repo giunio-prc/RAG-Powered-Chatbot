@@ -9,7 +9,7 @@ from langchain_text_splitters import CharacterTextSplitter
 from app.ports import DatabaseManagerInterface
 
 
-class FakeDatabase(DatabaseManagerInterface):
+class FakeDatabaseManager(DatabaseManagerInterface):
     db: defaultdict[str, list[str]]
 
     text_splitter: CharacterTextSplitter = CharacterTextSplitter(

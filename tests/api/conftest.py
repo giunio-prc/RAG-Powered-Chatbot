@@ -6,11 +6,13 @@ from app.agents import FakeAgent
 from app.api.database import router as database_router
 from app.api.dependencies import get_agent_from_state, get_db_from_state
 from app.api.prompting import router as prompting_router
-from app.databases import FakeDatabase
+from app.databases import FakeDatabaseManager
 
 
 @pytest.fixture
-def app_with_mocks(fake_database: FakeDatabase, fake_agent: FakeAgent) -> FastAPI:
+def app_with_mocks(
+    fake_database: FakeDatabaseManager, fake_agent: FakeAgent
+) -> FastAPI:
     app = FastAPI()
     app.include_router(database_router)
     app.include_router(prompting_router)
