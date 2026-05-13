@@ -2,7 +2,7 @@ from asyncio import sleep
 from collections.abc import AsyncGenerator
 from random import random
 
-from app.interfaces.agent import AIAgentInterface
+from app.ports.agent import AIAgentInterface
 
 
 class FakeAgent(AIAgentInterface):

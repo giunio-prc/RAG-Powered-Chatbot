@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from app.controllers import (
+from app.ports.errors import EmbeddingAPILimitError
+from app.usecases import (
     add_content_into_db,
     query_agent,
     query_agent_with_stream_response,
 )
-from app.interfaces.errors import EmbeddingAPILimitError
 from tests.conftest import data_location
 
 

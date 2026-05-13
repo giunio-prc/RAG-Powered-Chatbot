@@ -6,7 +6,7 @@ from os import PathLike
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_text_splitters import CharacterTextSplitter
 
-from app.interfaces import DatabaseManagerInterface
+from app.ports import DatabaseManagerInterface
 
 
 class FakeDatabase(DatabaseManagerInterface):

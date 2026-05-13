@@ -12,8 +12,8 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents.base import Document
 from langchain_text_splitters import CharacterTextSplitter
 
-from app.interfaces.database import DatabaseManagerInterface
-from app.interfaces.errors import EmbeddingAPILimitError, TooManyRequestsError
+from app.ports.database import DatabaseManagerInterface
+from app.ports.errors import EmbeddingAPILimitError, TooManyRequestsError
 
 load_dotenv()
 

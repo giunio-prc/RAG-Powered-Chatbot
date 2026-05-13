@@ -13,8 +13,8 @@ from langchain_core.prompts import (
 )
 from langchain_core.runnables import RunnableSerializable
 
-from app.interfaces.agent import AIAgentInterface
-from app.interfaces.errors import TooManyRequestsError
+from app.ports.agent import AIAgentInterface
+from app.ports.errors import TooManyRequestsError
 
 load_dotenv()
 

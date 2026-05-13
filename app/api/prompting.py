@@ -10,7 +10,7 @@ from app.api.dependencies import (
     get_cookie_session,
     get_db_from_state_annotation,
 )
-from app.controllers import query_agent, query_agent_with_stream_response
+from app.usecases import query_agent, query_agent_with_stream_response
 
 router = APIRouter()
 

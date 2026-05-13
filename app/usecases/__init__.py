@@ -2,8 +2,8 @@ from asyncio import sleep
 from collections.abc import AsyncGenerator
 from random import random
 
-from app.interfaces import AIAgentInterface, DatabaseManagerInterface
-from app.interfaces.errors import EmbeddingAPILimitError, TooManyRequestsError
+from app.ports import AIAgentInterface, DatabaseManagerInterface
+from app.ports.errors import EmbeddingAPILimitError, TooManyRequestsError
 
 
 async def add_content_into_db(

@@ -12,12 +12,12 @@ from nicegui.ui_run_with import run_with
 from app.agents import CohereAgent, FakeAgent
 from app.api import database, prompting
 from app.databases import ChromaDatabase, FakeDatabase
-from app.interfaces import AIAgentInterface, DatabaseManagerInterface
-from app.interfaces.errors import TooManyRequestsError
 from app.middleware import SessionCookieMiddleware
+from app.ports import AIAgentInterface, DatabaseManagerInterface
+from app.ports.errors import TooManyRequestsError
 from app.ui import setup_pages
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn")
 
 
 class State(TypedDict):

@@ -9,7 +9,7 @@ from app.api.dependencies import (
     get_cookie_session,
     get_db_from_state_annotation,
 )
-from app.controllers import add_content_into_db
+from app.usecases import add_content_into_db
 
 router = APIRouter()
 

@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
-from app.interfaces import AIAgentInterface, DatabaseManagerInterface
+from app.ports import AIAgentInterface, DatabaseManagerInterface
 
 
 async def get_db_from_state(request: Request) -> DatabaseManagerInterface:
