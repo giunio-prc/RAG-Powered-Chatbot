@@ -167,11 +167,11 @@ app/
 │   ├── database.py         # Document upload and stats endpoints
 │   ├── dependencies.py     # Dependency injection helpers
 │   └── prompting.py        # Chat query endpoints
-├── controllers/            # Business logic orchestration
+├── usecases/               # Business logic orchestration
 ├── databases/              # Vector database implementations
 │   ├── chroma_database.py  # Production ChromaDB implementation
 │   └── fake_database.py    # Mock implementation for testing
-├── interfaces/             # Abstract base classes (contracts)
+├── ports/                  # Abstract base classes (contracts)
 │   ├── agent.py            # AIAgentInterface
 │   ├── database.py         # DatabaseManagerInterface
 │   └── errors.py           # Custom exceptions
