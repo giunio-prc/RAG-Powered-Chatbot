@@ -53,7 +53,8 @@ async def documents_page():
                         # Validate file type
                         if not filename.endswith(".txt"):
                             ui.notify(
-                                f"Invalid file type: {filename}. Only .txt files allowed.",
+                                f"Invalid file type: {filename}. "
+                                "Only .txt files allowed.",
                                 type="negative",
                             )
                             return
@@ -85,7 +86,8 @@ async def documents_page():
                                         progress_text = line.strip()
                                         if progress_text == "API_LIMIT_EXCEEDED":
                                             ui.notify(
-                                                "API limit exceeded. Please try again later.",
+                                                "API limit exceeded. "
+                                                "Please try again later.",
                                                 type="warning",
                                             )
                                             return

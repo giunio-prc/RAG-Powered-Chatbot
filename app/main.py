@@ -31,7 +31,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     _ = app
     if not os.getenv("COHERE_API_KEY"):
         logger.warning(
-            "COHERE_API_KEY is not set. Using FakeDatabase and FakeAgent for testing purposes."
+            "COHERE_API_KEY is not set. "
+            "Using FakeDatabase and FakeAgent for testing purposes."
         )
         # Use fake implementations for testing purposes
         db = FakeDatabaseManager()

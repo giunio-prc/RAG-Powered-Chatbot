@@ -67,7 +67,8 @@ async def chat_page():
                     ):
                         # Avatar
                         with ui.element("div").classes(
-                            f"w-8 h-8 rounded-full flex items-center justify-center {avatar_bg}"
+                            "w-8 h-8 rounded-full flex items-center "
+                            f"justify-center {avatar_bg}"
                         ):
                             ui.icon(avatar_icon).classes("text-sm")
                         # Message bubble
@@ -140,7 +141,8 @@ async def chat_page():
                         # Message bubble
                         with ui.column().classes("gap-1"):
                             response_label = ui.label("").classes(
-                                "px-4 py-2 rounded-2xl bg-gray-100 text-gray-800 whitespace-pre-wrap"
+                                "px-4 py-2 rounded-2xl bg-gray-100 "
+                                "text-gray-800 whitespace-pre-wrap"
                             )
                             ui.label(ai_timestamp).classes("text-xs text-gray-400 px-2")
 
@@ -221,6 +223,7 @@ async def chat_page():
             with ui.row().classes("items-center gap-2"):
                 ui.icon("info").classes("text-blue-600")
                 ui.label(
-                    "This chatbot uses RAG (Retrieval-Augmented Generation) technology. "
-                    "Upload documents in the Documents section to provide context for more accurate answers."
+                    "This chatbot uses RAG (Retrieval-Augmented Generation) "
+                    "technology. Upload documents in the Documents section "
+                    "to provide context for more accurate answers."
                 ).classes("text-sm text-blue-800")

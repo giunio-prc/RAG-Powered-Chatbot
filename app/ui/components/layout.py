@@ -56,22 +56,23 @@ async def page_layout(active_page: Literal["chat", "documents"] = "chat"):
     agent_info = await get_agent_info()
 
     # Add Tailwind CSS and custom styles
-    ui.add_head_html("""
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <style>
-            body { font-family: 'Inter', sans-serif; }
-            .chat-container { scrollbar-width: thin; }
-            .chat-container::-webkit-scrollbar { width: 6px; }
-            .chat-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
-            /* QR code responsive: desktop fixed, mobile inline */
-            .qr-desktop { display: block; }
-            .qr-mobile { display: none; }
-            @media (max-width: 768px) {
-                .qr-desktop { display: none; }
-                .qr-mobile { display: flex; }
-            }
-        </style>
-    """)
+    ui.add_head_html(
+        "<link href='https://fonts.googleapis.com/css2"
+        "?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet'>"
+        "<style>"
+        "body { font-family: 'Inter', sans-serif; }"
+        ".chat-container { scrollbar-width: thin; }"
+        ".chat-container::-webkit-scrollbar { width: 6px; }"
+        ".chat-container::-webkit-scrollbar-thumb "
+        "{ background-color: #cbd5e1; border-radius: 3px; }"
+        ".qr-desktop { display: block; }"
+        ".qr-mobile { display: none; }"
+        "@media (max-width: 768px) {"
+        ".qr-desktop { display: none; }"
+        ".qr-mobile { display: flex; }"
+        "}"
+        "</style>"
+    )
 
     # Header with navigation
     with ui.header().classes("bg-blue-600 text-white"):
@@ -121,7 +122,8 @@ async def page_layout(active_page: Literal["chat", "documents"] = "chat"):
         # QR code inline for mobile - shown at bottom of content, scrollable
         if qr_path:
             with ui.column().classes(
-                "w-full items-center mt-8 mb-4 bg-white rounded-xl shadow-lg p-4 qr-mobile"
+                "w-full items-center mt-8 mb-4 bg-white "
+                "rounded-xl shadow-lg p-4 qr-mobile"
             ):
                 ui.image(str(qr_path)).classes("w-48 h-48")
                 ui.label("Scan to connect").classes(
