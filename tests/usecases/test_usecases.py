@@ -70,7 +70,7 @@ Third chunk starts here with more content.
 
 
 @pytest.mark.asyncio
-async def test_controller__can_stream_from_fake_agent(fake_database, fake_agent):
+async def test_usecase__can_stream_from_fake_agent(fake_database, fake_agent):
     streaming_response_generator = query_agent_with_stream_response(
         fake_database, fake_agent, "What time is it?"
     )
@@ -81,7 +81,7 @@ async def test_controller__can_stream_from_fake_agent(fake_database, fake_agent)
 
 
 @pytest.mark.asyncio
-async def test_controller__can_stream_from_cohere_agent(chroma_database, cohere_agent):
+async def test_usecase__can_stream_from_cohere_agent(chroma_database, cohere_agent):
     streaming_response_generator = query_agent_with_stream_response(
         chroma_database, cohere_agent, "What time is it?"
     )
@@ -118,7 +118,7 @@ Third chunk starts here with more content.
     with patch.object(
         fake_database, "add_text_to_db", side_effect=mock_add_text_with_api_limit
     ):
-        # Collect all responses from the controller
+        # Collect all responses
         responses = []
         async for response in add_content_into_db(fake_database, content):
             responses.append(response.strip())

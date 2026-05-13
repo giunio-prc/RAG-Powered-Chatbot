@@ -32,7 +32,7 @@ The application follows hexagonal architecture principles with clear separation 
 
 ### Core Components
 
-- **Interfaces** (`app/interfaces/`): Abstract contracts defining behavior
+- **Ports** (`app/ports/`): Abstract contracts defining behavior
   - `AIAgentInterface`: Contract for AI agents (query_with_context, get_stream_response)
   - `DatabaseManagerInterface`: Contract for vector databases (add_text_to_db, get_context, etc.)
 
@@ -44,7 +44,7 @@ The application follows hexagonal architecture principles with clear separation 
     - `ChromaDatabase`: Production implementation using ChromaDB with Cohere embeddings
     - `FakeDatabase`: Mock implementation for testing
 
-- **Controller** (`app/controllers`): Business logic orchestration
+- **Use Casess** (`app/usecases`): Business logic orchestration
 - **API Layer** (`app/api/`): FastAPI routers and HTTP handling
 - **UI Layer** (`app/ui/`): NiceGUI pages and components
   - `pages/chat.py`: Real-time chat interface with streaming responses
@@ -188,7 +188,7 @@ app/
 
 tests/                      # Test suite mirroring app structure
 ├── api/                    # API endpoint tests
-├── controller/             # Controller tests
+├── usecases/               # Controller tests
 └── databases/              # Database tests
 
 static/                     # Static assets (favicon)
