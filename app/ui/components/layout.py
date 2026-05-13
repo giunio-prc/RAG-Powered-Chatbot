@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 
+import httpx
 from loguru import logger
 from nicegui import ui
 
@@ -35,7 +36,7 @@ async def get_agent_info() -> dict:
             response = await client.get("/agent-info")
             response.raise_for_status()
             return response.json()
-    except Exception:
+    except httpx.HTTPError:
         # Default to production settings if API call fails
         return {
             "icon": "smart_toy",

@@ -2,6 +2,7 @@
 
 from datetime import datetime
 
+import httpx
 from nicegui import app, ui
 from nicegui.events import UploadEventArguments
 
@@ -110,7 +111,7 @@ async def documents_page():
                             # Refresh stats
                             await refresh_stats()
 
-                        except Exception as ex:
+                        except httpx.HTTPError as ex:
                             ui.notify(f"Upload failed: {ex!s}", type="negative")
                             upload_status.set_text(f"Failed: {filename}")
 
@@ -212,7 +213,7 @@ async def documents_page():
                             if show_toast:
                                 ui.notify("Statistics refreshed", type="info")
 
-                        except Exception as ex:
+                        except httpx.HTTPError as ex:
                             ui.notify(f"Failed to load stats: {ex!s}", type="negative")
 
                     refresh_btn.on_click(lambda: refresh_stats(show_toast=True))
@@ -232,7 +233,7 @@ async def documents_page():
                             add_activity("Emptied database")
                             await refresh_stats()
 
-                        except Exception as ex:
+                        except httpx.HTTPError as ex:
                             ui.notify(
                                 f"Failed to empty database: {ex!s}", type="negative"
                             )

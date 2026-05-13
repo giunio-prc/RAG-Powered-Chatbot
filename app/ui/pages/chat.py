@@ -3,6 +3,7 @@
 import json
 from datetime import datetime
 
+import httpx
 from httpx_sse import aconnect_sse
 from nicegui import app, ui
 
@@ -175,7 +176,7 @@ async def chat_page():
                     }
                 )
                 storage["chat_history"] = history
-            except Exception as e:
+            except httpx.HTTPError as e:
                 response_label.set_text(f"Error: {e!s}")
                 ui.notify(f"Error: {e!s}", type="negative")
 

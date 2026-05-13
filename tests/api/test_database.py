@@ -1,8 +1,11 @@
 import io
+from unittest.mock import MagicMock
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from app.agents import CohereAgent
+from app.api.dependencies import get_agent_from_state, get_db_from_state
 from app.databases import FakeDatabaseManager
 
 
@@ -195,11 +198,6 @@ class TestGetAgentInfoEndpoint:
         self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
     ):
         """Test that /agent-info returns correct info for CohereAgent."""
-        from unittest.mock import MagicMock
-
-        from app.agents import CohereAgent
-        from app.api.dependencies import get_agent_from_state, get_db_from_state
-
         # Create a mock CohereAgent (we don't want to actually call the API)
         mock_cohere_agent = MagicMock(spec=CohereAgent)
 

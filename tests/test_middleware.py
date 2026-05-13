@@ -1,4 +1,6 @@
 import uuid
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -11,9 +13,6 @@ from app.middleware import SessionCookieMiddleware
 
 @pytest.fixture
 def app():
-    from collections.abc import AsyncIterator
-    from contextlib import asynccontextmanager
-
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[dict]:
         _ = app
