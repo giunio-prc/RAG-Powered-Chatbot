@@ -1,8 +1,7 @@
 """Documents page UI components and handlers."""
 
-from collections.abc import MutableMapping
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any
 
 import httpx
 from nicegui import ui
@@ -10,6 +9,7 @@ from nicegui.elements.upload import Upload
 from nicegui.events import UploadEventArguments
 
 from app.ui.http_client import create_client
+from app.ui.services.activity import Activity, ActivityService
 from app.ui.utils import format_time
 
 
@@ -26,10 +26,14 @@ class StatsHandler:
         vector_count_label: ui.label,
         longest_vector_label: ui.label,
         last_updated_label: ui.label,
+        time_provider: Callable | None = None,
     ):
         self.vector_count_label = vector_count_label
         self.longest_vector_label = longest_vector_label
         self.last_updated_label = last_updated_label
+
+        self._time_provider = time_provider or datetime.now
+        self._format_time = format_time
 
     async def refresh_stats(self, show_toast: bool = False):
         """Refresh database statistics."""
@@ -45,7 +49,7 @@ class StatsHandler:
             self.vector_count_label.set_text(format_number(num_vectors))
             self.longest_vector_label.set_text(format_number(longest))
             self.last_updated_label.set_text(
-                f"Last updated: {format_time(datetime.now())}"
+                f"Last updated: {self._format_time(self._time_provider())}"
             )
 
             if show_toast:
@@ -56,45 +60,37 @@ class StatsHandler:
 
 
 class ActivityHandler:
-    """Handles recent activity display and management."""
+    """Thin UI handler that delegates business logic to ActivityService."""
 
-    def __init__(
-        self, storage: MutableMapping[str, Any], activity_container: ui.column
-    ):
-        self.storage = storage
+    def __init__(self, service: ActivityService, activity_container: ui.column):
+        self.service = service
         self.activity_container = activity_container
 
     def add_activity(self, message: str):
-        """Add an activity to the recent activity list."""
-        activities = self.storage.get("recent_activity", [])
-        activities.insert(
-            0,
-            {
-                "message": message,
-                "timestamp": format_time(datetime.now()),
-            },
-        )
-        # Keep only last 5
-        activities = activities[:5]
-        self.storage["recent_activity"] = activities
+        """Add an activity and re-render the list."""
+        self.service.add_activity(message)
         self.render_activities()
 
     def render_activities(self):
         """Render the activity list."""
         self.activity_container.clear()
-        activities = self.storage.get("recent_activity", [])
+        activities = self.service.get_activities()
 
         if not activities:
             with self.activity_container:
                 ui.label("No recent activity").classes("text-sm text-gray-400")
         else:
             for activity in activities:
-                with self.activity_container:
-                    with ui.row().classes(
-                        "items-center justify-between text-sm p-2 bg-gray-50 rounded"
-                    ):
-                        ui.label(activity["message"]).classes("text-gray-700")
-                        ui.label(activity["timestamp"]).classes("text-gray-400")
+                self._render_activity(activity)
+
+    def _render_activity(self, activity: Activity):
+        """Render a single activity item."""
+        with self.activity_container:
+            with ui.row().classes(
+                "items-center justify-between text-sm p-2 bg-gray-50 rounded"
+            ):
+                ui.label(activity.message).classes("text-gray-700")
+                ui.label(activity.timestamp).classes("text-gray-400")
 
 
 class UploadHandler:

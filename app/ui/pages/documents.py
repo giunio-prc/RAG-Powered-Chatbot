@@ -1,8 +1,6 @@
 """Documents page implementation using NiceGUI."""
 
-from collections.abc import MutableMapping
 from dataclasses import dataclass, field
-from typing import Any
 
 from nicegui import app, ui
 from nicegui.elements.upload import Upload
@@ -14,6 +12,7 @@ from app.ui.components.documents import (
     UploadHandler,
 )
 from app.ui.components.layout import page_layout
+from app.ui.services.activity import ActivityService
 
 
 @dataclass
@@ -38,6 +37,7 @@ class DbActionsState:
 async def documents_page():
     """Document management page."""
     storage = app.storage.browser
+    activity_service = ActivityService(storage)
     upload_state = UploadState()
     db_actions_state = DbActionsState()
 
@@ -52,7 +52,7 @@ async def documents_page():
             # Right column - Stats and actions
             with ui.column().classes("flex-1 min-w-80"):
                 stats_handler = _build_stats_section()
-                activity_handler = _build_activity_section(storage)
+                activity_handler = _build_activity_section(activity_service)
                 db_actions_handler = _build_database_actions_section(
                     stats_handler, activity_handler, db_actions_state
                 )
@@ -172,13 +172,13 @@ def _build_stats_section() -> StatsHandler:
     return stats_handler
 
 
-def _build_activity_section(storage: MutableMapping[str, Any]) -> ActivityHandler:
+def _build_activity_section(activity_service: ActivityService) -> ActivityHandler:
     """Build the recent activity section UI and return its handler."""
     with ui.card().classes("w-full mt-4"):
         ui.label("Recent Activity").classes("text-lg font-semibold mb-4")
         activity_container = ui.column().classes("w-full gap-2")
 
-    activity_handler = ActivityHandler(storage, activity_container)
+    activity_handler = ActivityHandler(activity_service, activity_container)
     activity_handler.render_activities()
 
     return activity_handler

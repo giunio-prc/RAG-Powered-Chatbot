@@ -35,7 +35,11 @@ asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
 omit = [
-  "app/ui/*",
+  "app/ui/components/*",
+  "app/ui/pages/*",
+  "app/ui/__init__.py",
+  "app/ui/http_client.py",
+  "app/ui/utils.py",
   "app/agents/cohere_agent.py",
   "app/databases/chroma_database.py",
   "app/main.py"

@@ -4,6 +4,7 @@ from nicegui import app, ui
 
 from app.ui.components.chat import ChatHandler
 from app.ui.components.layout import page_layout
+from app.ui.services.chat import ChatService
 
 
 @ui.page("/", favicon="static/favicon.svg", title="RAG Chatbot")
@@ -11,8 +12,7 @@ async def chat_page():
     """Chat interface page."""
     # Use user storage for chat history (server-side, persists across navigation)
     storage = app.storage.user
-    if "chat_history" not in storage:
-        storage["chat_history"] = []
+    chat_service = ChatService(storage)
 
     async with page_layout(active_page="chat"):
         # Chat header
@@ -41,9 +41,9 @@ async def chat_page():
             )
             send_btn = ui.button("Send", icon="send").props("unelevated color=primary")
 
-        # Create chat handler
+        # Create chat handler with service
         chat_handler = ChatHandler(
-            storage=storage,
+            service=chat_service,
             messages_area=messages_area,
             chat_container=chat_container,
             input_field=input_field,
