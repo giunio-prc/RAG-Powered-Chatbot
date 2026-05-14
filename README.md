@@ -46,9 +46,12 @@ The application follows hexagonal architecture principles with clear separation 
 
 - **Use Casess** (`app/usecases`): Business logic orchestration
 - **API Layer** (`app/api/`): FastAPI routers and HTTP handling
-- **UI Layer** (`app/ui/`): NiceGUI pages and components
-  - `pages/chat.py`: Real-time chat interface with streaming responses
-  - `pages/documents.py`: Document upload and database management
+- **UI Layer** (`app/ui/`): NiceGUI pages, components, and services
+  - `services/`: Pure business logic (testable without UI framework)
+    - `ChatService`: Chat history management
+    - `ActivityService`: Activity tracking
+  - `components/`: UI handlers that delegate to services
+  - `pages/`: Page implementations (chat, documents)
 
 ## Quick Start
 
@@ -138,7 +141,7 @@ CHROMA_SERVER_PORT=8001
 uv run ruff check --fix
 
 # Run type checking
-uv run mypy
+uv run ty check
 
 # Run pre-commit hooks manually
 uv run pre-commit run
@@ -176,7 +179,12 @@ app/
 │   ├── database.py         # DatabaseManagerInterface
 │   └── errors.py           # Custom exceptions
 ├── ui/                     # NiceGUI web interface
-│   ├── components/         # Reusable UI components
+│   ├── services/           # Pure business logic (testable)
+│   │   ├── chat.py         # ChatService - chat history management
+│   │   └── activity.py     # ActivityService - activity tracking
+│   ├── components/         # UI handlers (thin layer over services)
+│   │   ├── chat.py         # ChatHandler - UI for chat
+│   │   ├── documents.py    # Document-related UI handlers
 │   │   └── layout.py       # Page layout component
 │   ├── pages/              # Page implementations
 │   │   ├── chat.py         # Real-time chat interface
@@ -188,8 +196,9 @@ app/
 
 tests/                      # Test suite mirroring app structure
 ├── api/                    # API endpoint tests
-├── usecases/               # Controller tests
-└── databases/              # Database tests
+├── usecases/               # Use case tests
+├── databases/              # Database tests
+└── ui/                     # UI service tests (pure logic, no mocks)
 
 static/                     # Static assets (favicon)
 docs/                       # Sample documents for testing
@@ -241,9 +250,12 @@ db_chroma/                  # ChromaDB storage (persistent mode)
 
 - **Unit Tests**: Located in `tests/` directory mirroring `app/` structure
 - **Mock Implementations**: `FakeAgent` and `FakeDatabase` for isolated testing
+- **UI Services**: Pure business logic in `app/ui/services/` tested without mocks
+  - `ChatService` and `ActivityService` use dependency injection for time providers
+  - Tests use simple dict storage, no UI framework dependencies
 - **Test Data**: Sample documents in `tests/data/`
 - **Async Support**: Tests support FastAPI's async operations
-- **Coverage**: Use `pytest --cov` for coverage reports
+- **Coverage**: 100% coverage enforced (UI components/pages excluded)
 
 ## Contributing
 
