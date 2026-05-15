@@ -1,8 +1,7 @@
 from collections.abc import AsyncIterable
 from typing import Annotated
 
-from cohere.errors import TooManyRequestsError
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends
 from fastapi.sse import EventSourceResponse
 
 from app.api.dependencies import (
@@ -22,14 +21,7 @@ async def query_agent_endpoint(
     question: Annotated[str, Body()],
     cookie_session: Annotated[str, Depends(get_cookie_session)],
 ) -> str:  # pragma: no cover
-    try:
-        response = await query_agent(db, agent, question, cookie_session)
-        return response
-    except TooManyRequestsError:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many requests. Please try again later.",
-        )
+    return await query_agent(db, agent, question, cookie_session)
 
 
 @router.post("/query-stream", response_class=EventSourceResponse)

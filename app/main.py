@@ -4,7 +4,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import TypedDict
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from nicegui.ui_run_with import run_with
@@ -14,7 +14,6 @@ from app.api import database, prompting
 from app.databases import ChromaDatabaseManager, FakeDatabaseManager
 from app.middleware import SessionCookieMiddleware
 from app.ports import AIAgentInterface, DatabaseManagerInterface
-from app.ports.errors import TooManyRequestsError
 from app.ui import setup_pages
 
 logger = logging.getLogger("uvicorn")
@@ -66,15 +65,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def health_check():
     """Health check endpoint"""
     return JSONResponse(content={"status": "ok"})
-
-
-@app.exception_handler(TooManyRequestsError)
-async def too_many_request_error(request: Request, exc: TooManyRequestsError):
-    _ = request
-    return JSONResponse(
-        status_code=exc.status_code or status.HTTP_429_TOO_MANY_REQUESTS,
-        content={"message": "Too Many requests"},
-    )
 
 
 # Initialize NiceGUI pages and mount on FastAPI
