@@ -1,3 +1,4 @@
+import uuid
 from typing import Annotated
 
 from fastapi import Depends, Request
@@ -24,4 +25,6 @@ get_agent_from_state_annotation = Annotated[
 
 
 async def get_cookie_session(request: Request) -> str:
-    return request.cookies.get("SESSION", "default")
+    if "id" not in request.session:
+        request.session["id"] = str(uuid.uuid4())
+    return request.session["id"]

@@ -8,11 +8,11 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from nicegui.ui_run_with import run_with
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.agents import CohereAgent, FakeAgent
 from app.api import database, prompting
 from app.databases import ChromaDatabaseManager, FakeDatabaseManager
-from app.middleware import SessionCookieMiddleware
 from app.ports import AIAgentInterface, DatabaseManagerInterface
 from app.ports.errors import TooManyRequestsError
 from app.ui import setup_pages
@@ -23,7 +23,6 @@ logger = logging.getLogger("uvicorn")
 class State(TypedDict):
     db: DatabaseManagerInterface
     agent: AIAgentInterface
-    cookies: set[str]
 
 
 @asynccontextmanager
@@ -41,7 +40,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
         db = ChromaDatabaseManager()
         agent = CohereAgent()
 
-    yield {"db": db, "agent": agent, "cookies": set()}
+    yield {"db": db, "agent": agent}
 
 
 app = FastAPI(title="AI RAG Assistant", lifespan=lifespan)
@@ -51,8 +50,6 @@ if analytics_id := os.getenv("ANALYTICS_ID"):
     from api_analytics.fastapi import Analytics
 
     app.add_middleware(Analytics, api_key=analytics_id)
-
-app.add_middleware(SessionCookieMiddleware, cookie_name="SESSION")
 
 # Include API routers
 app.include_router(database.router)
@@ -84,4 +81,13 @@ setup_pages()
 run_with(
     app,
     storage_secret=os.getenv("NICEGUI_STORAGE_SECRET", "rag-chatbot-secret-key"),
+)
+
+# Add SessionMiddleware after run_with to ensure it wraps all routes including NiceGUI
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SESSION_SECRET_KEY", "rag-chatbot-session-secret"),
+    session_cookie="SESSION",
+    max_age=60 * 60 * 24 * 30,  # 30 days
+    https_only=False,  # Set to True in production with HTTPS
 )
