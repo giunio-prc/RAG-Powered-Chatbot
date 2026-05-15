@@ -21,7 +21,7 @@ def app():
     test_app.add_middleware(SessionCookieMiddleware, cookie_name="TEST_SESSION")
 
     @test_app.get("/test")
-    async def test_endpoint(request: Request):
+    async def _test_endpoint(request: Request):
         _ = request
         return {"message": "test"}
 
@@ -98,3 +98,15 @@ class TestSessionCookieMiddleware:
         # Both should be valid UUIDs
         uuid.UUID(session1)
         uuid.UUID(session2)
+
+    def test_creates_new_session_when_different_cookie_present(self, client):
+        """Test that middleware creates a new session
+        when a different cookie is present."""
+        # Send request with a different cookie (not TEST_SESSION)
+        response = client.get("/test", cookies={"OTHER_COOKIE": "some-value"})
+
+        assert response.status_code == 200
+        assert "TEST_SESSION" in response.cookies
+
+        session_id = response.cookies["TEST_SESSION"]
+        uuid.UUID(session_id)  # Verify it's a valid UUID

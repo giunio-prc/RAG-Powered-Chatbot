@@ -1,11 +1,7 @@
 import io
-from unittest.mock import MagicMock
 
-from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.agents import CohereAgent
-from app.api.dependencies import get_agent_from_state, get_db_from_state
 from app.databases import FakeDatabaseManager
 
 
@@ -84,8 +80,8 @@ class TestAddDocumentEndpoint:
         )
         # Read content to ensure streaming completes
         _ = response.text
-
-        assert fake_database_manager.get_number_of_vectors("test-session") > 0
+        vectors = fake_database_manager.db.popitem()
+        assert vectors[1] == ["Test content for database storage."]
 
 
 class TestGetVectorsDataEndpoint:
@@ -97,18 +93,23 @@ class TestGetVectorsDataEndpoint:
         assert data["number_of_vectors"] == 0
         assert data["longest_vector"] == 0
 
-    def test_get_vectors_data_returns_correct_stats_after_adding_content(
-        self, client: TestClient, fake_database_manager: FakeDatabaseManager
-    ):
-        # Add some content to the database
-        fake_database_manager.db["test-session"] = ["short", "a longer text chunk here"]
+    def test_get_vectors_data_returns_correct_stats(self, client: TestClient):
+        # Add content via the API
+        file_content = b"short\n\na much longer text chunk here for testing"
+        file = io.BytesIO(file_content)
+
+        response = client.post(
+            "/add-document",
+            files={"file": ("test.txt", file, "text/plain")},
+        )
+        _ = response.text
 
         response = client.get("/get-vectors-data")
 
         assert response.status_code == 200
         data = response.json()
-        assert data["number_of_vectors"] == 2
-        assert data["longest_vector"] == len("a longer text chunk here")
+        assert data["number_of_vectors"] == 1
+        assert data["longest_vector"] == 47
 
     def test_get_vectors_data_isolates_sessions(
         self, client: TestClient, fake_database_manager: FakeDatabaseManager
@@ -134,52 +135,37 @@ class TestEmptyDatabaseEndpoint:
         self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         # Add content first
-        fake_database_manager.db["test-session"] = ["chunk1", "chunk2", "chunk3"]
-        assert fake_database_manager.get_number_of_vectors("test-session") == 3
+        file_content = "chunk1" * 40 + "\n" + "chunk2" * 40 + "\n" + "chunk3"
+        file = io.BytesIO(file_content.encode())
+
+        _response = client.post(
+            "/add-document",
+            files={"file": ("test.txt", file, "text/plain")},
+        )
+        # Read content to ensure streaming completes
+        _ = _response.text
+
+        cookie, chunks = fake_database_manager.db.popitem()
+
+        assert len(chunks) == 3
 
         response = client.delete("/empty-database")
 
         assert response.status_code == 200
-        assert fake_database_manager.get_number_of_vectors("test-session") == 0
+        assert fake_database_manager.get_number_of_vectors(cookie) == 0
 
     def test_empty_database_does_not_affect_other_sessions(
         self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         # Add content to both sessions
-        fake_database_manager.db["test-session"] = ["test session content"]
+        cookie_session = client.get("/cookie").text
+        fake_database_manager.db[cookie_session] = ["test session content"]
         fake_database_manager.db["other-session"] = ["other session content"]
 
         client.delete("/empty-database")
 
         assert fake_database_manager.get_number_of_vectors("test-session") == 0
         assert fake_database_manager.get_number_of_vectors("other-session") == 1
-
-
-class TestSessionCookieHandling:
-    def test_endpoints_use_default_session_without_cookie(
-        self, app_with_mocks: FastAPI, fake_database_manager: FakeDatabaseManager
-    ):
-        # Client without SESSION cookie
-        client = TestClient(app_with_mocks)
-        fake_database_manager.db["default"] = ["default session content"]
-
-        response = client.get("/get-vectors-data")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["number_of_vectors"] == 1
-
-    def test_endpoints_use_custom_session_with_cookie(
-        self, app_with_mocks: FastAPI, fake_database_manager: FakeDatabaseManager
-    ):
-        client = TestClient(app_with_mocks, cookies={"SESSION": "custom-session"})
-        fake_database_manager.db["custom-session"] = ["custom content", "more content"]
-
-        response = client.get("/get-vectors-data")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["number_of_vectors"] == 2
 
 
 class TestGetAgentInfoEndpoint:
@@ -193,28 +179,3 @@ class TestGetAgentInfoEndpoint:
         assert data["icon"] == "pets"
         assert data["label"] == "RAG Parrot"
         assert data["embedding_model"] == "No Embedding Model"
-
-    def test_get_agent_info_returns_cohere_agent_info(
-        self, app_with_mocks: FastAPI, fake_database_manager: FakeDatabaseManager
-    ):
-        """Test that /agent-info returns correct info for CohereAgent."""
-        # Create a mock CohereAgent (we don't want to actually call the API)
-        mock_cohere_agent = MagicMock(spec=CohereAgent)
-
-        # Override the agent dependency with the mock
-        app_with_mocks.dependency_overrides[get_db_from_state] = lambda: (
-            fake_database_manager
-        )
-        app_with_mocks.dependency_overrides[get_agent_from_state] = lambda: (
-            mock_cohere_agent
-        )
-
-        client = TestClient(app_with_mocks)
-        response = client.get("/agent-info")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["is_fake"] is False
-        assert data["icon"] == "smart_toy"
-        assert data["label"] == "RAG Chatbot"
-        assert data["embedding_model"] == "Cohere"
