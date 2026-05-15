@@ -1,6 +1,4 @@
-from asyncio import sleep
 from collections.abc import AsyncGenerator
-from random import random
 
 from app.ports import AIAgentInterface, DatabaseManagerInterface
 from app.ports.errors import EmbeddingAPILimitError, TooManyRequestsError
@@ -24,9 +22,12 @@ async def query_agent(
     question: str,
     cookie: str | None = None,
 ) -> str:
-    context = await db.get_context(question, cookie)
-    answer = await ai_agent.query_with_context(question, context)
-    return answer
+    try:
+        context = await db.get_context(question, cookie)
+        answer = await ai_agent.query_with_context(question, context)
+        return answer
+    except TooManyRequestsError:  # pragma: no cover
+        return "API key limit exceeded. Please try again later."
 
 
 async def query_agent_with_stream_response(
@@ -40,6 +41,5 @@ async def query_agent_with_stream_response(
         async for chunk in ai_agent.get_stream_response(question, context):
             yield chunk
     except TooManyRequestsError:  # pragma: no cover
-        for char in "API key limit exceeded. Please try again later.":
-            await sleep(0.05 * random())
-            yield char
+        for token in "API key limit exceeded. Please try again later.".split(" "):
+            yield token
