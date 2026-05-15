@@ -11,14 +11,14 @@ data_location = Path(__file__).parent / "data"
 
 
 @pytest.fixture
-def fake_database() -> Generator[FakeDatabaseManager]:
-    database = FakeDatabaseManager()
-    yield database
-    database.empty_database()
+def fake_database_manager() -> Generator[FakeDatabaseManager]:
+    database_manager = FakeDatabaseManager()
+    yield database_manager
+    database_manager.empty_database()
 
 
 @pytest.fixture
-def chroma_database() -> Generator[ChromaDatabaseManager]:
+def chroma_database_manager() -> Generator[ChromaDatabaseManager]:
     if "COHERE_API_KEY" not in os.environ:
         pytest.skip()
     database = ChromaDatabaseManager()

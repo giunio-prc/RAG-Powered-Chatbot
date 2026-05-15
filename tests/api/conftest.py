@@ -11,13 +11,13 @@ from app.databases import FakeDatabaseManager
 
 @pytest.fixture
 def app_with_mocks(
-    fake_database: FakeDatabaseManager, fake_agent: FakeAgent
+    fake_database_manager: FakeDatabaseManager, fake_agent: FakeAgent
 ) -> FastAPI:
     app = FastAPI()
     app.include_router(database_router)
     app.include_router(prompting_router)
 
-    app.dependency_overrides[get_db_from_state] = lambda: fake_database
+    app.dependency_overrides[get_db_from_state] = lambda: fake_database_manager
     app.dependency_overrides[get_agent_from_state] = lambda: fake_agent
 
     return app

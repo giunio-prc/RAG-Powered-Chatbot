@@ -13,10 +13,12 @@ from tests.conftest import data_location
 
 
 @pytest.mark.asyncio
-async def test_load_initial_documents__load_chunks_from_file_in_folder(fake_database):
-    fake_database.load_documents_from_folder(data_location)
+async def test_load_initial_documents__load_chunks_from_file_in_folder(
+    fake_database_manager,
+):
+    fake_database_manager.load_documents_from_folder(data_location)
 
-    chunks = fake_database.get_chunks()
+    chunks = fake_database_manager.get_chunks()
 
     assert len(chunks) == 18
     expected_content_chunk = (
@@ -29,7 +31,7 @@ async def test_load_initial_documents__load_chunks_from_file_in_folder(fake_data
 
 
 @pytest.mark.asyncio
-async def test_add_content_into_db__streams_progress_updates(fake_database):
+async def test_add_content_into_db__streams_progress_updates(fake_database_manager):
     content = """
 First chunk of content that should be split.
 This is line 2.
@@ -42,7 +44,7 @@ Third chunk starts here with more content.
 """
 
     progress_updates = []
-    async for progress_str in add_content_into_db(fake_database, content):
+    async for progress_str in add_content_into_db(fake_database_manager, content):
         # Verify each progress update is a string with newline
         assert isinstance(progress_str, str)
         assert progress_str.endswith("\n")
@@ -65,14 +67,14 @@ Third chunk starts here with more content.
     assert progress_updates[-1] == 100.0
 
     # Verify content was actually added to database
-    chunks = fake_database.get_chunks()
+    chunks = fake_database_manager.get_chunks()
     assert len(chunks) > 0
 
 
 @pytest.mark.asyncio
-async def test_usecase__can_stream_from_fake_agent(fake_database, fake_agent):
+async def test_usecase__can_stream_from_fake_agent(fake_database_manager, fake_agent):
     streaming_response_generator = query_agent_with_stream_response(
-        fake_database, fake_agent, "What time is it?"
+        fake_database_manager, fake_agent, "What time is it?"
     )
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
@@ -81,9 +83,11 @@ async def test_usecase__can_stream_from_fake_agent(fake_database, fake_agent):
 
 
 @pytest.mark.asyncio
-async def test_usecase__can_stream_from_cohere_agent(chroma_database, cohere_agent):
+async def test_usecase__can_stream_from_cohere_agent(
+    chroma_database_manager, cohere_agent
+):
     streaming_response_generator = query_agent_with_stream_response(
-        chroma_database, cohere_agent, "What time is it?"
+        chroma_database_manager, cohere_agent, "What time is it?"
     )
     assert isinstance(streaming_response_generator, AsyncGenerator)
     response = [chunk async for chunk in streaming_response_generator]
@@ -91,7 +95,9 @@ async def test_usecase__can_stream_from_cohere_agent(chroma_database, cohere_age
 
 
 @pytest.mark.asyncio
-async def test_add_content_into_db__handles_api_limit_error_gracefully(fake_database):
+async def test_add_content_into_db__handles_api_limit_error_gracefully(
+    fake_database_manager,
+):
     content = """
 First chunk of content that should be split.
 This is line 2.
@@ -106,9 +112,9 @@ Third chunk starts here with more content.
     # Mock the add_text_to_db method to simulate API limit error after partial upload
     async def mock_add_text_with_api_limit(text: str, cookie: str | None = None):
         _ = cookie
-        chunks = fake_database.text_splitter.split_text(text)
+        chunks = fake_database_manager.text_splitter.split_text(text)
         # Simulate successful upload of first chunk, then API limit error
-        fake_database.db["default"].append(chunks[0])  # Upload first chunk
+        fake_database_manager.db["default"].append(chunks[0])  # Upload first chunk
         yield 25.0  # First chunk progress
 
         # Simulate API limit error during second chunk
@@ -116,11 +122,13 @@ Third chunk starts here with more content.
 
     # Patch the fake_database method
     with patch.object(
-        fake_database, "add_text_to_db", side_effect=mock_add_text_with_api_limit
+        fake_database_manager,
+        "add_text_to_db",
+        side_effect=mock_add_text_with_api_limit,
     ):
         # Collect all responses
         responses = []
-        async for response in add_content_into_db(fake_database, content):
+        async for response in add_content_into_db(fake_database_manager, content):
             responses.append(response.strip())
 
         # Verify we got progress update followed by API limit signal
@@ -131,7 +139,7 @@ Third chunk starts here with more content.
 
 @pytest.mark.asyncio
 async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
-    fake_database,
+    fake_database_manager,
 ):
     content = "First chunk that will fail immediately."
 
@@ -144,11 +152,13 @@ async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
 
     # Patch the fake_database method
     with patch.object(
-        fake_database, "add_text_to_db", side_effect=mock_add_text_immediate_failure
+        fake_database_manager,
+        "add_text_to_db",
+        side_effect=mock_add_text_immediate_failure,
     ):
         # Collect all responses from the controller
         responses = []
-        async for response in add_content_into_db(fake_database, content):
+        async for response in add_content_into_db(fake_database_manager, content):
             responses.append(response.strip())
 
         # Verify we only got the API limit signal with no progress updates
@@ -157,10 +167,12 @@ async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
 
 
 @pytest.mark.asyncio
-async def test_query_agent__returns_answer_from_fake_agent(fake_database, fake_agent):
+async def test_query_agent__returns_answer_from_fake_agent(
+    fake_database_manager, fake_agent
+):
     question = "What time is it?"
 
-    answer = await query_agent(fake_database, fake_agent, question)
+    answer = await query_agent(fake_database_manager, fake_agent, question)
 
     assert isinstance(answer, str)
     assert question in answer
@@ -169,15 +181,17 @@ async def test_query_agent__returns_answer_from_fake_agent(fake_database, fake_a
 
 
 @pytest.mark.asyncio
-async def test_query_agent__includes_context_when_available(fake_database, fake_agent):
+async def test_query_agent__includes_context_when_available(
+    fake_database_manager, fake_agent
+):
     # Add some content to the database first
     content = "The store opens at 9am and closes at 6pm every day."
-    async for _ in fake_database.add_text_to_db(content):
+    async for _ in fake_database_manager.add_text_to_db(content):
         pass
 
     question = "What are the opening hours?"
 
-    answer = await query_agent(fake_database, fake_agent, question)
+    answer = await query_agent(fake_database_manager, fake_agent, question)
 
     assert isinstance(answer, str)
     assert question in answer
@@ -185,10 +199,12 @@ async def test_query_agent__includes_context_when_available(fake_database, fake_
 
 
 @pytest.mark.asyncio
-async def test_query_agent__works_with_cohere_agent(chroma_database, cohere_agent):
+async def test_query_agent__works_with_cohere_agent(
+    chroma_database_manager, cohere_agent
+):
     question = "What time is it?"
 
-    answer = await query_agent(chroma_database, cohere_agent, question)
+    answer = await query_agent(chroma_database_manager, cohere_agent, question)
 
     assert isinstance(answer, str)
     assert len(answer) > 0

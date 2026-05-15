@@ -72,7 +72,7 @@ class TestAddDocumentEndpoint:
         assert "cannot be uploaded" in response.json()["detail"]
 
     def test_add_document_stores_content_in_database(
-        self, client: TestClient, fake_database: FakeDatabaseManager
+        self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         file_content = b"Test content for database storage."
         file = io.BytesIO(file_content)
@@ -85,7 +85,7 @@ class TestAddDocumentEndpoint:
         # Read content to ensure streaming completes
         _ = response.text
 
-        assert fake_database.get_number_of_vectors("test-session") > 0
+        assert fake_database_manager.get_number_of_vectors("test-session") > 0
 
 
 class TestGetVectorsDataEndpoint:
@@ -98,10 +98,10 @@ class TestGetVectorsDataEndpoint:
         assert data["longest_vector"] == 0
 
     def test_get_vectors_data_returns_correct_stats_after_adding_content(
-        self, client: TestClient, fake_database: FakeDatabaseManager
+        self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         # Add some content to the database
-        fake_database.db["test-session"] = ["short", "a longer text chunk here"]
+        fake_database_manager.db["test-session"] = ["short", "a longer text chunk here"]
 
         response = client.get("/get-vectors-data")
 
@@ -111,10 +111,10 @@ class TestGetVectorsDataEndpoint:
         assert data["longest_vector"] == len("a longer text chunk here")
 
     def test_get_vectors_data_isolates_sessions(
-        self, client: TestClient, fake_database: FakeDatabaseManager
+        self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         # Add content to a different session
-        fake_database.db["other-session"] = ["content from other session"]
+        fake_database_manager.db["other-session"] = ["content from other session"]
 
         response = client.get("/get-vectors-data")
 
@@ -131,37 +131,37 @@ class TestEmptyDatabaseEndpoint:
         assert response.json()["message"] == "Database emptied successfully"
 
     def test_empty_database_clears_content(
-        self, client: TestClient, fake_database: FakeDatabaseManager
+        self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         # Add content first
-        fake_database.db["test-session"] = ["chunk1", "chunk2", "chunk3"]
-        assert fake_database.get_number_of_vectors("test-session") == 3
+        fake_database_manager.db["test-session"] = ["chunk1", "chunk2", "chunk3"]
+        assert fake_database_manager.get_number_of_vectors("test-session") == 3
 
         response = client.delete("/empty-database")
 
         assert response.status_code == 200
-        assert fake_database.get_number_of_vectors("test-session") == 0
+        assert fake_database_manager.get_number_of_vectors("test-session") == 0
 
     def test_empty_database_does_not_affect_other_sessions(
-        self, client: TestClient, fake_database: FakeDatabaseManager
+        self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):
         # Add content to both sessions
-        fake_database.db["test-session"] = ["test session content"]
-        fake_database.db["other-session"] = ["other session content"]
+        fake_database_manager.db["test-session"] = ["test session content"]
+        fake_database_manager.db["other-session"] = ["other session content"]
 
         client.delete("/empty-database")
 
-        assert fake_database.get_number_of_vectors("test-session") == 0
-        assert fake_database.get_number_of_vectors("other-session") == 1
+        assert fake_database_manager.get_number_of_vectors("test-session") == 0
+        assert fake_database_manager.get_number_of_vectors("other-session") == 1
 
 
 class TestSessionCookieHandling:
     def test_endpoints_use_default_session_without_cookie(
-        self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
+        self, app_with_mocks: FastAPI, fake_database_manager: FakeDatabaseManager
     ):
         # Client without SESSION cookie
         client = TestClient(app_with_mocks)
-        fake_database.db["default"] = ["default session content"]
+        fake_database_manager.db["default"] = ["default session content"]
 
         response = client.get("/get-vectors-data")
 
@@ -170,10 +170,10 @@ class TestSessionCookieHandling:
         assert data["number_of_vectors"] == 1
 
     def test_endpoints_use_custom_session_with_cookie(
-        self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
+        self, app_with_mocks: FastAPI, fake_database_manager: FakeDatabaseManager
     ):
         client = TestClient(app_with_mocks, cookies={"SESSION": "custom-session"})
-        fake_database.db["custom-session"] = ["custom content", "more content"]
+        fake_database_manager.db["custom-session"] = ["custom content", "more content"]
 
         response = client.get("/get-vectors-data")
 
@@ -195,14 +195,16 @@ class TestGetAgentInfoEndpoint:
         assert data["embedding_model"] == "No Embedding Model"
 
     def test_get_agent_info_returns_cohere_agent_info(
-        self, app_with_mocks: FastAPI, fake_database: FakeDatabaseManager
+        self, app_with_mocks: FastAPI, fake_database_manager: FakeDatabaseManager
     ):
         """Test that /agent-info returns correct info for CohereAgent."""
         # Create a mock CohereAgent (we don't want to actually call the API)
         mock_cohere_agent = MagicMock(spec=CohereAgent)
 
         # Override the agent dependency with the mock
-        app_with_mocks.dependency_overrides[get_db_from_state] = lambda: fake_database
+        app_with_mocks.dependency_overrides[get_db_from_state] = lambda: (
+            fake_database_manager
+        )
         app_with_mocks.dependency_overrides[get_agent_from_state] = lambda: (
             mock_cohere_agent
         )
