@@ -1,5 +1,3 @@
-import pytest
-
 from tests.conftest import data_location
 
 
@@ -9,7 +7,6 @@ def test_fake_database__returns_zero_length_of_longest_vector_when_empty(
     assert fake_database_manager.get_length_of_longest_vector() == 0
 
 
-@pytest.mark.asyncio
 async def test_fake_database__can_return_context(fake_database_manager):
     fake_database_manager.load_documents_from_folder(data_location)
 

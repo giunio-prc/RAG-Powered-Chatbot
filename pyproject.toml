@@ -32,6 +32,7 @@ select = ["I", "E", "F", "Q", "FAST", "UP", "ARG", "BLE", "C", "PL"]
 [tool.pytest.ini_options]
 pythonpath = "."
 asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 omit = [
