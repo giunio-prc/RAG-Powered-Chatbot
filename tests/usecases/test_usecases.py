@@ -1,8 +1,6 @@
 from collections.abc import AsyncGenerator
 from unittest.mock import patch
 
-import pytest
-
 from app.ports.errors import EmbeddingAPILimitError
 from app.usecases import (
     add_content_into_db,
@@ -12,7 +10,6 @@ from app.usecases import (
 from tests.conftest import data_location
 
 
-@pytest.mark.asyncio
 async def test_load_initial_documents__load_chunks_from_file_in_folder(
     fake_database_manager,
 ):
@@ -30,7 +27,6 @@ async def test_load_initial_documents__load_chunks_from_file_in_folder(
     assert expected_content_chunk in chunks
 
 
-@pytest.mark.asyncio
 async def test_add_content_into_db__streams_progress_updates(fake_database_manager):
     content = """
 First chunk of content that should be split.
@@ -71,7 +67,6 @@ Third chunk starts here with more content.
     assert len(chunks) > 0
 
 
-@pytest.mark.asyncio
 async def test_usecase__can_stream_from_fake_agent(fake_database_manager, fake_agent):
     streaming_response_generator = query_agent_with_stream_response(
         fake_database_manager, fake_agent, "What time is it?"
@@ -82,7 +77,6 @@ async def test_usecase__can_stream_from_fake_agent(fake_database_manager, fake_a
     assert response[0] == "You "
 
 
-@pytest.mark.asyncio
 async def test_usecase__can_stream_from_cohere_agent(
     chroma_database_manager, cohere_agent
 ):
@@ -94,7 +88,6 @@ async def test_usecase__can_stream_from_cohere_agent(
     assert len(response) > 20
 
 
-@pytest.mark.asyncio
 async def test_add_content_into_db__handles_api_limit_error_gracefully(
     fake_database_manager,
 ):
@@ -137,7 +130,6 @@ Third chunk starts here with more content.
         assert responses[1] == "API_LIMIT_EXCEEDED"  # Error signal
 
 
-@pytest.mark.asyncio
 async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
     fake_database_manager,
 ):
@@ -166,7 +158,6 @@ async def test_add_content_into_db__handles_api_limit_error_on_first_chunk(
         assert responses[0] == "API_LIMIT_EXCEEDED"
 
 
-@pytest.mark.asyncio
 async def test_query_agent__returns_answer_from_fake_agent(
     fake_database_manager, fake_agent
 ):
@@ -180,7 +171,6 @@ async def test_query_agent__returns_answer_from_fake_agent(
     assert "without any context" in answer
 
 
-@pytest.mark.asyncio
 async def test_query_agent__includes_context_when_available(
     fake_database_manager, fake_agent
 ):
@@ -198,7 +188,6 @@ async def test_query_agent__includes_context_when_available(
     assert "With the following context:" in answer
 
 
-@pytest.mark.asyncio
 async def test_query_agent__works_with_cohere_agent(
     chroma_database_manager, cohere_agent
 ):
