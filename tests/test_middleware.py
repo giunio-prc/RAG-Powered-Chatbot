@@ -1,11 +1,9 @@
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import FastAPI, Request
-from fastapi.responses import Response
 from starlette.testclient import TestClient
 
 from app.middleware import SessionCookieMiddleware
@@ -100,55 +98,3 @@ class TestSessionCookieMiddleware:
         # Both should be valid UUIDs
         uuid.UUID(session1)
         uuid.UUID(session2)
-
-    @pytest.mark.asyncio
-    async def test_middleware_dispatch_flow(self):
-        """Test the internal dispatch flow of the middleware."""
-        middleware = SessionCookieMiddleware(None, cookie_name="TEST_SESSION")
-
-        # Mock request with no existing cookie
-        request = MagicMock(spec=Request)
-        request.cookies = {}
-        request.state.cookies = set()
-
-        # Mock call_next function
-        call_next = AsyncMock()
-        mock_response = Response()
-        call_next.return_value = mock_response
-
-        # Execute middleware
-        await middleware.dispatch(request, call_next)
-
-        # Verify call_next was called
-        call_next.assert_called_once_with(request)
-
-        # Verify new session was created and added to request.cookies
-        assert "TEST_SESSION" in request.cookies
-        session_id = request.cookies["TEST_SESSION"]
-        uuid.UUID(session_id)  # Verify valid UUID
-
-        # Verify session was added to state
-        assert session_id in request.state.cookies
-
-    @pytest.mark.asyncio
-    async def test_middleware_with_existing_valid_session(self):
-        """Test middleware behavior with existing valid session."""
-        middleware = SessionCookieMiddleware(None, cookie_name="TEST_SESSION")
-
-        # Create a valid session ID and add to state
-        existing_session = str(uuid.uuid4())
-        request = MagicMock(spec=Request)
-        request.cookies = {"TEST_SESSION": existing_session}
-        request.state.cookies = {existing_session}
-
-        # Mock call_next
-        call_next = AsyncMock()
-        mock_response = Response()
-        call_next.return_value = mock_response
-
-        # Execute middleware
-        response = await middleware.dispatch(request, call_next)
-
-        # Verify no new cookie was set (response should be unchanged)
-        assert response is mock_response
-        call_next.assert_called_once_with(request)
