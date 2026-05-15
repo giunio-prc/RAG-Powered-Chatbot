@@ -1,32 +1,69 @@
 import uuid
+from http.cookies import SimpleCookie
 
-from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.datastructures import MutableHeaders
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 
-class SessionCookieMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, cookie_name: str = "SESSION"):
-        super().__init__(app)
+class SessionCookieMiddleware:
+    def __init__(self, app: ASGIApp, cookie_name: str = "SESSION"):
+        self.app = app
         self.cookie_name = cookie_name
 
-    async def dispatch(self, request: Request, call_next):
-        session_cookie = request.cookies.get(self.cookie_name)
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
 
-        valid_session = session_cookie and session_cookie in request.state.cookies
+        session_cookie = self._get_cookie_from_scope(scope)
+        cookies: set[str] = scope["state"].get("cookies", set())
+        valid_session = session_cookie and session_cookie in cookies
 
         if not valid_session:
             new_session = str(uuid.uuid4())
-            request.state.cookies.add(new_session)
-            request.cookies[self.cookie_name] = new_session
+            cookies.add(new_session)
+            scope["state"]["cookies"] = cookies
+            self._set_cookie_in_scope(scope, new_session)
 
-        response = await call_next(request)
+        async def send_wrapper(message: Message) -> None:
+            if message["type"] == "http.response.start" and not valid_session:
+                headers = MutableHeaders(scope=message)
+                cookie_value = self._get_cookie_from_scope(scope)
+                set_cookie = (
+                    f"{self.cookie_name}={cookie_value}; "
+                    f"HttpOnly; Max-Age={60 * 60 * 24 * 30}; Path=/"
+                )
+                headers.append("set-cookie", set_cookie)
+            await send(message)
 
-        if not valid_session:
-            response.set_cookie(
-                key=self.cookie_name,
-                value=request.cookies[self.cookie_name],
-                httponly=True,
-                max_age=60 * 60 * 24 * 30,  # 30 days
-            )
+        await self.app(scope, receive, send_wrapper)
 
-        return response
+    def _get_cookie_from_scope(self, scope: Scope) -> str | None:
+        headers = dict(scope.get("headers", []))
+        cookie_header = headers.get(b"cookie", b"").decode()
+        if not cookie_header:
+            return None
+        cookie = SimpleCookie()
+        cookie.load(cookie_header)
+        if self.cookie_name in cookie:
+            return cookie[self.cookie_name].value
+        return None
+
+    def _set_cookie_in_scope(self, scope: Scope, value: str) -> None:
+        headers = list(scope.get("headers", []))
+        cookie_header = None
+        cookie_index = None
+        for i, (name, val) in enumerate(headers):
+            if name == b"cookie":
+                cookie_header = val.decode()
+                cookie_index = i
+                break
+
+        new_cookie_part = f"{self.cookie_name}={value}"
+        if cookie_header and cookie_index is not None:
+            new_cookie_header = f"{cookie_header}; {new_cookie_part}"
+            headers[cookie_index] = (b"cookie", new_cookie_header.encode())
+        else:
+            headers.append((b"cookie", new_cookie_part.encode()))
+
+        scope["headers"] = headers
