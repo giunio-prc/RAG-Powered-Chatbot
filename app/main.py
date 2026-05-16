@@ -10,7 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from nicegui.ui_run_with import run_with
 
 from app.agents import CohereAgent, FakeAgent
-from app.api import database, prompting
+from app.api.database import router as db_router
+from app.api.prompting import router as query_router
 from app.databases import ChromaDatabaseManager, FakeDatabaseManager
 from app.middleware import SessionCookieMiddleware
 from app.ports import AIAgentInterface, DatabaseManagerInterface
@@ -54,8 +55,8 @@ if analytics_id := os.getenv("ANALYTICS_ID"):
 app.add_middleware(SessionCookieMiddleware, cookie_name="SESSION")
 
 # Include API routers
-app.include_router(database.router)
-app.include_router(prompting.router)
+app.include_router(db_router)
+app.include_router(query_router)
 
 # Set up static files (for favicon)
 app.mount("/static", StaticFiles(directory="static"), name="static")
