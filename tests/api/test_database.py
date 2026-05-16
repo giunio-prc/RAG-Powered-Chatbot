@@ -67,6 +67,18 @@ class TestAddDocumentEndpoint:
         assert response.status_code == 406
         assert "cannot be uploaded" in response.json()["detail"]
 
+    def test_add_document_rejects_file_exceeding_size_limit(self, client: TestClient):
+        file_content = b"x" * (1024 * 1024 + 1)  # 1 MB + 1 byte
+        file = io.BytesIO(file_content)
+
+        response = client.post(
+            "/add-document",
+            files={"file": ("large.txt", file, "text/plain")},
+        )
+
+        assert response.status_code == 413
+        assert "File too large" in response.json()["detail"]
+
     def test_add_document_stores_content_in_database(
         self, client: TestClient, fake_database_manager: FakeDatabaseManager
     ):

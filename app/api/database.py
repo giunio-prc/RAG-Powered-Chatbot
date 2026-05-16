@@ -15,11 +15,19 @@ from app.usecases import add_content_into_db
 router = APIRouter()
 
 
+MAX_FILE_SIZE = 1024 * 1024  # 1 MB
+
+
 async def get_valid_file_content(file: UploadFile) -> str:
     if file.content_type != "text/plain":
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail="Invalid file. The app only support text files",
+        )
+    if file.size and file.size > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File too large. Maximum size is {MAX_FILE_SIZE // 1024} KB",
         )
     try:
         return file.file.read().decode()
@@ -34,7 +42,15 @@ class EventStreamResponse(StreamingResponse):
     media_type = "text/event-stream"
 
 
-@router.post("/add-document", response_class=EventStreamResponse)
+@router.post(
+    "/add-document",
+    response_class=EventStreamResponse,
+    responses={
+        406: {"description": "File cannot be decoded as UTF-8"},
+        413: {"description": "File exceeds maximum size limit"},
+        415: {"description": "Invalid file type. Only text/plain is supported"},
+    },
+)
 async def add_document_endpoint(
     db: get_db_from_state_annotation,
     file_content: Annotated[str, Depends(get_valid_file_content)],
