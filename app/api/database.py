@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterable
+from collections.abc import AsyncIterator
 from typing import Annotated, TypedDict
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
@@ -55,7 +55,7 @@ async def add_document_endpoint(
     db: get_db_from_state_annotation,
     file_content: Annotated[str, Depends(get_valid_file_content)],
     cookie_session: Annotated[str, Depends(get_cookie_session)],
-) -> AsyncIterable[str]:
+) -> AsyncIterator[str]:
     async for percentage in add_content_into_db(db, file_content, cookie_session):
         yield percentage
 

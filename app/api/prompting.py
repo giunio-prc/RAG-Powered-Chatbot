@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterable
+from collections.abc import AsyncIterator
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends
@@ -30,7 +30,7 @@ async def query_with_stream_response(
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
     cookie_session: Annotated[str, Depends(get_cookie_session)],
-) -> AsyncIterable[str]:
+) -> AsyncIterator[str]:
     async for token in query_agent_with_stream_response(
         db, agent, question, cookie_session
     ):

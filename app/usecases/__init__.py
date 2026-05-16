@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterable
+from collections.abc import AsyncIterator
 
 from app.ports import AIAgentInterface, DatabaseManagerInterface
 from app.ports.errors import EmbeddingAPILimitError, TooManyRequestsError
@@ -6,7 +6,7 @@ from app.ports.errors import EmbeddingAPILimitError, TooManyRequestsError
 
 async def add_content_into_db(
     db: DatabaseManagerInterface, content: str, cookie: str | None = None
-) -> AsyncIterable[str]:
+) -> AsyncIterator[str]:
     try:
         async for percentage in db.add_text_to_db(content, cookie):
             yield f"{percentage}\n"
@@ -35,7 +35,7 @@ async def query_agent_with_stream_response(
     ai_agent: AIAgentInterface,
     question: str,
     cookie: str | None = None,
-) -> AsyncIterable[str]:
+) -> AsyncIterator[str]:
     try:
         context = await db.get_context(question, cookie)
         async for chunk in ai_agent.get_stream_response(question, context):
