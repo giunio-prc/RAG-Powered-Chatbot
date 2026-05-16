@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterable
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
@@ -14,29 +15,33 @@ from app.usecases import add_content_into_db
 router = APIRouter()
 
 
-@router.post("/add-document")
-async def add_document_endpoint(
-    db: get_db_from_state_annotation,
-    file: UploadFile,
-    cookie_session: Annotated[str, Depends(get_cookie_session)],
-):
+async def get_valid_file_content(file: UploadFile) -> str:
     if file.content_type != "text/plain":
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail="Invalid file. The app only supprt text files",
+            detail="Invalid file. The app only support text files",
         )
     try:
-        file_content = file.file.read().decode()
+        return file.file.read().decode()
     except UnicodeError:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="The file cannot be uploaded",
         )
-    return StreamingResponse(
-        add_content_into_db(db, file_content, cookie_session),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
-    )
+
+
+class EventStreamResponse(StreamingResponse):
+    media_type = "text/event-stream"
+
+
+@router.post("/add-document", response_class=EventStreamResponse)
+async def add_document_endpoint(
+    db: get_db_from_state_annotation,
+    file_content: Annotated[str, Depends(get_valid_file_content)],
+    cookie_session: Annotated[str, Depends(get_cookie_session)],
+) -> AsyncIterable[str]:
+    async for percentage in add_content_into_db(db, file_content, cookie_session):
+        yield percentage
 
 
 @router.get("/get-vectors-data")
