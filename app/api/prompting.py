@@ -20,7 +20,7 @@ async def query_agent_endpoint(
     agent: get_agent_from_state_annotation,
     question: Annotated[str, Body()],
     cookie_session: Annotated[str, Depends(get_cookie_session)],
-) -> str:  # pragma: no cover
+) -> str:
     return await query_agent(db, agent, question, cookie_session)
 
 

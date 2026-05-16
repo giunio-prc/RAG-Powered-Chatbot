@@ -1,6 +1,19 @@
 from fastapi.testclient import TestClient
 
 
+def test_query_endpoint_returns_response(client: TestClient):
+    response = client.post(
+        "/query",
+        content='"What is the return policy?"',
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 200
+    assert "What is the return policy?" in response.text
+    assert "without any context" in response.text
+    assert "fake agent" in response.text
+
+
 def test_query_stream_endpoint_returns_sse_response(client: TestClient):
     response = client.post(
         "/query-stream",
