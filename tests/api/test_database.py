@@ -65,7 +65,9 @@ class TestAddDocumentEndpoint:
         )
 
         assert response.status_code == 406
-        assert "cannot be uploaded" in response.json()["detail"]
+        detail = response.json()["detail"]
+        assert "cannot be uploaded" in detail
+        assert "position 0: invalid start byte" in detail
 
     def test_add_document_rejects_file_exceeding_size_limit(self, client: TestClient):
         file_content = b"x" * (1024 * 1024 + 1)  # 1 MB + 1 byte

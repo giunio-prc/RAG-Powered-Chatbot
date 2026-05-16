@@ -31,10 +31,10 @@ async def get_valid_file_content(file: UploadFile) -> str:
         )
     try:
         return file.file.read().decode()
-    except UnicodeError:
+    except UnicodeError as err:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="The file cannot be uploaded",
+            detail=f"The file cannot be uploaded: {str(err)}",
         )
 
 
