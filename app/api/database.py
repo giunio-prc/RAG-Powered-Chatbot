@@ -72,9 +72,7 @@ async def get_vectors_data(
 ) -> VectorsDataResponse:
     number_of_vectors = db.get_number_of_vectors(cookie_session)
     longest_vector = db.get_length_of_longest_vector(cookie_session)
-    return VectorsDataResponse(
-        number_of_vectors=number_of_vectors, longest_vector=longest_vector
-    )
+    return {"number_of_vectors": number_of_vectors, "longest_vector": longest_vector}
 
 
 class EmptyDatabaseResponse(TypedDict):
@@ -87,7 +85,7 @@ async def empty_database(
     cookie_session: Annotated[str, Depends(get_cookie_session)],
 ) -> EmptyDatabaseResponse:
     db.empty_database(cookie_session)
-    return EmptyDatabaseResponse(message="Database emptied successfully")
+    return {"message": "Database emptied successfully"}
 
 
 class AgentInfoResponse(TypedDict):
@@ -101,9 +99,9 @@ class AgentInfoResponse(TypedDict):
 async def get_agent_info(agent: get_agent_from_state_annotation) -> AgentInfoResponse:
     """Return information about the current AI agent configuration."""
     is_fake = isinstance(agent, FakeAgent)
-    return AgentInfoResponse(
-        is_fake=is_fake,
-        icon="pets" if is_fake else "smart_toy",
-        label="RAG Parrot" if is_fake else "RAG Chatbot",
-        embedding_model="No Embedding Model" if is_fake else "Cohere",
-    )
+    return {
+        "is_fake": is_fake,
+        "icon": "pets" if is_fake else "smart_toy",
+        "label": "RAG Parrot" if is_fake else "RAG Chatbot",
+        "embedding_model": "No Embedding Model" if is_fake else "Cohere",
+    }
