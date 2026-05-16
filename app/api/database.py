@@ -1,5 +1,5 @@
 from collections.abc import AsyncIterable
-from typing import Annotated
+from typing import Annotated, TypedDict
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
@@ -60,32 +60,50 @@ async def add_document_endpoint(
         yield percentage
 
 
+class VectorsDataResponse(TypedDict):
+    number_of_vectors: int
+    longest_vector: int
+
+
 @router.get("/get-vectors-data")
 async def get_vectors_data(
     db: get_db_from_state_annotation,
     cookie_session: Annotated[str, Depends(get_cookie_session)],
-):
+) -> VectorsDataResponse:
     number_of_vectors = db.get_number_of_vectors(cookie_session)
     longest_vector = db.get_length_of_longest_vector(cookie_session)
-    return {"number_of_vectors": number_of_vectors, "longest_vector": longest_vector}
+    return VectorsDataResponse(
+        number_of_vectors=number_of_vectors, longest_vector=longest_vector
+    )
+
+
+class EmptyDatabaseResponse(TypedDict):
+    message: str
 
 
 @router.delete("/empty-database")
 async def empty_database(
     db: get_db_from_state_annotation,
     cookie_session: Annotated[str, Depends(get_cookie_session)],
-):
+) -> EmptyDatabaseResponse:
     db.empty_database(cookie_session)
-    return {"message": "Database emptied successfully"}
+    return EmptyDatabaseResponse(message="Database emptied successfully")
+
+
+class AgentInfoResponse(TypedDict):
+    is_fake: bool
+    icon: str
+    label: str
+    embedding_model: str
 
 
 @router.get("/agent-info")
-async def get_agent_info(agent: get_agent_from_state_annotation):
+async def get_agent_info(agent: get_agent_from_state_annotation) -> AgentInfoResponse:
     """Return information about the current AI agent configuration."""
     is_fake = isinstance(agent, FakeAgent)
-    return {
-        "is_fake": is_fake,
-        "icon": "pets" if is_fake else "smart_toy",
-        "label": "RAG Parrot" if is_fake else "RAG Chatbot",
-        "embedding_model": "No Embedding Model" if is_fake else "Cohere",
-    }
+    return AgentInfoResponse(
+        is_fake=is_fake,
+        icon="pets" if is_fake else "smart_toy",
+        label="RAG Parrot" if is_fake else "RAG Chatbot",
+        embedding_model="No Embedding Model" if is_fake else "Cohere",
+    )
