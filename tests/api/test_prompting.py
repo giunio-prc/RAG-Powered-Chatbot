@@ -1,3 +1,5 @@
+import io
+
 from fastapi.testclient import TestClient
 
 
@@ -35,3 +37,25 @@ def test_query_stream_endpoint_returns_sse_response(client: TestClient):
     assert 'data: "context\\nUnfortunately "' in content
     assert 'data: "fake "' in content
     assert 'data: "agent "' in content
+
+
+def test_query_endpoint_uses_document_context(client: TestClient):
+    file_content = b"Our return policy allows returns within 30 days."
+    file = io.BytesIO(file_content)
+
+    response = client.post(
+        "/add-document",
+        files={"file": ("policy.txt", file, "text/plain")},
+    )
+    _ = response.text
+
+    response = client.post(
+        "/query",
+        content='"What is the return policy?"',
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 200
+    assert "What is the return policy?" in response.text
+    assert "With the following context" in response.text
+    assert "return policy allows returns within 30 days" in response.text
