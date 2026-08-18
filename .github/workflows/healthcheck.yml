@@ -1,0 +1,29 @@
+name: Health Check
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check rag.avenueit.be/healthz
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://rag.avenueit.be/healthz)
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 300 ]; then
+            echo "rag.avenueit.be/healthz OK ($STATUS)"
+          else
+            echo "::warning::rag.avenueit.be/healthz returned $STATUS"
+          fi
+
+      - name: Check fakerag.avenueit.be/healthz
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://fakerag.avenueit.be/healthz)
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 300 ]; then
+            echo "fakerag.avenueit.be/healthz OK ($STATUS)"
+          else
+            echo "::warning::fakerag.avenueit.be/healthz returned $STATUS"
+          fi
