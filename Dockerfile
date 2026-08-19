@@ -12,4 +12,4 @@ COPY docs/ ./docs/
 ENV PORT=8080
 EXPOSE 8080
 
-CMD exec uv run fastapi run --host 0.0.0.0 --port ${PORT}
+CMD exec uv run --no-dev fastapi run app/main.py --host 0.0.0.0 --port ${PORT}
