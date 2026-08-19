@@ -1,13 +1,14 @@
 """Shared HTTP client utilities for NiceGUI pages."""
 
+import os
+
 import httpx
 from nicegui import context
 
 
 def get_base_url() -> str:
-    """Get the base URL for API calls from the current request context."""
-    request = context.client.request
-    return f"{request.url.scheme}://{request.url.netloc}"
+    port = os.getenv("PORT", "8000")
+    return f"http://127.0.0.1:{port}"
 
 
 def get_session_cookie() -> dict[str, str]:
