@@ -18,6 +18,8 @@ watch(isDark, applyClass, { immediate: true })
 export function useColorMode() {
   return {
     isDark,
-    toggle: () => { isDark.value = !isDark.value },
+    toggle: () => {
+      isDark.value = !isDark.value
+    },
   }
 }

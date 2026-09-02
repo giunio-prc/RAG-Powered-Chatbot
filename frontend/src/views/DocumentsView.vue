@@ -2,8 +2,16 @@
 import { ref } from 'vue'
 import { useDocuments } from '@/composables/useDocuments'
 import {
-  UploadCloud, RefreshCw, Trash2, Database, Ruler,
-  CheckCircle2, Brain, Activity, X, FileText,
+  UploadCloud,
+  RefreshCw,
+  Trash2,
+  Database,
+  Ruler,
+  CheckCircle2,
+  Brain,
+  Activity,
+  X,
+  FileText,
 } from '@lucide/vue'
 
 const {
@@ -47,11 +55,9 @@ async function confirmEmptyDatabase() {
 <template>
   <div class="flex-1 overflow-y-auto px-6 py-6">
     <div class="max-w-5xl mx-auto">
-
       <h1 class="text-xl font-semibold text-foreground mb-6">Documents</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
         <!-- Upload card -->
         <div class="bg-card border border-border rounded-xl p-5 flex flex-col gap-4">
           <h2 class="text-sm font-medium text-foreground">Upload</h2>
@@ -72,8 +78,10 @@ async function confirmEmptyDatabase() {
             type="button"
             class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center gap-3 w-full"
             :class="[
-              isDragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-secondary/40',
-              isUploading ? 'opacity-50 pointer-events-none' : ''
+              isDragging
+                ? 'border-primary bg-primary/5'
+                : 'border-border hover:border-primary/50 hover:bg-secondary/40',
+              isUploading ? 'opacity-50 pointer-events-none' : '',
             ]"
             :disabled="isUploading"
             @click="fileInput?.click()"
@@ -112,7 +120,6 @@ async function confirmEmptyDatabase() {
 
         <!-- Right column -->
         <div class="flex flex-col gap-4">
-
           <!-- Stats -->
           <div class="bg-card border border-border rounded-xl p-5">
             <div class="flex items-center justify-between mb-4">
@@ -130,7 +137,9 @@ async function confirmEmptyDatabase() {
                   <Database class="w-3.5 h-3.5 text-primary" />
                   <span class="text-xs text-muted-foreground">Vectors</span>
                 </div>
-                <p class="text-2xl font-bold text-foreground">{{ vectorsData.number_of_vectors }}</p>
+                <p class="text-2xl font-bold text-foreground">
+                  {{ vectorsData.number_of_vectors }}
+                </p>
               </div>
               <div class="bg-secondary/50 rounded-lg p-3">
                 <div class="flex items-center gap-2 mb-1">
@@ -174,7 +183,9 @@ async function confirmEmptyDatabase() {
                 </div>
                 <div class="flex items-center gap-2">
                   <Brain class="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span class="text-muted-foreground truncate">{{ agentInfo.embedding_model }}</span>
+                  <span class="text-muted-foreground truncate">{{
+                    agentInfo.embedding_model
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -191,7 +202,6 @@ async function confirmEmptyDatabase() {
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -216,7 +226,8 @@ async function confirmEmptyDatabase() {
             </button>
           </div>
           <p class="text-sm text-muted-foreground mb-6">
-            This will permanently delete all uploaded documents and their embeddings. This action cannot be undone.
+            This will permanently delete all uploaded documents and their embeddings. This action
+            cannot be undone.
           </p>
           <div class="flex justify-end gap-2">
             <button
@@ -249,7 +260,9 @@ async function confirmEmptyDatabase() {
 }
 .modal-enter-active > div,
 .modal-leave-active > div {
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 .modal-enter-from > div,
 .modal-leave-to > div {

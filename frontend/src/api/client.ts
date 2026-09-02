@@ -11,8 +11,7 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
-  postForm: (path: string, form: FormData) =>
-    fetch(path, { ...OPTS, method: 'POST', body: form }),
+  postForm: (path: string, form: FormData) => fetch(path, { ...OPTS, method: 'POST', body: form }),
 
   delete: (path: string) => fetch(path, { ...OPTS, method: 'DELETE' }),
 }

@@ -25,7 +25,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <aside class="w-56 shrink-0 flex flex-col bg-card/50 backdrop-blur-2xl border-r border-border h-full">
+  <aside
+    class="w-56 shrink-0 flex flex-col bg-card/50 backdrop-blur-2xl border-r border-border h-full"
+  >
     <!-- Brand -->
     <div class="px-4 py-5 border-b border-border">
       <div class="flex items-center gap-2.5">
@@ -38,11 +40,7 @@ onMounted(async () => {
 
     <!-- Nav -->
     <nav class="flex-1 px-2 py-3 space-y-0.5">
-      <router-link
-        to="/"
-        class="nav-link"
-        :class="{ 'nav-link--active': route.path === '/' }"
-      >
+      <router-link to="/" class="nav-link" :class="{ 'nav-link--active': route.path === '/' }">
         <MessageSquare class="w-4 h-4 shrink-0" />
         Chat
       </router-link>
@@ -80,7 +78,8 @@ onMounted(async () => {
             target="_blank"
             rel="noopener"
             class="text-primary hover:underline"
-          >AvenueIT</a>
+            >AvenueIT</a
+          >
         </p>
       </div>
     </div>
@@ -97,7 +96,9 @@ onMounted(async () => {
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
   text-decoration: none;
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 
 .nav-link:hover {
