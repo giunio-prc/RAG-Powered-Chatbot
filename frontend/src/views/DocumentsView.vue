@@ -68,12 +68,14 @@ async function confirmEmptyDatabase() {
           </div>
 
           <!-- Drop zone -->
-          <div
-            class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center gap-3"
+          <button
+            type="button"
+            class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center gap-3 w-full"
             :class="[
               isDragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-secondary/40',
               isUploading ? 'opacity-50 pointer-events-none' : ''
             ]"
+            :disabled="isUploading"
             @click="fileInput?.click()"
             @dragover.prevent="isDragging = true"
             @dragleave="isDragging = false"
@@ -86,7 +88,7 @@ async function confirmEmptyDatabase() {
               <p class="text-sm text-foreground font-medium">Drop a file or click to browse</p>
               <p class="text-xs text-muted-foreground mt-1">.txt · max 100 KB · UTF-8</p>
             </div>
-          </div>
+          </button>
           <input
             ref="fileInput"
             type="file"
