@@ -7,7 +7,6 @@ from typing import TypedDict
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from nicegui.ui_run_with import run_with
 
 from app.agents import CohereAgent, FakeAgent
 from app.api.database import router as db_router
@@ -15,7 +14,6 @@ from app.api.prompting import router as query_router
 from app.databases import ChromaDatabaseManager, FakeDatabaseManager
 from app.middleware import SessionCookieMiddleware
 from app.ports import AIAgentInterface, DatabaseManagerInterface
-from app.ui import setup_pages
 
 logger = logging.getLogger("uvicorn")
 
@@ -68,11 +66,5 @@ async def health_check():
     return JSONResponse(content={"status": "ok"})
 
 
-# Initialize NiceGUI pages and mount on FastAPI
-setup_pages()
-
-# Run NiceGUI with FastAPI
-run_with(
-    app,
-    storage_secret=os.getenv("NICEGUI_STORAGE_SECRET", "rag-chatbot-secret-key"),
-)
+# Serve Vue SPA — must be last so API routes take precedence
+app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")

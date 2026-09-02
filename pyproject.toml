@@ -15,8 +15,6 @@ dependencies = [
   "langchain-chroma>=0.2.3",
   "protobuf<=3.20",
   "api-analytics[fastapi]>=1.2.7",
-  "nicegui>=3.11.0",
-  "httpx-sse>=0.4.0",
   "langchain-text-splitters>=1.1.2"
 ]
 
@@ -36,11 +34,6 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 omit = [
-  "app/ui/components/*",
-  "app/ui/pages/*",
-  "app/ui/__init__.py",
-  "app/ui/http_client.py",
-  "app/ui/utils.py",
   "app/agents/cohere_agent.py",
   "app/databases/chroma_database.py",
   "app/main.py"
