@@ -108,6 +108,7 @@ export function useDocuments() {
         await refreshStats()
       } else {
         uploadStatus.value = 'Partial upload (API limit)'
+        await refreshStats()
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
