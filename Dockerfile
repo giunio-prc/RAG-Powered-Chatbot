@@ -1,5 +1,13 @@
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+# Stage 1: Build Vue frontend
+FROM node:22-alpine AS frontend-builder
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
 
+# Stage 2: Python app
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 WORKDIR /app
 
 COPY pyproject.toml .
@@ -7,7 +15,7 @@ RUN uv sync --no-dev --no-install-project --no-cache
 
 COPY app/ ./app/
 COPY static/ ./static/
-COPY docs/ ./docs/
+COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
 ENV PORT=8080
 EXPOSE 8080
