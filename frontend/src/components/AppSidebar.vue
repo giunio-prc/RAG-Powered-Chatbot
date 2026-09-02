@@ -72,6 +72,17 @@ onMounted(async () => {
         <ExternalLink class="w-4 h-4 shrink-0" />
         GitHub
       </a>
+      <div class="px-3 pt-2 pb-1">
+        <p class="text-xs text-muted-foreground">
+          Powered by
+          <a
+            href="https://avenueit.be"
+            target="_blank"
+            rel="noopener"
+            class="text-primary hover:underline"
+          >AvenueIT</a>
+        </p>
+      </div>
     </div>
   </aside>
 </template>
