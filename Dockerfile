@@ -24,4 +24,4 @@ USER appuser
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["uv", "run", "--no-dev", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8080"]
