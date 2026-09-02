@@ -2,7 +2,7 @@
 import AppSidebar from '@/components/AppSidebar.vue'
 import { useColorMode } from '@/composables/useColorMode'
 import { useRoute } from 'vue-router'
-import { Bot, MessageSquare, FileText, Sun, Moon } from '@lucide/vue'
+import { MessageSquare, FileText, Sun, Moon } from '@lucide/vue'
 
 const { isDark, toggle } = useColorMode()
 const route = useRoute()
@@ -33,9 +33,16 @@ const route = useRoute()
       style="padding-top: max(0.75rem, env(safe-area-inset-top)); padding-bottom: 0.75rem"
     >
       <div class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-          <Bot class="w-3.5 h-3.5 text-primary" />
-        </div>
+        <svg height="28" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="avenueit-grad-mobile" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2d388a" />
+              <stop offset="1" stop-color="#00aeef" />
+            </linearGradient>
+          </defs>
+          <polygon points="2.83,0 29.17,9.123 2.83,18.247" fill="url(#avenueit-grad-mobile)" />
+          <polygon points="2.83,22.877 29.17,13.753 29.17,32" fill="url(#avenueit-grad-mobile)" />
+        </svg>
         <span class="font-semibold text-sm">RAG Chatbot</span>
       </div>
       <button
