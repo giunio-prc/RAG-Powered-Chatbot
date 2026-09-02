@@ -11,8 +11,16 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@lucide/vue": "^1.39.0",
+    "@vueuse/core": "^14.4.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-vue-next": "^1.0.0",
     "pinia": "^4.0.2",
     "pinia-plugin-persistedstate": "^4.7.1",
+    "radix-vue": "^1.9.17",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss-animate": "^1.0.7",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
     "vue-toastification": "^2.0.0-rc.5"
