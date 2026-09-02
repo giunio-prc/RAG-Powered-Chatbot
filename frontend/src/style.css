@@ -71,7 +71,7 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: 'Inter', sans-serif;
+  font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
