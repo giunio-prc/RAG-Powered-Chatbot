@@ -1,4 +1,5 @@
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useToast } from 'vue-toastification'
 import { api, parseErrorDetail } from '@/api/client'
 import { useDocumentsStore } from '@/stores/documents'
@@ -17,6 +18,7 @@ export interface AgentInfo {
 
 export function useDocuments() {
   const store = useDocumentsStore()
+  const { activities } = storeToRefs(store)
   const toast = useToast()
 
   const vectorsData = ref<VectorsData>({ number_of_vectors: 0, longest_vector: 0 })
@@ -141,7 +143,7 @@ export function useDocuments() {
     isUploading,
     uploadStatus,
     isEmptyingDb,
-    activities: store.activities,
+    activities,
     uploadFile,
     emptyDatabase,
     refreshStats,

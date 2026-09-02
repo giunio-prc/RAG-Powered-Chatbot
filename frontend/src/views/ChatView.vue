@@ -14,9 +14,9 @@ async function scrollToBottom() {
   }
 }
 
-watch(() => messages.length, scrollToBottom)
+watch(() => messages.value.length, scrollToBottom)
 watch(
-  () => messages.at(-1)?.content,
+  () => messages.value.at(-1)?.content,
   scrollToBottom,
 )
 

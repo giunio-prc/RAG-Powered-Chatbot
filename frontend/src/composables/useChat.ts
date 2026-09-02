@@ -1,10 +1,12 @@
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useToast } from 'vue-toastification'
 import { api, parseErrorDetail } from '@/api/client'
 import { useChatStore } from '@/stores/chat'
 
 export function useChat() {
   const store = useChatStore()
+  const { messages } = storeToRefs(store)
   const toast = useToast()
   const isLoading = ref(false)
 
@@ -54,5 +56,5 @@ export function useChat() {
     }
   }
 
-  return { isLoading, sendMessage, messages: store.messages, clearHistory: store.clearHistory }
+  return { isLoading, sendMessage, messages, clearHistory: () => store.clearHistory() }
 }
