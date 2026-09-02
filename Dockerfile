@@ -1,4 +1,5 @@
 # Stage 1: Build Vue frontend
+# Build-only stage: vulnerabilities here do not affect the runtime image
 FROM node:22-alpine AS frontend-builder
 WORKDIR /frontend
 COPY frontend/package*.json ./
@@ -20,4 +21,4 @@ COPY --from=frontend-builder /frontend/dist ./frontend/dist
 ENV PORT=8080
 EXPOSE 8080
 
-CMD exec uv run --no-dev fastapi run app/main.py --host 0.0.0.0 --port ${PORT}
+CMD ["uv", "run", "--no-dev", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8080"]
