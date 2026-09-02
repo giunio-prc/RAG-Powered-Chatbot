@@ -27,9 +27,7 @@ class CohereAgent(AIAgentInterface):
 
     def __init__(self):
         """Initialize CohereAgent with chat model, prompts, and response chain."""
-        cohere_model = os.getenv("COHERE_MODEL")
-        if not cohere_model:
-            raise ValueError("COHERE_MODEL environment variable is not set.")
+        cohere_model = os.getenv("COHERE_MODEL", "command-a-03-2025")
 
         model = ChatCohere(model=cohere_model)
         system_message_prompt = SystemMessagePromptTemplate.from_template(

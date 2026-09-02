@@ -113,6 +113,7 @@ Create a `.env` file in the project root with the following variables:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `COHERE_API_KEY` | Yes | Your Cohere API key for embeddings and language models |
+| `COHERE_MODEL` | No | Cohere model to use for language generation (defaults to `command-a-03-2025`) |
 | `CHROMA_SERVER_HOST` | No | Host for external Chroma server (defaults to in-memory) |
 | `CHROMA_SERVER_PORT` | No | Port for external Chroma server |
 | `NICEGUI_STORAGE_SECRET` | No | Secret key for NiceGUI session storage (defaults to built-in key) |
