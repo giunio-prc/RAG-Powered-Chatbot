@@ -58,7 +58,7 @@ export function useDocuments() {
       toast.warning('File too large. Maximum size is 100KB.')
       return
     }
-    if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+    if (!file.name.endsWith('.txt')) {
       toast.warning('Only .txt files are supported.')
       return
     }
