@@ -18,6 +18,9 @@ COPY app/ ./app/
 COPY static/ ./static/
 COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
+RUN useradd --no-create-home --shell /bin/false appuser && chown -R appuser /app
+USER appuser
+
 ENV PORT=8080
 EXPOSE 8080
 
