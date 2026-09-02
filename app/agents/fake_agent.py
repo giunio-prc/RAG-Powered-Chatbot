@@ -23,5 +23,5 @@ class FakeAgent(AIAgentInterface):
     ) -> AsyncGenerator[str, None]:
         response = await self.query_with_context(question, context)
         for word in response.split(" "):
-            await sleep(0.01 * random())
+            await sleep(0.05 * random())
             yield word + " "
