@@ -21,7 +21,7 @@ A modern AI-driven customer support assistant that leverages Retrieval-Augmented
 - **AI Integration**: Cohere Command-R-Plus model for natural language generation
 - **Real-time Chat**: FastAPI-powered REST API with streaming support
 - **Document Management**: Upload and manage knowledge base documents (max 100KB per file)
-- **Modern Web UI**: NiceGUI-powered reactive interface with real-time updates
+- **Modern Web UI**: Vue 3 SPA with Tailwind CSS, real-time streaming, and persistent chat history
 - **Session Isolation**: Per-user document storage with cookie-based sessions (30-day persistence)
 - **Testing**: Comprehensive test suite with mock implementations
 - **Development Tools**: Pre-commit hooks, linting, and type checking
@@ -44,20 +44,20 @@ The application follows hexagonal architecture principles with clear separation 
     - `ChromaDatabase`: Production implementation using ChromaDB with Cohere embeddings
     - `FakeDatabase`: Mock implementation for testing
 
-- **Use Casess** (`app/usecases`): Business logic orchestration
+- **Use Cases** (`app/usecases`): Business logic orchestration
 - **API Layer** (`app/api/`): FastAPI routers and HTTP handling
-- **UI Layer** (`app/ui/`): NiceGUI pages, components, and services
-  - `services/`: Pure business logic (testable without UI framework)
-    - `ChatService`: Chat history management
-    - `ActivityService`: Activity tracking
-  - `components/`: UI handlers that delegate to services
-  - `pages/`: Page implementations (chat, documents)
+- **Frontend** (`frontend/`): Vue 3 SPA served by FastAPI
+  - `src/views/`: Chat and Documents pages
+  - `src/composables/`: SSE streaming logic (useChat, useDocuments)
+  - `src/stores/`: Pinia stores with localStorage persistence (chat history, activity feed)
+  - `src/components/`: AppHeader, AppFooter, MessageBubble
 
 ## Quick Start
 
 ### Prerequisites
 
 - Python 3.12 or 3.13
+- Node.js 22+
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
@@ -69,22 +69,27 @@ git clone https://github.com/giunio-prc/rag-powered-chatbot
 cd rag-powered-chatbot
 ```
 
-2. Install dependencies:
+2. Install Python dependencies:
 ```bash
-uv install
+uv sync
 ```
 
-3. Install pre-commit hooks:
+3. Install frontend dependencies:
+```bash
+cd frontend && npm install && cd ..
+```
+
+4. Install pre-commit hooks:
 ```bash
 uv run pre-commit install
 ```
 
-4. Create environment configuration:
+5. Create environment configuration:
 ```bash
 cp .env.example .env
 ```
 
-5. Edit `.env` file with your API keys:
+6. Edit `.env` file with your API keys:
 ```env
 COHERE_API_KEY=your-cohere-api-key-here
 # Optional: External Chroma server settings
@@ -94,14 +99,20 @@ CHROMA_SERVER_PORT=8001
 
 ### Running the Application
 
-#### Development Mode (with auto-reload):
+#### Development Mode (two terminals):
 ```bash
-uv run fastapi dev
-```
+# Terminal 1 — FastAPI backend with auto-reload
+uv run fastapi dev app/main.py
 
-#### Production Mode:
+# Terminal 2 — Vue frontend (proxies API calls to :8000)
+cd frontend && npm run dev
+```
+Frontend available at `http://localhost:5173`, backend API at `http://localhost:8000`.
+
+#### Production Mode (build Vue then serve everything from FastAPI):
 ```bash
-uv run fastapi run
+cd frontend && npm run build && cd ..
+uv run fastapi run app/main.py
 ```
 
 The application will be available at `http://localhost:8000`
@@ -116,7 +127,7 @@ Create a `.env` file in the project root with the following variables:
 | `COHERE_MODEL` | No | Cohere model to use for language generation (defaults to `command-a-03-2025`) |
 | `CHROMA_SERVER_HOST` | No | Host for external Chroma server (defaults to in-memory) |
 | `CHROMA_SERVER_PORT` | No | Port for external Chroma server |
-| `NICEGUI_STORAGE_SECRET` | No | Secret key for NiceGUI session storage (defaults to built-in key) |
+| `QR_CODE_PATH` | No | Path to a QR code image displayed in the UI |
 
 ## Development
 
@@ -170,7 +181,7 @@ app/
 ├── api/                    # FastAPI routers and endpoints
 │   ├── database.py         # Document upload and stats endpoints
 │   ├── dependencies.py     # Dependency injection helpers
-│   └── prompting.py        # Chat query endpoints
+│   └── prompting.py        # Chat query endpoints (SSE streaming)
 ├── usecases/               # Business logic orchestration
 ├── databases/              # Vector database implementations
 │   ├── chroma_database.py  # Production ChromaDB implementation
@@ -179,32 +190,31 @@ app/
 │   ├── agent.py            # AIAgentInterface
 │   ├── database.py         # DatabaseManagerInterface
 │   └── errors.py           # Custom exceptions
-├── ui/                     # NiceGUI web interface
-│   ├── services/           # Pure business logic (testable)
-│   │   ├── chat.py         # ChatService - chat history management
-│   │   └── activity.py     # ActivityService - activity tracking
-│   ├── components/         # UI handlers (thin layer over services)
-│   │   ├── chat.py         # ChatHandler - UI for chat
-│   │   ├── documents.py    # Document-related UI handlers
-│   │   └── layout.py       # Page layout component
-│   ├── pages/              # Page implementations
-│   │   ├── chat.py         # Real-time chat interface
-│   │   └── documents.py    # Document management page
-│   ├── http_client.py      # HTTP client for API calls
-│   └── utils.py            # UI utility functions
 ├── middleware.py           # Session cookie middleware
 └── main.py                 # FastAPI application entry point
 
-tests/                      # Test suite mirroring app structure
+frontend/                   # Vue 3 SPA (TypeScript + Tailwind CSS)
+├── src/
+│   ├── api/client.ts       # Fetch wrapper (credentials: include)
+│   ├── composables/
+│   │   ├── useChat.ts      # SSE streaming via fetch + ReadableStream
+│   │   └── useDocuments.ts # Upload progress + stats
+│   ├── stores/
+│   │   ├── chat.ts         # Chat history (localStorage via Pinia)
+│   │   └── documents.ts    # Activity feed (localStorage via Pinia)
+│   ├── components/         # AppHeader, AppFooter, MessageBubble
+│   └── views/              # ChatView, DocumentsView
+├── index.html
+├── vite.config.ts          # Tailwind plugin + dev proxy to :8000
+└── package.json
+
+tests/                      # Python test suite
 ├── api/                    # API endpoint tests
 ├── usecases/               # Use case tests
-├── databases/              # Database tests
-└── ui/                     # UI service tests (pure logic, no mocks)
+└── databases/              # Database tests
 
 static/                     # Static assets (favicon)
 docs/                       # Sample documents for testing
-stack_logos/                # Technology stack logos
-db_chroma/                  # ChromaDB storage (persistent mode)
 ```
 
 ## API Endpoints
@@ -218,8 +228,8 @@ db_chroma/                  # ChromaDB storage (persistent mode)
 - `GET /get-vectors-data` - Get database statistics (vector count, longest vector)
 - `DELETE /empty-database` - Clear all documents for current session
 
-### Web Interface (NiceGUI)
-- `GET /` - Chat interface with real-time streaming responses
+### Web Interface (Vue SPA)
+- `GET /` - Chat interface with real-time SSE streaming responses
 - `GET /documents` - Document upload, statistics, and database management
 
 ## Technology Stack
@@ -233,13 +243,13 @@ db_chroma/                  # ChromaDB storage (persistent mode)
     <img src="stack_logos/langchain-logo.webp" alt="LangChain" height="60">
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/zauberzeug/nicegui">
-    <img src="stack_logos/nicegui-logo.png" alt="NiceGUI" height="60">
+  <a href="https://github.com/vuejs/vue">
+    <img src="stack_logos/vue-logo.svg" alt="Vue.js" height="60">
   </a>
 </p>
 
 - **FastAPI**: Modern, fast web framework for building APIs
-- **NiceGUI**: Python-based reactive web UI framework
+- **Vue 3**: Progressive JavaScript framework with TypeScript and Tailwind CSS
 - **LangChain**: Framework for developing applications with large language models
 - **ChromaDB**: Open-source embedding database for vector similarity search
 - **Cohere**: AI platform providing embeddings and language generation models
@@ -251,12 +261,9 @@ db_chroma/                  # ChromaDB storage (persistent mode)
 
 - **Unit Tests**: Located in `tests/` directory mirroring `app/` structure
 - **Mock Implementations**: `FakeAgent` and `FakeDatabase` for isolated testing
-- **UI Services**: Pure business logic in `app/ui/services/` tested without mocks
-  - `ChatService` and `ActivityService` use dependency injection for time providers
-  - Tests use simple dict storage, no UI framework dependencies
 - **Test Data**: Sample documents in `tests/data/`
 - **Async Support**: Tests support FastAPI's async operations
-- **Coverage**: 100% coverage enforced (UI components/pages excluded)
+- **Coverage**: 100% coverage enforced on backend (agents and ChromaDB implementation excluded)
 
 ## Contributing
 
