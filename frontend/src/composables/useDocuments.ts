@@ -22,7 +22,12 @@ export function useDocuments() {
   const toast = useToast()
 
   const vectorsData = ref<VectorsData>({ number_of_vectors: 0, longest_vector: 0 })
-  const agentInfo = ref<AgentInfo>({ is_fake: false, icon: 'smart_toy', label: 'RAG Chatbot', embedding_model: 'Cohere' })
+  const agentInfo = ref<AgentInfo>({
+    is_fake: false,
+    icon: 'smart_toy',
+    label: 'RAG Chatbot',
+    embedding_model: 'Cohere',
+  })
   const uploadProgress = ref(0)
   const isUploading = ref(false)
   const uploadStatus = ref('')

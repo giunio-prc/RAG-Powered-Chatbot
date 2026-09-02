@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme inline {
   --color-background: hsl(var(--background));
@@ -24,15 +24,15 @@
 
 /* Light mode — soft gray-white, not stark white */
 :root {
-  --background: 240 5% 96%;        /* zinc-100 */
+  --background: 240 5% 96%; /* zinc-100 */
   --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;               /* white cards for depth */
+  --card: 0 0% 100%; /* white cards for depth */
   --card-foreground: 240 10% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 240 10% 3.9%;
-  --primary: 239 84% 67%;          /* indigo-500 */
+  --primary: 239 84% 67%; /* indigo-500 */
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 5.9% 90%;      /* zinc-200 */
+  --secondary: 240 5.9% 90%; /* zinc-200 */
   --secondary-foreground: 240 5.9% 10%;
   --muted: 240 5.9% 90%;
   --muted-foreground: 240 3.8% 46.1%; /* zinc-500 */
@@ -40,22 +40,22 @@
   --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 84%;          /* zinc-300 */
+  --border: 240 5.9% 84%; /* zinc-300 */
   --input: 240 5.9% 84%;
   --ring: 239 84% 67%;
 }
 
 /* Dark mode — comfortable dark gray, not near-black */
 .dark {
-  --background: 240 5.9% 10.2%;   /* zinc-900 */
+  --background: 240 5.9% 10.2%; /* zinc-900 */
   --foreground: 0 0% 95%;
-  --card: 240 3.7% 16.3%;         /* zinc-800 */
+  --card: 240 3.7% 16.3%; /* zinc-800 */
   --card-foreground: 0 0% 95%;
   --popover: 240 3.7% 16.3%;
   --popover-foreground: 0 0% 95%;
-  --primary: 239 84% 67%;         /* indigo-500 */
+  --primary: 239 84% 67%; /* indigo-500 */
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 3.6% 22%;      /* between zinc-800 and zinc-700 */
+  --secondary: 240 3.6% 22%; /* between zinc-800 and zinc-700 */
   --secondary-foreground: 0 0% 95%;
   --muted: 240 3.6% 22%;
   --muted-foreground: 240 5% 60%; /* slightly lighter zinc-400 */
@@ -76,13 +76,20 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
   background-color: hsl(var(--border));
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--muted-foreground)); }
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
+}
 
 /* Noise grain texture */
 .noise {
@@ -92,7 +99,15 @@ body {
 
 /* Message animation */
 @keyframes msg-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.message-enter-active { animation: msg-in 0.18s ease-out; }
+.message-enter-active {
+  animation: msg-in 0.18s ease-out;
+}
