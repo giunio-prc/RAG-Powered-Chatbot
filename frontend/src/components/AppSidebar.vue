@@ -25,7 +25,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <aside class="w-56 shrink-0 flex flex-col bg-card border-r border-border h-full">
+  <aside class="w-56 shrink-0 flex flex-col bg-card/50 backdrop-blur-2xl border-r border-border h-full">
     <!-- Brand -->
     <div class="px-4 py-5 border-b border-border">
       <div class="flex items-center gap-2.5">
