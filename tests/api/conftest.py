@@ -3,7 +3,6 @@ from typing import Annotated
 import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
-from starlette.middleware.sessions import SessionMiddleware
 
 from app.agents import FakeAgent
 from app.api.database import router as database_router
@@ -14,8 +13,6 @@ from app.api.dependencies import (
 )
 from app.api.prompting import router as prompting_router
 from app.databases import FakeDatabaseManager
-
-TEST_SECRET = "test-secret"
 
 
 @pytest.fixture
@@ -28,8 +25,6 @@ def app_with_mocks(
 
     app.dependency_overrides[get_db_from_state] = lambda: fake_database_manager
     app.dependency_overrides[get_agent_from_state] = lambda: fake_agent
-
-    app.add_middleware(SessionMiddleware, secret_key=TEST_SECRET)
 
     @app.get("/cookie")
     async def _get_cookie_session_endpoint(
