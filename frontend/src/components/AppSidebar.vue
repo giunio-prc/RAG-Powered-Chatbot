@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '@/api/client'
-import { Bot, MessageSquare, FileText, ExternalLink } from '@lucide/vue'
+import { Bot, MessageSquare, FileText, ExternalLink, Sun, Moon } from '@lucide/vue'
+import { useColorMode } from '@/composables/useColorMode'
 
 interface AgentInfo {
   icon: string
@@ -10,6 +11,7 @@ interface AgentInfo {
 }
 
 const route = useRoute()
+const { isDark, toggle } = useColorMode()
 const agentInfo = ref<AgentInfo>({ icon: 'smart_toy', label: 'RAG Chatbot' })
 
 onMounted(async () => {
@@ -55,7 +57,12 @@ onMounted(async () => {
     </nav>
 
     <!-- Footer -->
-    <div class="px-2 py-3 border-t border-border">
+    <div class="px-2 py-3 border-t border-border flex flex-col gap-0.5">
+      <button class="nav-link w-full" @click="toggle">
+        <Sun v-if="isDark" class="w-4 h-4 shrink-0" />
+        <Moon v-else class="w-4 h-4 shrink-0" />
+        {{ isDark ? 'Light mode' : 'Dark mode' }}
+      </button>
       <a
         href="https://github.com/giunio-prc/rag-powered-chatbot"
         target="_blank"
