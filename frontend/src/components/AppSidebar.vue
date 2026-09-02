@@ -71,16 +71,27 @@ onMounted(async () => {
         GitHub
       </a>
       <div class="px-3 pt-2 pb-1">
-        <p class="text-xs text-muted-foreground">
-          Powered by
-          <a
-            href="https://avenueit.be"
-            target="_blank"
-            rel="noopener"
-            class="text-primary hover:underline"
-            >AvenueIT</a
-          >
-        </p>
+        <a
+          href="https://avenueit.be"
+          target="_blank"
+          rel="noopener"
+          class="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
+        >
+          <svg height="22" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="avenueit-grad-sidebar" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2d388a" />
+                <stop offset="1" stop-color="#00aeef" />
+              </linearGradient>
+            </defs>
+            <polygon points="2.83,0 29.17,9.123 2.83,18.247" fill="url(#avenueit-grad-sidebar)" />
+            <polygon
+              points="2.83,22.877 29.17,13.753 29.17,32"
+              fill="url(#avenueit-grad-sidebar)"
+            />
+          </svg>
+          <span class="text-xs text-muted-foreground">AvenueIT</span>
+        </a>
       </div>
     </div>
   </aside>
