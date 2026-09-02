@@ -10,6 +10,22 @@ function now(): string {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+// sessionStorage is cleared when the tab closes, making it a reliable proxy for
+// the lifetime of the SESSION cookie from the frontend's perspective.
+function getOrCreateSessionStamp(): string {
+  let stamp = sessionStorage.getItem('session_stamp')
+  if (!stamp) {
+    stamp = crypto.randomUUID()
+    sessionStorage.setItem('session_stamp', stamp)
+  }
+  return stamp
+}
+
+interface PersistedChat {
+  sessionStamp: string
+  messages: Message[]
+}
+
 export const useChatStore = defineStore('chat', {
   state: () => ({
     messages: [] as Message[],
@@ -36,5 +52,22 @@ export const useChatStore = defineStore('chat', {
       this.messages = []
     },
   },
-  persist: true,
+  persist: {
+    serializer: {
+      serialize(state) {
+        const payload: PersistedChat = {
+          sessionStamp: getOrCreateSessionStamp(),
+          messages: (state as { messages: Message[] }).messages,
+        }
+        return JSON.stringify(payload)
+      },
+      deserialize(raw) {
+        const parsed: PersistedChat = JSON.parse(raw)
+        if (parsed.sessionStamp !== getOrCreateSessionStamp()) {
+          return { messages: [] }
+        }
+        return { messages: parsed.messages }
+      },
+    },
+  },
 })
