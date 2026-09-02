@@ -46,19 +46,21 @@ function onKeydown(e: KeyboardEvent) {
 <template>
   <div class="flex flex-col h-full">
     <!-- Header -->
-    <div class="shrink-0 flex items-center justify-between px-6 py-3 border-b border-border">
+    <div
+      class="shrink-0 flex items-center justify-between px-3 sm:px-6 py-3 border-b border-border"
+    >
       <span class="text-sm font-medium text-foreground">Chat</span>
       <button
-        class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+        class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
         @click="clearHistory"
       >
         <Trash2 class="w-4 h-4" />
-        Clear chat
+        <span class="hidden sm:inline">Clear chat</span>
       </button>
     </div>
 
     <!-- Messages -->
-    <div ref="chatContainer" class="flex-1 overflow-y-auto px-6 py-6 min-h-0">
+    <div ref="chatContainer" class="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 min-h-0">
       <div class="max-w-3xl mx-auto flex flex-col gap-5">
         <template v-if="messages.length === 0">
           <div class="flex flex-col items-center justify-center h-64 gap-3 select-none">
@@ -75,7 +77,7 @@ function onKeydown(e: KeyboardEvent) {
     </div>
 
     <!-- Input bar -->
-    <div class="shrink-0 border-t border-border bg-background px-6 py-4">
+    <div class="shrink-0 border-t border-border bg-background px-3 sm:px-6 py-3 sm:py-4">
       <div class="max-w-3xl mx-auto flex flex-col gap-2">
         <div class="flex gap-2 items-end">
           <div class="flex-1 relative">
@@ -101,7 +103,9 @@ function onKeydown(e: KeyboardEvent) {
           </button>
         </div>
 
-        <p class="text-xs text-muted-foreground px-1">Enter to send · Shift+Enter for newline</p>
+        <p class="hidden sm:block text-xs text-muted-foreground px-1">
+          Enter to send · Shift+Enter for newline
+        </p>
       </div>
     </div>
   </div>

@@ -53,9 +53,9 @@ async function confirmEmptyDatabase() {
 </script>
 
 <template>
-  <div class="flex-1 overflow-y-auto px-6 py-6">
+  <div class="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
     <div class="max-w-5xl mx-auto">
-      <h1 class="text-xl font-semibold text-foreground mb-6">Documents</h1>
+      <h1 class="text-xl font-semibold text-foreground mb-4 sm:mb-6">Documents</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Upload card -->

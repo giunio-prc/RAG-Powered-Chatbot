@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import AppSidebar from '@/components/AppSidebar.vue'
+import { useColorMode } from '@/composables/useColorMode'
+import { useRoute } from 'vue-router'
+import { Bot, MessageSquare, FileText, Sun, Moon } from '@lucide/vue'
+
+const { isDark, toggle } = useColorMode()
+const route = useRoute()
 </script>
 
 <template>
-  <div class="flex h-screen bg-background text-foreground overflow-hidden">
+  <div class="flex flex-col md:flex-row h-screen bg-background text-foreground overflow-hidden">
     <!-- Ambient background layer -->
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
       <div
@@ -18,9 +24,79 @@ import AppSidebar from '@/components/AppSidebar.vue'
       <div class="noise absolute inset-0" />
     </div>
 
-    <AppSidebar />
+    <!-- Desktop sidebar -->
+    <AppSidebar class="hidden md:flex" />
+
+    <!-- Mobile header -->
+    <header
+      class="md:hidden shrink-0 flex items-center justify-between px-4 bg-card/80 backdrop-blur-xl border-b border-border"
+      style="padding-top: max(0.75rem, env(safe-area-inset-top)); padding-bottom: 0.75rem"
+    >
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+          <Bot class="w-3.5 h-3.5 text-primary" />
+        </div>
+        <span class="font-semibold text-sm">RAG Chatbot</span>
+      </div>
+      <button
+        class="p-2 rounded-lg text-muted-foreground hover:bg-secondary transition-colors"
+        @click="toggle"
+      >
+        <Sun v-if="isDark" class="w-4 h-4" />
+        <Moon v-else class="w-4 h-4" />
+      </button>
+    </header>
+
+    <!-- Main content -->
     <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <RouterView />
     </main>
+
+    <!-- Mobile bottom nav -->
+    <nav
+      class="md:hidden shrink-0 flex border-t border-border bg-card/80 backdrop-blur-xl"
+      style="padding-bottom: env(safe-area-inset-bottom)"
+    >
+      <router-link
+        to="/"
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link--active': route.path === '/' }"
+      >
+        <MessageSquare class="w-5 h-5" />
+        <span>Chat</span>
+      </router-link>
+      <router-link
+        to="/documents"
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link--active': route.path === '/documents' }"
+      >
+        <FileText class="w-5 h-5" />
+        <span>Docs</span>
+      </router-link>
+    </nav>
   </div>
 </template>
+
+<style scoped>
+.mobile-nav-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 0;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.mobile-nav-link:hover {
+  color: hsl(var(--foreground));
+}
+
+.mobile-nav-link--active {
+  color: hsl(var(--primary));
+}
+</style>
