@@ -47,6 +47,7 @@ const route = useRoute()
       </div>
       <button
         class="p-2 rounded-lg text-muted-foreground hover:bg-secondary transition-colors"
+        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
         @click="toggle"
       >
         <Sun v-if="isDark" class="w-4 h-4" />

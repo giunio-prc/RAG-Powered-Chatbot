@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from typing import TypedDict
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents import CohereAgent, FakeAgent
@@ -25,7 +25,7 @@ class State(TypedDict):
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[State]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[State, None]:
     _ = app
     if not os.getenv("COHERE_API_KEY"):
         logger.warning(
@@ -66,6 +66,16 @@ async def health_check():
     return JSONResponse(content={"status": "ok"})
 
 
-# Serve Vue SPA in production — must be last so API routes take precedence
+# Serve Vue SPA in production — must be last so API routes take precedence.
+# Assets are mounted directly; everything else falls back to index.html so
+# client-side routes like /documents are handled by the Vue router.
 if os.path.isdir("frontend/dist"):
-    app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
+    if os.path.isdir("frontend/dist/assets"):
+        app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="spa-assets")
+
+    @app.get("/{full_path:path}")
+    async def spa_fallback(full_path: str):
+        candidate = os.path.join("frontend/dist", full_path)
+        if os.path.isfile(candidate):
+            return FileResponse(candidate)
+        return FileResponse("frontend/dist/index.html")
