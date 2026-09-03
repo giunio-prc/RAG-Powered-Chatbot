@@ -66,5 +66,6 @@ async def health_check():
     return JSONResponse(content={"status": "ok"})
 
 
-# Serve Vue SPA — must be last so API routes take precedence
-app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
+# Serve Vue SPA in production — must be last so API routes take precedence
+if os.path.isdir("frontend/dist"):
+    app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
