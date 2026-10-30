@@ -71,7 +71,9 @@ async def health_check():
 # client-side routes like /documents are handled by the Vue router.
 if os.path.isdir("frontend/dist"):
     if os.path.isdir("frontend/dist/assets"):
-        app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="spa-assets")
+        app.mount(
+            "/assets", StaticFiles(directory="frontend/dist/assets"), name="spa-assets"
+        )
 
     @app.get("/{full_path:path}")
     async def spa_fallback(full_path: str):
